@@ -1,0 +1,144 @@
+aid: lead-bank
+url: https://raw.githubusercontent.com/api-evangelist/lead-bank/refs/heads/main/apis.yml
+name: Lead Bank
+kind: company
+description: >-
+  Lead Bank is a Kansas City-chartered FDIC-insured bank operating as a
+  sponsor bank and embedded-finance infrastructure provider for fintech
+  partners. The platform is organized around four product pillars - Lend
+  (term loans, lines of credit, BNPL, in-app financing), Move (ACH,
+  instant payments, wires, international wires, stablecoin transfers,
+  payment controls), Issue (physical and virtual credit / debit cards,
+  custom account numbers), and Store (FDIC-insured multi-currency deposit
+  accounts). APIs and file integrations (SFTP) are documented at
+  docs.lead.bank but access is gated through Lead Bank's partner-onboarding
+  process. Recognized on the Forbes Next Billion-Dollar Startups and CNBC
+  Disruptor 50 lists.
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+tags:
+  - Banking
+  - Sponsor Bank
+  - Embedded Finance
+  - Banking as a Service
+  - Payments
+  - Lending
+  - Cards
+  - Deposits
+created: '2026-05-23'
+modified: '2026-05-23'
+specificationVersion: '0.19'
+apis:
+  - aid: lead-bank:lend
+    name: Lead Bank Lend API
+    description: >-
+      Embedded-credit API supporting term loans, revolving lines of credit,
+      in-app financing, and buy-now-pay-later products. Covers origination,
+      underwriting, servicing, and disbursement.
+    humanURL: https://docs.lead.bank/api-integrations/overview
+    baseURL: gated-partner-access
+    tags:
+      - Lending
+      - Credit
+      - BNPL
+      - Origination
+    properties:
+      - type: Documentation
+        url: https://docs.lead.bank/api-integrations/overview
+  - aid: lead-bank:move
+    name: Lead Bank Move API
+    description: >-
+      Money-movement API spanning ACH, instant payments (RTP / FedNow),
+      domestic and international wires, stablecoin transfers, and
+      partner-configurable payment controls.
+    humanURL: https://docs.lead.bank/api-integrations/overview
+    baseURL: gated-partner-access
+    tags:
+      - Payments
+      - ACH
+      - RTP
+      - FedNow
+      - Wires
+      - Stablecoin
+    properties:
+      - type: Documentation
+        url: https://docs.lead.bank/api-integrations/overview
+  - aid: lead-bank:issue
+    name: Lead Bank Issue API
+    description: >-
+      Card-issuing API for physical and virtual credit and debit cards plus
+      custom-generated account numbers used in card-program back-ends.
+    humanURL: https://docs.lead.bank/api-integrations/overview
+    baseURL: gated-partner-access
+    tags:
+      - Cards
+      - Issuing
+      - Virtual Cards
+    properties:
+      - type: Documentation
+        url: https://docs.lead.bank/api-integrations/overview
+  - aid: lead-bank:store
+    name: Lead Bank Store API
+    description: >-
+      Deposit-account API for opening and managing FDIC-insured accounts on
+      behalf of partner-program end users, including multi-currency balances
+      and flexible account structures.
+    humanURL: https://docs.lead.bank/api-integrations/overview
+    baseURL: gated-partner-access
+    tags:
+      - Accounts
+      - Deposits
+      - FDIC
+      - Multi-Currency
+    properties:
+      - type: Documentation
+        url: https://docs.lead.bank/api-integrations/overview
+  - aid: lead-bank:file-integrations
+    name: Lead Bank File Integrations (SFTP)
+    description: >-
+      File-based integration channel over SFTP for partners that ingest or
+      emit batch files (NACHA, reconciliation, settlement reports).
+    humanURL: https://docs.lead.bank/file-integrations/sftp-setup
+    baseURL: gated-partner-access
+    tags:
+      - SFTP
+      - File Integration
+      - Batch
+      - NACHA
+    properties:
+      - type: Documentation
+        url: https://docs.lead.bank/file-integrations/sftp-setup
+  - aid: lead-bank:webhooks
+    name: Lead Bank Webhooks
+    description: >-
+      Outbound webhook events covering account, payment, card, and lending
+      lifecycle changes. Endpoints configured per partner program.
+    humanURL: https://docs.lead.bank
+    baseURL: customer-configured
+    tags:
+      - Webhooks
+      - Events
+    properties:
+      - type: Documentation
+        url: https://docs.lead.bank
+common:
+  - type: Website
+    url: https://lead.bank/
+  - type: Documentation
+    url: https://docs.lead.bank/
+  - type: PartnerPortal
+    url: https://partners.lead.bank/
+  - type: Changelog
+    url: https://docs.lead.bank/changelog
+  - type: ContactSales
+    url: https://lead.bank/contact
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/lead-bank
+integrations:
+  - name: NACHA (ACH)
+  - name: FedNow
+  - name: The Clearing House (RTP)
+  - name: Fedwire
+  - name: SWIFT
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
