@@ -133,6 +133,8 @@ common:
     url: https://lead.bank/contact
   - type: LinkedIn
     url: https://www.linkedin.com/company/lead-bank
+  - type: LLMsTxt
+    url: https://docs.lead.bank/llms.txt
 integrations:
   - name: NACHA (ACH)
   - name: FedNow
