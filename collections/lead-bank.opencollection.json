@@ -1,0 +1,2324 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lead Bank",
+    "version": "v1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "ACH",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all ACHes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/ach",
+            "params": [
+              {
+                "name": "account_id",
+                "value": "",
+                "type": "query",
+                "description": "Return ACHes associated with this `account_id`."
+              },
+              {
+                "name": "account_number",
+                "value": "",
+                "type": "query",
+                "description": "Return ACHes associated with this `account_number`."
+              },
+              {
+                "name": "account_number_id",
+                "value": "",
+                "type": "query",
+                "description": "Return ACHes associated with this `account_number_id`."
+              },
+              {
+                "name": "counterparty_account_number",
+                "value": "",
+                "type": "query",
+                "description": "Return ACHes associated with this counterparty's account_number."
+              },
+              {
+                "name": "direction",
+                "value": "",
+                "type": "query",
+                "description": "Return ACHes with this `direction`."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Return ACHes with this `status`."
+              },
+              {
+                "name": "transaction_type",
+                "value": "",
+                "type": "query",
+                "description": "Return ACHes with this `transaction_type`."
+              },
+              {
+                "name": "created_at",
+                "value": "",
+                "type": "query",
+                "description": "A set of filters on the list using the object’s field `created_at`."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              },
+              {
+                "name": "ending_before",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              }
+            ]
+          },
+          "docs": "List all ACH objects."
+        },
+        {
+          "info": {
+            "name": "Create an ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/ach",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates an outgoing ACH."
+        },
+        {
+          "info": {
+            "name": "Retrieve an ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/ach/:ach_id",
+            "params": [
+              {
+                "name": "ach_id",
+                "value": "ach_xyz001",
+                "type": "path",
+                "description": "ID of the ACH object you want to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve an ACH object."
+        },
+        {
+          "info": {
+            "name": "Update an ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.sandbox.lead.bank/v1/ach/:ach_id",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "ach_id",
+                "value": "ach_xyz001",
+                "type": "path",
+                "description": "ID of the ACH object you want to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update an ACH object."
+        },
+        {
+          "info": {
+            "name": "Cancel an ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/ach/:ach_id/cancel",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "ach_id",
+                "value": "ach_xyz001",
+                "type": "path",
+                "description": "ID of the ACH to be canceled."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Cancel an outgoing ACH."
+        },
+        {
+          "info": {
+            "name": "Return an ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/ach/:ach_id/return",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "ach_id",
+                "value": "ach_xyz001",
+                "type": "path",
+                "description": "ID of the ACH object to be returned."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Issue a return against an incoming ACH."
+        },
+        {
+          "info": {
+            "name": "Reverse an ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/ach/:ach_id/reverse",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "ach_id",
+                "value": "ach_xyz001",
+                "type": "path",
+                "description": "ID of the ACH you want to return."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Reverse an outgoing ACH."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Account Number",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all Account Numbers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/account_number",
+            "params": [
+              {
+                "name": "account_id",
+                "value": "account_xyz",
+                "type": "query",
+                "description": "The ID of the account."
+              },
+              {
+                "name": "account_number",
+                "value": "123412341234",
+                "type": "query",
+                "description": "The account number."
+              },
+              {
+                "name": "limit",
+                "value": "10",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "account_number_xyz",
+                "type": "query",
+                "description": "The ID of the account number to start the list after."
+              },
+              {
+                "name": "ending_before",
+                "value": "account_number_xyz",
+                "type": "query",
+                "description": "The ID of the account number to end the list before."
+              }
+            ]
+          },
+          "docs": "List all Account Numbers."
+        },
+        {
+          "info": {
+            "name": "Create an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/account_number",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates an Account Number. Optionally also assigns either a ClientCustomerID or EntityID to the Account Number"
+        },
+        {
+          "info": {
+            "name": "Register an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/account_number/register",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Registers an Account Number."
+        },
+        {
+          "info": {
+            "name": "Assign an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/account_number/:account_number_id/assign",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "account_number_id",
+                "value": "account_number_xyz",
+                "type": "path",
+                "description": "The ID of the Account Number to be assigned."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Assigns an Account Number with either a ClientCustomerID or EntityID. Only one of these should be provided"
+        },
+        {
+          "info": {
+            "name": "Retrieve an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/account_number/:account_number_id",
+            "params": [
+              {
+                "name": "account_number_id",
+                "value": "account_number_xyz",
+                "type": "path",
+                "description": "The ID of the Account Number to be retrieved."
+              }
+            ]
+          },
+          "docs": "Retrieve an Account Number."
+        },
+        {
+          "info": {
+            "name": "Update an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.sandbox.lead.bank/v1/account_number/:account_number_id",
+            "params": [
+              {
+                "name": "account_number_id",
+                "value": "account_number_xyz",
+                "type": "path",
+                "description": "The ID of the Account Number to be updated."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update an Account Number's metadata."
+        },
+        {
+          "info": {
+            "name": "Activate an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/account_number/:account_number_id/activate",
+            "params": [
+              {
+                "name": "account_number_id",
+                "value": "account_number_xyz",
+                "type": "path",
+                "description": "The ID of the Account Number to be activated."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Activate an Account Number."
+        },
+        {
+          "info": {
+            "name": "Deactivate an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/account_number/:account_number_id/deactivate",
+            "params": [
+              {
+                "name": "account_number_id",
+                "value": "account_number_xyz",
+                "type": "path",
+                "description": "The ID of the Account Number to be deactivated."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deactivate an Account Number."
+        },
+        {
+          "info": {
+            "name": "Cancel an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/account_number/:account_number_id/cancel",
+            "params": [
+              {
+                "name": "account_number_id",
+                "value": "account_number_xyz",
+                "type": "path",
+                "description": "The ID of the Account Number to be canceled."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Cancel an Account Number."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "OAuth",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get an Access Token",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/oauth/token",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Exchange your client credentials for an access code."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Events",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve an event",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/event/:event_id",
+            "params": [
+              {
+                "name": "event_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the Event object you want to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieves an event object."
+        },
+        {
+          "info": {
+            "name": "List all events",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/event",
+            "params": [
+              {
+                "name": "events",
+                "value": "",
+                "type": "query",
+                "description": "ID of the Event object you want to retrieve."
+              },
+              {
+                "name": "created_at",
+                "value": "",
+                "type": "query",
+                "description": "A set of filters on the list using the object’s field `created_at`."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an Event ID that defines your place in the list."
+              },
+              {
+                "name": "ending_before",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an Event ID that defines your place in the list."
+              },
+              {
+                "name": "object_id",
+                "value": "",
+                "type": "query",
+                "description": "Filter events by the ID of the associated object (e.g., wire_12345). If the object_id doesn't match the event filter's object type, returns empty results."
+              }
+            ]
+          },
+          "docs": "List all event objects."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Lending",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a Disbursement",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/lending/disbursements",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a disbursement for a loan"
+        },
+        {
+          "info": {
+            "name": "Retrieve a disbursement",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/lending/disbursements/:disbursement_id",
+            "params": [
+              {
+                "name": "disbursement_id",
+                "value": "disbursement_xyz001",
+                "type": "path",
+                "description": "ID of the disbursement object you want to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a disbursement object."
+        },
+        {
+          "info": {
+            "name": "Cancel a disbursement",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/lending/disbursements/:disbursement_id/cancel",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "disbursement_id",
+                "value": "disbursement_xyz001",
+                "type": "path",
+                "description": "ID of the disbursement object you want to cancel."
+              }
+            ]
+          },
+          "docs": "Cancel a disbursement."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Lending Simulation",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Advance Sandbox Disbursement",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/simulate/lending/disbursements/:disbursement_id/advance",
+            "params": [
+              {
+                "name": "disbursement_id",
+                "value": "disbursement_xyz001",
+                "type": "path",
+                "description": "ID of the disbursement object you want to advance."
+              },
+              {
+                "name": "event",
+                "value": "lending.disbursement.processing",
+                "type": "query",
+                "description": "Disbursement webhook event that you want to simulate. Possible values can be found in the Events & Webhooks section."
+              }
+            ]
+          },
+          "docs": "Advances a disbursement object status in the sandbox environment."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Simulation",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Simulate Incoming ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/ach/incoming_ach",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming ACH."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Return",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/ach/:ach_id/incoming_return",
+            "params": [
+              {
+                "name": "ach_id",
+                "value": "ach_xyz001",
+                "type": "path",
+                "description": "ID of the ACH object you want to return."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming Return."
+        },
+        {
+          "info": {
+            "name": "Advance Sandbox ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/ach/:ach_id/advance",
+            "params": [
+              {
+                "name": "ach_id",
+                "value": "ach_xyz001",
+                "type": "path",
+                "description": "ID of the ACH object you want to advance."
+              }
+            ]
+          },
+          "docs": "Advance an ACH in Sandbox."
+        },
+        {
+          "info": {
+            "name": "Advance Sandbox Wire",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/wires/:wire_id/advance",
+            "params": [
+              {
+                "name": "wire_id",
+                "value": "wire_xyz001",
+                "type": "path",
+                "description": "ID of the Wire object you want to advance."
+              }
+            ]
+          },
+          "docs": "Advance a Wire in Sandbox."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Wire",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/wires/incoming",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming Wire."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Wire Return",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/wires/:wire_id/incoming_return",
+            "params": [
+              {
+                "name": "wire_id",
+                "value": "wire_xyz001",
+                "type": "path",
+                "description": "ID of the Wire object you want to return."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming Wire Return."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Instant Payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/instant_payments/incoming",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming instant payment."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Instant Payment Return",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/instant_payments/:instant_payment_id/incoming_return",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object you want to return."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming instant payment return."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Instant Payment Return Request",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/instant_payments/:instant_payment_id/incoming_return_request",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object you want to request a return for."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming instant payment return request."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Instant Payment Return Request Rejection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/instant_payments/:instant_payment_id/incoming_return_request_rejection",
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object whose return request you want to reject."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming instant payment return request rejection."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Instant Payment Return Request Acceptance",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/instant_payments/:instant_payment_id/incoming_return_request_acceptance",
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object whose return request you want to accept."
+              }
+            ]
+          },
+          "docs": "Simulate an incoming instant payment return request acceptance."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Internal Transfer",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all Internal Transfers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/internal_transfer",
+            "params": [
+              {
+                "name": "sender_account_number_id",
+                "value": "account_number_xyz",
+                "type": "query",
+                "description": "The sender account number ID."
+              },
+              {
+                "name": "receiver_account_number_id",
+                "value": "account_number_xyz",
+                "type": "query",
+                "description": "The receiver account number ID."
+              },
+              {
+                "name": "status",
+                "value": "posted",
+                "type": "query"
+              },
+              {
+                "name": "created_at",
+                "value": "",
+                "type": "query",
+                "description": "A set of filters on the list using the object’s field `created_at`."
+              },
+              {
+                "name": "limit",
+                "value": "10",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "internal_transfer_xyz123",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              },
+              {
+                "name": "ending_before",
+                "value": "internal_transfer_xyz456",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              }
+            ]
+          },
+          "docs": "List all Internal Transfers."
+        },
+        {
+          "info": {
+            "name": "Create an asynchronous Internal Transfer",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/internal_transfer",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates an asynchronous Internal Transfer."
+        },
+        {
+          "info": {
+            "name": "Retrieve an Internal Transfer",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/internal_transfer/:internal_transfer_id",
+            "params": [
+              {
+                "name": "internal_transfer_id",
+                "value": "internal_transfer_xyz23",
+                "type": "path",
+                "description": "The ID of the internal transfer object to be retrieved."
+              }
+            ]
+          },
+          "docs": "Retrieve an Internal Transfer."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Wire",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve a wire V1",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/wires/:wire_id",
+            "params": [
+              {
+                "name": "wire_id",
+                "value": "wire_xyz001",
+                "type": "path",
+                "description": "ID of the wire object you want to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a wire object."
+        },
+        {
+          "info": {
+            "name": "Update a wire V1",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.sandbox.lead.bank/v1/wires/:wire_id",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "wire_id",
+                "value": "wire_xyz001",
+                "type": "path",
+                "description": "ID of the wire object you want to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a wire."
+        },
+        {
+          "info": {
+            "name": "List all wires V1",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/wires",
+            "params": [
+              {
+                "name": "account_id",
+                "value": "",
+                "type": "query",
+                "description": "Returns wires associated with this `account_id`."
+              },
+              {
+                "name": "account_number_id",
+                "value": "",
+                "type": "query",
+                "description": "Returns wires associated with this `account_number_id`."
+              },
+              {
+                "name": "direction",
+                "value": "",
+                "type": "query",
+                "description": "Returns wires with this `direction`."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Returns wires with this `status`."
+              },
+              {
+                "name": "created_at",
+                "value": "",
+                "type": "query",
+                "description": "A set of filters on the list using the object’s field `created_at`."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              },
+              {
+                "name": "ending_before",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              }
+            ]
+          },
+          "docs": "List all wire objects."
+        },
+        {
+          "info": {
+            "name": "Create a wire V1",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/wires",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new outgoing wire."
+        },
+        {
+          "info": {
+            "name": "Return a wire V1",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/wires/:wire_id/return",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "wire_id",
+                "value": "wire_xyz001",
+                "type": "path",
+                "description": "ID of the wire object you want to return."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Initiate a return against an incoming wire."
+        },
+        {
+          "info": {
+            "name": "Cancel a wire V1",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/wires/:wire_id/cancel",
+            "params": [
+              {
+                "name": "wire_id",
+                "value": "wire_xyz001",
+                "type": "path",
+                "description": "ID of the wire object you want to cancel."
+              }
+            ]
+          },
+          "docs": "Cancel a wire object."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Entity",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve an entity by client customer id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/entities",
+            "params": [
+              {
+                "name": "client_customer_id",
+                "value": "",
+                "type": "query",
+                "description": "Client Customer ID of the entity object you want to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve an entity by the client customer id"
+        },
+        {
+          "info": {
+            "name": "Create an entity",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/entities",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create an Individual, Sole Prop or Business Entity."
+        },
+        {
+          "info": {
+            "name": "Retrieve an entity by entity id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/entities/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Entity ID of the entity object you want to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve an entity by entity id"
+        },
+        {
+          "info": {
+            "name": "Update an entity",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.sandbox.lead.bank/v0/entities/:id",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Entity ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Certain updates on Entity trigger KYC re-screening, requiring an updated kyc_details.result and kyc_details.screened_at.\n\nFor individual entities, KYC re-screening is triggered by changes to: first name, last name, date of birth, tax ID (for US entities), existing identification document (for non-US entities), and switching between US vs. non-US entities.\n\nFor business and sole proprietorship entities, KYC re-screening is triggered by changes to: business name, business type, tax ID (US entities"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Originator",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all Originators",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/originators",
+            "params": [
+              {
+                "name": "account_id",
+                "value": "account_xyz123",
+                "type": "query",
+                "description": "The account ID to retrieve the originators for."
+              },
+              {
+                "name": "limit",
+                "value": "10",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "originator_xyz123",
+                "type": "query",
+                "description": "The ID of the originator to start the list after."
+              },
+              {
+                "name": "ending_before",
+                "value": "originator_xyz123",
+                "type": "query",
+                "description": "The ID of the originator to end the list before."
+              },
+              {
+                "name": "status",
+                "value": "active",
+                "type": "query",
+                "description": "The status of the originator."
+              }
+            ]
+          },
+          "docs": "List all Originators."
+        },
+        {
+          "info": {
+            "name": "Create an Originator",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/originators",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create an Originator"
+        },
+        {
+          "info": {
+            "name": "Retrieve an Originator",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/originators/:originator_id",
+            "params": [
+              {
+                "name": "originator_id",
+                "value": "originator_xyz123",
+                "type": "path",
+                "description": "The ID of the originator to be retrieved."
+              }
+            ]
+          },
+          "docs": "Retrieve an Originator."
+        },
+        {
+          "info": {
+            "name": "Update an Originator",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.sandbox.lead.bank/v0/originators/:originator_id",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "originator_id",
+                "value": "originator_xyz123",
+                "type": "path",
+                "description": "The ID of the originator to be retrieved."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update an Originator's parameters."
+        },
+        {
+          "info": {
+            "name": "Activate an Originator",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/originators/:originator_id/activate",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "originator_id",
+                "value": "originator_xyz123",
+                "type": "path",
+                "description": "The ID of the originator to be activated."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Activate an Originator."
+        },
+        {
+          "info": {
+            "name": "Deactivate an Originator",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/originators/:originator_id/deactivate",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "originator_id",
+                "value": "originator_xyz123",
+                "type": "path",
+                "description": "The ID of the originator to be deactivated."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deactivate an Originator."
+        },
+        {
+          "info": {
+            "name": "Cancel an Originator",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/originators/:originator_id/cancel",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "originator_id",
+                "value": "originator_xyz123",
+                "type": "path",
+                "description": "The ID of the originator to be cancelled."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Cancel an Originator."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Funding",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a Funding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/fundings",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a Funding object to request that Lead move funds from a Lead GL to the partner's funding FBO account."
+        },
+        {
+          "info": {
+            "name": "Retrieve a Funding",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/fundings/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "funding_0o5Fs0EELR0fUjHjbCnEtdUwQe3",
+                "type": "path",
+                "description": "The ID of the funding object to be retrieved."
+              }
+            ]
+          },
+          "docs": "Retrieve a Funding object."
+        },
+        {
+          "info": {
+            "name": "Advance a Funding (Simulation)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/fundings/:id/advance",
+            "params": [
+              {
+                "name": "id",
+                "value": "funding_0o5Fs0EELR0fUjHjbCnEtdUwQe3",
+                "type": "path",
+                "description": "The ID of the funding object to advance."
+              }
+            ]
+          },
+          "docs": "Advances a Funding object from processing to posted status in the Sandbox environment."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Subledger Balances",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a Subledger Balance",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/subledger_balances",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a Subledger Balance object. The newly created Subledger Balance will have a `status` of `active` and a `status_reason` of `active`, and a unique `id` with prefix `subledger_balance_` will be auto-generated."
+        },
+        {
+          "info": {
+            "name": "Retrieve a Subledger Balance",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/subledger_balances/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Return Subledger Balance associated with this `id`."
+              }
+            ]
+          },
+          "docs": "Retrieve a Subledger Balance object."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Instant Payments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all instant payments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments",
+            "params": [
+              {
+                "name": "account_id",
+                "value": "",
+                "type": "query",
+                "description": "Returns instant payments associated with this `account_id`."
+              },
+              {
+                "name": "account_number_id",
+                "value": "",
+                "type": "query",
+                "description": "Returns instant payments associated with this `account_number_id`."
+              },
+              {
+                "name": "direction",
+                "value": "",
+                "type": "query",
+                "description": "Returns instant payments with the given direction."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Returns instant payments with the given status."
+              },
+              {
+                "name": "counterparty_status",
+                "value": "",
+                "type": "query",
+                "description": "Returns instant payments with the given counterparty status."
+              },
+              {
+                "name": "return_request_status",
+                "value": "",
+                "type": "query",
+                "description": "Returns instant payments that have a return request with the given status."
+              },
+              {
+                "name": "created_at",
+                "value": "",
+                "type": "query",
+                "description": "A set of filters on the list using the object's field `created_at`."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              },
+              {
+                "name": "ending_before",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              }
+            ]
+          },
+          "docs": "List instant payments with optional filtering."
+        },
+        {
+          "info": {
+            "name": "Create an instant payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Initiates an outgoing instant payment."
+        },
+        {
+          "info": {
+            "name": "Retrieve an instant payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments/:instant_payment_id",
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object you want to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve the details of an instant payment."
+        },
+        {
+          "info": {
+            "name": "Return an instant payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments/:instant_payment_id/return",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object you want to return."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Initiates an outgoing instant payment return. If there is an outstanding return request, invoking this endpoint is\nalso understood as accepting the active return request."
+        },
+        {
+          "info": {
+            "name": "Cancel an instant payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments/:instant_payment_id/cancel",
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object you want to cancel."
+              }
+            ]
+          },
+          "docs": "Attempt to cancel an outgoing instant payment that is currently in \"created\" or \"under_review\"\nstatus."
+        },
+        {
+          "info": {
+            "name": "Request return for an instant payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments/:instant_payment_id/request_return",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object you want to request a return for."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Send a return request to the counterparty for a previously posted outgoing instant payment.\nReturns the updated instant payment object with a new entry in the return_requests array."
+        },
+        {
+          "info": {
+            "name": "Reject return request for an instant payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments/:instant_payment_id/reject_return_request",
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object whose return request you want to reject."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Reject the active return request associated with an incoming instant payment.\nReturns the updated instant payment object with the status of the active return request set to \"rejected\"."
+        },
+        {
+          "info": {
+            "name": "Check instant payment availability",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments/check_availability",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Check if a given routing number is eligible to receive an instant payment."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Compliance",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create an application",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/applications",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "app-create-12345-abc"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new credit application in terminal status.\n\n## Business Rules\n- Applications MUST be created in terminal status (approved, declined, canceled)\n- Maximum 20 entities per relationship type\n- Cannot mix individual entities with business or sole_prop entities in account_holders; business and sole_prop entities may be combined\n- Credit fields required for all applications\n- Adverse action notice required for declined applications\n- Authorized signers required for commercial account holders\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve an application",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/applications/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Server-generated ID (application_*) application ID"
+              }
+            ]
+          },
+          "docs": "Retrieves a specific application by its ID.\nAccepts either a server-generated ID (application_*) or client-provided application ID.\nThe server detects the ID type by prefix.\n"
+        },
+        {
+          "info": {
+            "name": "Update an application",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.sandbox.lead.bank/v0/applications/:id",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "app-update-12345-abc"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Application ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates properties on an existing application.\n\nUses JSON Merge Patch semantics (RFC 7396): omitted fields are unchanged,\nexplicit values overwrite, nested objects merge recursively.\n\nNote: Entity relationships cannot be modified via this endpoint.\nUse POST /entity_relationships/batch to add and DELETE /entity_relationships/{entity_id} to remove.\n\n## Idempotency\nThe Idempotency-Key header is required.\n"
+        },
+        {
+          "info": {
+            "name": "List application entity relationships",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/applications/:id/entity_relationships",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Application ID"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of results to return. Defaults to 25, max 100."
+              },
+              {
+                "name": "starting_after",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for pagination. Returns results starting after this cursor."
+              }
+            ]
+          },
+          "docs": "Lists all entity relationships for a specific application."
+        },
+        {
+          "info": {
+            "name": "Create an account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/accounts",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "acct-create-12345-abc"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new account.\n\n## Business Rules\n- Status is set to `active` by default on creation\n- Maximum 20 entities per relationship type\n- Cannot mix individual entities with business or sole_prop entities in account_holders; business and sole_prop entities may be combined\n- Authorized signers required for business/sole_prop account holders\n- application_id is required for credit accounts\n\n## Idempotency\nThe Idempotency-Key header is required. Reusing a key with a different request\nbody will ret"
+        },
+        {
+          "info": {
+            "name": "Retrieve an account",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "account_2N5Hk8xYmQpL9rBvC3jD",
+                "type": "path",
+                "description": "Account ID"
+              }
+            ]
+          },
+          "docs": "Retrieves a specific account by its ID.\nAccepts a server-generated ID (account_*).\n\nNote: Entity relationships are not included in the response.\nUse GET /v0/accounts/{id}/entity_relationships to retrieve them.\n"
+        },
+        {
+          "info": {
+            "name": "Update an account",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "acct-update-12345-abc"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Account ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates properties on an existing account.\n\nNote: To manage entity relationships, use the /entity_relationships endpoints.\nStatus changes should use dedicated endpoints (/activate, /deactivate, /close).\n\n## Idempotency\nThe Idempotency-Key header is required.\n"
+        },
+        {
+          "info": {
+            "name": "Activate an account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id/activate",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "acct-activate-12345-abc"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Account ID"
+              }
+            ]
+          },
+          "docs": "Transitions an account from `inactive` to `active` status.\n\n## Idempotency\nThe Idempotency-Key header is required.\n"
+        },
+        {
+          "info": {
+            "name": "Deactivate an account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id/deactivate",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "acct-deactivate-12345-abc"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Account ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Transitions an account from `active` to `inactive` status.\n\n## Idempotency\nThe Idempotency-Key header is required.\n"
+        },
+        {
+          "info": {
+            "name": "Close an account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id/close",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "acct-close-12345-abc"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Account ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Transitions an account to `closed` status (terminal state).\nThis action cannot be undone.\n\n## Idempotency\nThe Idempotency-Key header is required.\n"
+        },
+        {
+          "info": {
+            "name": "List account entity relationships",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id/entity_relationships",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Account ID"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of results to return. Defaults to 25, max 100."
+              },
+              {
+                "name": "starting_after",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for pagination. Returns results starting after this cursor."
+              }
+            ]
+          },
+          "docs": "Lists all entity relationships for a specific account."
+        },
+        {
+          "info": {
+            "name": "Delete account entity relationship",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id/entity_relationships/:entity_id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Account ID"
+              },
+              {
+                "name": "entity_id",
+                "value": "",
+                "type": "path",
+                "description": "Entity ID to remove from the account relationships"
+              },
+              {
+                "name": "relationship_type",
+                "value": "",
+                "type": "query",
+                "description": "The specific relationship type to delete for the entity."
+              }
+            ]
+          },
+          "docs": "Deletes a specific entity relationship from an account and returns the updated list of entity relationships.\nThe relationship_type must be specified to identify which relationship to delete.\n"
+        },
+        {
+          "info": {
+            "name": "Batch create account entity relationships",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id/entity_relationships/batch",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "batch-entity-rel-12345-abc"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Account ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Associates multiple entities with an account under a single relationship type.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Blockchain Payment",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all Blockchain Payments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/blockchain_payments",
+            "params": [
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Filter payments by their current status."
+              },
+              {
+                "name": "limit",
+                "value": "10",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "blockchain_payment_xyz123",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              },
+              {
+                "name": "ending_before",
+                "value": "blockchain_payment_xyz456",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              }
+            ]
+          },
+          "docs": "List all Blockchain Payments."
+        },
+        {
+          "info": {
+            "name": "Create a Blockchain Payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/blockchain_payments",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a blockchain payment for fiat or cross-border payments."
+        },
+        {
+          "info": {
+            "name": "Retrieve a Blockchain Payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/blockchain_payments/:blockchain_payment_id",
+            "params": [
+              {
+                "name": "blockchain_payment_id",
+                "value": "blockchain_payment_xyz123",
+                "type": "path",
+                "description": "The ID of the blockchain payment object to be retrieved."
+              }
+            ]
+          },
+          "docs": "Retrieve a Blockchain Payment."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
