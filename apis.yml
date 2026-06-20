@@ -14,7 +14,7 @@ description: >-
   docs.lead.bank but access is gated through Lead Bank's partner-onboarding
   process. Recognized on the Forbes Next Billion-Dollar Startups and CNBC
   Disruptor 50 lists.
-image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 tags:
   - Banking
   - Sponsor Bank
