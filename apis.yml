@@ -127,13 +127,13 @@ common:
     url: https://docs.lead.bank/
   - type: PartnerPortal
     url: https://partners.lead.bank/
-  - type: Changelog
+  - type: ChangeLog
     url: https://docs.lead.bank/changelog
   - type: ContactSales
     url: https://lead.bank/contact
   - type: LinkedIn
     url: https://www.linkedin.com/company/lead-bank
-  - type: LLMsTxt
+  - type: LlmsText
     url: https://docs.lead.bank/llms.txt
 integrations:
   - name: NACHA (ACH)
