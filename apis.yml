@@ -121,6 +121,10 @@ apis:
       - type: Documentation
         url: https://docs.lead.bank
 common:
+  - type: DomainSecurity
+    url: security/lead-bank-domain-security.yml
+  - type: Authentication
+    url: authentication/lead-bank-authentication.yml
   - type: Website
     url: https://lead.bank/
   - type: Documentation
