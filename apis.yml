@@ -121,6 +121,8 @@ apis:
       - type: Documentation
         url: https://docs.lead.bank
 common:
+  - type: AgenticAccess
+    url: agentic-access/lead-bank-agentic-access.yml
   - type: DomainSecurity
     url: security/lead-bank-domain-security.yml
   - type: Authentication
