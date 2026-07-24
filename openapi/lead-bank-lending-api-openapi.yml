@@ -1,0 +1,430 @@
+openapi: 3.0.1
+info:
+  title: Lead Bank Account Number Lending API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: Lending
+paths:
+  /v0/lending/disbursements:
+    post:
+      tags:
+      - Lending
+      operationId: create-a-disbursement
+      summary: Create a Disbursement
+      description: Creates a disbursement for a loan
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - client_loan_id
+              - payment_method
+              - payment_details
+              properties:
+                client_loan_id:
+                  $ref: '#/components/schemas/ClientLoanID'
+                payment_method:
+                  $ref: '#/components/schemas/PaymentMethod'
+                payment_details:
+                  $ref: '#/components/schemas/CreateDisbursementPaymentDetails'
+      responses:
+        '200':
+          description: Disbursement object created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Disbursement'
+        '400':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '409':
+          description: A request with the same idempotency key is in flight.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: We couldn't parse your request body, please check that your request body is valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v0/lending/disbursements/{disbursement_id}:
+    get:
+      tags:
+      - Lending
+      operationId: retrieve-a-disbursement
+      summary: Retrieve a disbursement
+      description: Retrieve a disbursement object.
+      parameters:
+      - name: disbursement_id
+        description: ID of the disbursement object you want to retrieve.
+        example: disbursement_xyz001
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^disbursement_\w+$
+      responses:
+        '200':
+          description: A disbursement object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Disbursement'
+        '404':
+          description: disbursement_id passed in is not a valid external disbursement object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v0/lending/disbursements/{disbursement_id}/cancel:
+    post:
+      tags:
+      - Lending
+      operationId: cancel-a-disbursement
+      summary: Cancel a disbursement
+      description: Cancel a disbursement.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: false
+        schema:
+          type: string
+          maxLength: 255
+      - name: disbursement_id
+        description: ID of the disbursement object you want to cancel.
+        example: disbursement_xyz001
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^disbursement_\w+$
+      responses:
+        '200':
+          description: The canceled disbursement object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Disbursement'
+        '400':
+          description: This operation cannot be done on this object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: disbursement_id passed in is not a valid external disbursement object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '409':
+          description: A request with the same idempotency key is in flight.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+components:
+  schemas:
+    DeliveryType:
+      type: string
+      example: same_business_day
+      description: 'How fast you want the counterparty to receive the ACH.
+
+        * `same_business_day`: if the ACH request is submitted before the cutoff window with the same business day option, funds will settle on the same day. 
+
+        * `next_business_day`: standard ACH processing, for funds to settle on the next business day.'
+      enum:
+      - same_business_day
+      - next_business_day
+    CreateDisbursementPaymentDetails:
+      type: object
+      required:
+      - counterparty
+      - statement_descriptor
+      properties:
+        delivery_type:
+          $ref: '#/components/schemas/DeliveryType'
+        statement_descriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+        counterparty:
+          type: object
+          description: The details of the counterparty you are sending money to.
+          required:
+          - routing_number
+          - account_number
+          - account_type
+          - name
+          properties:
+            name:
+              type: string
+              description: The name of the counterparty you are transacting with.
+              example: Lara Smikle
+              maxLength: 22
+            account_number:
+              type: string
+              description: The account number for the bank account.
+              example: '1032345678'
+              maxLength: 17
+              pattern: ^[a-zA-Z0-9 ]*[a-zA-Z0-9]+$
+            routing_number:
+              type: string
+              description: The routing number for the bank account. This should be the ACH routing number, not the wire routing number.
+              example: '021000021'
+              minLength: 9
+              maxLength: 9
+              pattern: ^[0-9]+$
+            account_type:
+              $ref: '#/components/schemas/AccountType'
+    PaymentMethod:
+      type: string
+      example: ach
+      description: The payment method chosen for disbursement. Only ACH is supported today.
+      enum:
+      - ach
+    StatementDescriptor:
+      type: string
+      description: The description you would like to appear on your customers’ statement. Maximum number of characters is 10.
+      example: P2P Credit
+      minLength: 1
+      maxLength: 10
+      pattern: ^(?!0+$)(?! +$)[\x20-\x7E]*$
+    AchCorrection:
+      type: object
+      description: The corrected `counterparty` details.
+      properties:
+        account_number:
+          type: string
+          description: The updated account number for the `counterparty`.
+          example: '1032345678'
+          maxLength: 17
+        routing_number:
+          type: string
+          description: The updated routing number for the `counterparty`.
+          example: '021000021'
+          minLength: 9
+          maxLength: 9
+        account_type:
+          type: string
+          description: The updated account type for the `counterparty`.
+          enum:
+          - checking
+          - savings
+    DisbursementFailure:
+      type: object
+      properties:
+        failure_code:
+          type: string
+          description: The failure code for failed disbursement. This applies in the case of rejected disbursements either by the Fed, ODFI or RDFI.
+          example: account_closed
+          enum:
+          - account_closed
+          - no_account
+          - bad_account_number
+          - account_frozen
+          - contact_lead
+        failure_details:
+          type: string
+          description: 'Details on failure reason and recommended next steps for failed disbursements.
+
+            * `account_closed`: This account is closed. Please contact the account owner and request valid bank account details.
+
+            * `no_account`: This account cannot be located. Please contact the account owner and request valid bank account details.
+
+            * `bad_account_number`: This account contains invalid account number structure. Please contact the account owner and request valid bank account details.
+
+            * `account_frozen`: This account is frozen and funds cannot be disbursed.
+
+            * `contact_lead`: We were unable to complete the disbursement. Please contact Lead for more information.'
+          enum:
+          - account_closed
+          - no_account
+          - bad_account_number
+          - account_frozen
+          - contact_lead
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    DisbursementPaymentDetails:
+      type: object
+      required:
+      - delivery_type
+      - counterparty
+      - statement_descriptor
+      properties:
+        delivery_type:
+          $ref: '#/components/schemas/DeliveryType'
+        effective_date:
+          type: string
+          description: The date the ACH transaction is expected to settle with the financial institution. Lead will set this date based on the delivery_type field.
+        trace_number:
+          type: string
+          description: The unique number assigned to every ACH entry by an ODFI which identifies that entry within a specific ACH file. This is generated by Lead when we submit the ACH.
+          example: '123456789012345'
+        statement_descriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+        counterparty:
+          type: object
+          description: The details of the counterparty you are sending money to.
+          required:
+          - routing_number
+          - account_number
+          - account_type
+          - name
+          properties:
+            name:
+              type: string
+              description: The name of the counterparty you are transacting with.
+              example: Lara Smikle
+              maxLength: 22
+            account_number:
+              type: string
+              description: The account number for the bank account.
+              example: '1032345678'
+              maxLength: 17
+              pattern: ^[a-zA-Z0-9 ]*[a-zA-Z0-9]+$
+            routing_number:
+              type: string
+              description: The routing number for the bank account. This should be the ACH routing number, not the wire routing number.
+              example: '021000021'
+              minLength: 9
+              maxLength: 9
+              pattern: ^[0-9]+$
+            account_type:
+              $ref: '#/components/schemas/AccountType'
+        correction:
+          $ref: '#/components/schemas/AchCorrection'
+        failure:
+          $ref: '#/components/schemas/DisbursementFailure'
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    AccountType:
+      type: string
+      example: checking
+      description: The account type for the bank account. This should be one of checking or savings.
+      enum:
+      - checking
+      - savings
+    DisbursementStatus:
+      description: The current status of this Disbursement object.
+      type: string
+      example: succeeded
+      enum:
+      - created
+      - processing
+      - succeeded
+      - canceled
+      - failed
+    Disbursement:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id of the Disbursement object
+          example: disbursement_xyz001
+          pattern: ^disbursement_\w+$
+        client_loan_id:
+          $ref: '#/components/schemas/ClientLoanID'
+        created_at:
+          type: string
+          format: date-time
+          description: The ISO-8601 timestamp at which the Disbursement object was created.
+          example: '2022-06-27T11:22:33Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: The ISO-8601 timestamp at which the Disbursement object was last updated.
+          example: '2022-06-27T11:22:33Z'
+        status:
+          $ref: '#/components/schemas/DisbursementStatus'
+        amount:
+          type: integer
+          format: int64
+          description: Amount disbursed to the counterparty in cents. This amount will align with disbursement_amount from the Loan Origination Request
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethod'
+        payment_details:
+          $ref: '#/components/schemas/DisbursementPaymentDetails'
+    ClientLoanID:
+      type: string
+      description: The ID of your loan. This must be the same loan_id used in the Loan Origination Request.
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

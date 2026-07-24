@@ -1,0 +1,815 @@
+openapi: 3.0.1
+info:
+  title: Lead Bank Account Number API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: Account Number
+paths:
+  /v1/account_number:
+    post:
+      tags:
+      - Account Number
+      operationId: create-an-account-number
+      summary: Create an Account Number
+      description: Creates an Account Number. Optionally also assigns either a ClientCustomerID or EntityID to the Account Number
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: false
+        schema:
+          type: string
+          maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: CreateAccountNumberRequest
+              type: object
+              properties:
+                account_id:
+                  $ref: '#/components/schemas/AccountID'
+                client_customer_id:
+                  $ref: '#/components/schemas/ClientCustomerID'
+                entity_id:
+                  $ref: '#/components/schemas/EntityID'
+                ach_controls:
+                  $ref: '#/components/schemas/AchControls'
+                wire_controls:
+                  $ref: '#/components/schemas/WireControls'
+                internal_transfer_controls:
+                  $ref: '#/components/schemas/InternalTransferControls'
+                instant_payment_controls:
+                  $ref: '#/components/schemas/InstantPaymentControls'
+                metadata:
+                  $ref: '#/components/schemas/Metadata'
+              required:
+              - account_id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountNumber'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: operation_not_allowed
+                title: This operation cannot be done on this object.
+                detail: The maximum number of unassigned AccountNumbers has been reached. To create a new AccountNumber please pass in a `client_customer_id`, or assign one of your existing AccountNumbers.
+                status: '400'
+    get:
+      tags:
+      - Account Number
+      operationId: list-all-account-number
+      summary: List all Account Numbers
+      description: List all Account Numbers.
+      parameters:
+      - name: account_id
+        in: query
+        example: account_xyz
+        schema:
+          type: string
+          pattern: ^account_\w+$
+        description: The ID of the account.
+      - name: account_number
+        in: query
+        example: 123412341234
+        schema:
+          type: string
+        description: The account number.
+      - name: limit
+        description: Maximum number of objects to be returned.
+        in: query
+        example: 10
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+      - name: starting_after
+        in: query
+        example: account_number_xyz
+        schema:
+          type: string
+          pattern: ^account_number_\w+$
+        description: The ID of the account number to start the list after.
+      - name: ending_before
+        in: query
+        example: account_number_xyz
+        schema:
+          type: string
+          pattern: ^account_number_\w+$
+        description: The ID of the account number to end the list before.
+      responses:
+        '200':
+          description: List of Account Numbers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAccountNumber'
+  /v1/account_number/register:
+    post:
+      tags:
+      - Account Number
+      operationId: register-an-account-number
+      summary: Register an Account Number
+      description: Registers an Account Number.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: RegisterAccountNumberRequest
+              type: object
+              properties:
+                account_id:
+                  $ref: '#/components/schemas/AccountID'
+                account_number:
+                  type: string
+                  description: The account number.
+                  example: 123412341234
+                  maxLength: 17
+                  minLength: 8
+                  pattern: ^[a-zA-Z0-9]+$
+                client_customer_id:
+                  $ref: '#/components/schemas/ClientCustomerID'
+                entity_id:
+                  $ref: '#/components/schemas/EntityID'
+                ach_controls:
+                  $ref: '#/components/schemas/AchControls'
+                wire_controls:
+                  $ref: '#/components/schemas/WireControls'
+                internal_transfer_controls:
+                  $ref: '#/components/schemas/InternalTransferControls'
+                instant_payment_controls:
+                  $ref: '#/components/schemas/InstantPaymentControls'
+                metadata:
+                  $ref: '#/components/schemas/Metadata'
+              required:
+              - account_id
+              - account_number
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountNumber'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: operation_not_allowed
+                title: This operation cannot be done on this object.
+                detail: The maximum number of unassigned AccountNumbers has been reached. To create a new AccountNumber please pass in a `client_customer_id`, or assign one of your existing AccountNumbers.
+                status: '400'
+  /v1/account_number/{account_number_id}/assign:
+    post:
+      tags:
+      - Account Number
+      operationId: assign-an-account-number
+      summary: Assign an Account Number
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: false
+        schema:
+          type: string
+          maxLength: 255
+      - name: account_number_id
+        in: path
+        required: true
+        schema:
+          pattern: ^account_number_\w+$
+          type: string
+        description: The ID of the Account Number to be assigned.
+        example: account_number_xyz
+      description: Assigns an Account Number with either a ClientCustomerID or EntityID. Only one of these should be provided
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: AssignAccountNumberRequest
+              type: object
+              properties:
+                client_customer_id:
+                  $ref: '#/components/schemas/ClientCustomerID'
+                entity_id:
+                  $ref: '#/components/schemas/EntityID'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountNumber'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: operation_not_allowed
+                title: This operation cannot be done on this object.
+                detail: 'You cannot assign an already assigned client_customer_id, current value: <client_customer_id>.'
+                status: '400'
+  /v1/account_number/{account_number_id}:
+    patch:
+      tags:
+      - Account Number
+      operationId: update-an-account-number
+      summary: Update an Account Number
+      description: Update an Account Number's metadata.
+      parameters:
+      - name: account_number_id
+        in: path
+        required: true
+        example: account_number_xyz
+        schema:
+          type: string
+          pattern: ^account_number_\w+$
+        description: The ID of the Account Number to be updated.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: UpdateAccountNumberRequest
+              type: object
+              properties:
+                ach_controls:
+                  $ref: '#/components/schemas/AchControls'
+                wire_controls:
+                  $ref: '#/components/schemas/WireControls'
+                internal_transfer_controls:
+                  $ref: '#/components/schemas/InternalTransferControls'
+                instant_payment_controls:
+                  $ref: '#/components/schemas/InstantPaymentControls'
+                metadata:
+                  $ref: '#/components/schemas/Metadata'
+                  description: Updated metadata for the Account Number.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountNumber'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: parameters_invalid
+                title: Your request parameters did not validate.
+                detail: The field passed in cannot be updated using this API.
+                instance: '{#invalid-field-name}'
+                status: '400'
+    get:
+      tags:
+      - Account Number
+      operationId: retrieve-an-account-number
+      summary: Retrieve an Account Number
+      description: Retrieve an Account Number.
+      parameters:
+      - name: account_number_id
+        in: path
+        required: true
+        example: account_number_xyz
+        schema:
+          type: string
+          pattern: ^account_number_\w+$
+        description: The ID of the Account Number to be retrieved.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountNumber'
+  /v1/account_number/{account_number_id}/activate:
+    post:
+      tags:
+      - Account Number
+      operationId: activate-an-account-number
+      summary: Activate an Account Number
+      description: Activate an Account Number.
+      parameters:
+      - name: account_number_id
+        in: path
+        required: true
+        example: account_number_xyz
+        schema:
+          type: string
+          pattern: ^account_number_\w+$
+        description: The ID of the Account Number to be activated.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              title: ActivateAccountNumberRequest
+              type: object
+              properties:
+                metadata:
+                  $ref: '#/components/schemas/Metadata'
+                  description: Updated metadata for the Account Number.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountNumber'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v1/account_number/{account_number_id}/deactivate:
+    post:
+      tags:
+      - Account Number
+      operationId: deactivate-an-account-number
+      summary: Deactivate an Account Number
+      description: Deactivate an Account Number.
+      parameters:
+      - name: account_number_id
+        in: path
+        required: true
+        example: account_number_xyz
+        schema:
+          type: string
+          pattern: ^account_number_\w+$
+        description: The ID of the Account Number to be deactivated.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              title: DeactivateAccountNumberRequest
+              type: object
+              properties:
+                metadata:
+                  $ref: '#/components/schemas/Metadata'
+                  description: Updated metadata for the Account Number.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountNumber'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v1/account_number/{account_number_id}/cancel:
+    post:
+      tags:
+      - Account Number
+      operationId: cancel-an-account-number
+      summary: Cancel an Account Number
+      description: Cancel an Account Number.
+      parameters:
+      - name: account_number_id
+        in: path
+        required: true
+        example: account_number_xyz
+        schema:
+          type: string
+          pattern: ^account_number_\w+$
+        description: The ID of the Account Number to be canceled.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              title: CancelAccountNumberRequest
+              type: object
+              properties:
+                metadata:
+                  $ref: '#/components/schemas/Metadata'
+                  description: Updated metadata for the Account Number.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountNumber'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+components:
+  schemas:
+    AccountNumberID:
+      type: string
+      description: The ID of the Lead Bank Account Number object.
+      example: account_number_xyz123
+      pattern: ^account_number_\w+$
+    AccountNumber:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the retrieved Account Number.
+          example: account_number_xyz
+          pattern: ^account_number_\w+$
+        account_number:
+          type: string
+          description: The account number.
+          example: 123412341234
+        routing_number:
+          type: string
+          description: The routing number.
+          example: 123456789
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+        client_customer_id:
+          $ref: '#/components/schemas/ClientCustomerID'
+        entity_id:
+          $ref: '#/components/schemas/EntityID'
+        status:
+          $ref: '#/components/schemas/AccountNumberStatus'
+        ach_controls:
+          $ref: '#/components/schemas/AchControls'
+        wire_controls:
+          $ref: '#/components/schemas/WireControls'
+        internal_transfer_controls:
+          $ref: '#/components/schemas/InternalTransferControls'
+        instant_payment_controls:
+          $ref: '#/components/schemas/InstantPaymentControls'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp of creation in ISO-8601 format.
+        updated_at:
+          type: string
+          format: date-time
+          description: The timestamp of last update in ISO-8601 format.
+    AllowedCounterpartyAccount:
+      type: object
+      required:
+      - type
+      - account_number
+      - routing_number
+      properties:
+        type:
+          type: string
+          enum:
+          - us_domestic
+        account_number:
+          type: string
+          example: 123412341234
+          maxLength: 17
+          minLength: 8
+          pattern: ^[a-zA-Z0-9]+$
+        routing_number:
+          type: string
+          example: 123412341234
+          minLength: 9
+          maxLength: 9
+          pattern: ^[0-9]+$
+    EntityID:
+      type: string
+      description: The ID of your entity.
+      example: entity_xyz123
+      pattern: ^entity_[^\s]{1,33}$
+    ListAccountNumber:
+      type: object
+      required:
+      - objects
+      - has_more
+      properties:
+        objects:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountNumber'
+        has_more:
+          type: boolean
+          description: Indicates if there are more account numbers to retrieve.
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
+    OriginatorID:
+      type: string
+      description: The ID of the Originator object.
+      example: originator_xyz123
+      pattern: ^originator_[^\s]{1,33}$
+    AllowedInternationalCounterpartyAccount:
+      type: object
+      required:
+      - business_identifier_code
+      - account_identifier
+      properties:
+        business_identifier_code:
+          type: string
+          description: BIC (Business Identifier Code / SWIFT code)
+          example: CHASUS33
+          pattern: ^[A-Za-z]{4}[A-Za-z]{2}[A-Za-z0-9]{2}([A-Za-z0-9]{3})?$
+        account_identifier:
+          type: object
+          description: Account identifier for the international account
+          required:
+          - type
+          - value
+          properties:
+            type:
+              type: string
+              description: Type of account identifier
+              enum:
+              - IBAN
+              - account_number
+            value:
+              type: string
+              description: The account identifier value
+              example: GB29NWBK60161331926819
+              minLength: 1
+              maxLength: 34
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+    OutgoingInternationalWire:
+      type: object
+      description: Outgoing International Wire payment controls
+      properties:
+        counterparty_filter:
+          $ref: '#/components/schemas/CounterpartyFilter'
+          default: accept_all
+        counterparty_international_account_numbers_allowlist:
+          type: array
+          maxLength: 20
+          description: Allowed international destinations when mode is allowlist_only
+          items:
+            $ref: '#/components/schemas/AllowedInternationalCounterpartyAccount'
+    WireControls:
+      type: object
+      description: Wire payment controls
+      properties:
+        incoming:
+          $ref: '#/components/schemas/IncomingWire'
+        outgoing:
+          $ref: '#/components/schemas/OutgoingWire'
+        outgoing_international:
+          $ref: '#/components/schemas/OutgoingInternationalWire'
+    OutgoingInstantPayment:
+      type: object
+      description: Outgoing Instant Payment controls
+      properties:
+        counterparty_filter:
+          $ref: '#/components/schemas/CounterpartyFilter'
+          default: accept_all
+        counterparty_account_numbers_allowlist:
+          type: array
+          maxLength: 20
+          description: Allowed destinations when mode is allowlist_only
+          items:
+            $ref: '#/components/schemas/AllowedUsDomesticCounterpartyAccount'
+    IncomingWire:
+      type: object
+      description: Incoming Wire payment controls
+      properties:
+        counterparty_filter:
+          $ref: '#/components/schemas/CounterpartyFilter'
+          default: accept_all
+        counterparty_account_numbers_allowlist:
+          type: array
+          maxLength: 20
+          description: Allowed destinations when mode is allowlist_only
+          items:
+            $ref: '#/components/schemas/AllowedCounterpartyAccount'
+    AccountNumberStatus:
+      type: string
+      description: Account Number Status
+      example: active
+      enum:
+      - active
+      - inactive
+      - canceled
+      - unassigned
+    OutgoingAch:
+      type: object
+      description: Outgoing ACH payment controls
+      properties:
+        counterparty_filter:
+          $ref: '#/components/schemas/CounterpartyFilter'
+          default: accept_all
+        counterparty_account_numbers_allowlist:
+          type: array
+          maxLength: 20
+          description: Allowed destinations when mode is allowlist_only
+          items:
+            $ref: '#/components/schemas/AllowedCounterpartyAccount'
+    IncomingInstantPayment:
+      type: object
+      description: Incoming Instant Payment controls
+      properties:
+        counterparty_filter:
+          $ref: '#/components/schemas/CounterpartyFilter'
+          default: accept_all
+        counterparty_account_numbers_allowlist:
+          type: array
+          maxLength: 20
+          description: Allowed destinations when mode is allowlist_only
+          items:
+            $ref: '#/components/schemas/AllowedUsDomesticCounterpartyAccount'
+    IncomingAch:
+      type: object
+      description: Incoming ACH payment controls
+      properties:
+        accept_credit:
+          type: boolean
+          description: Accept ACH credits
+        accept_debit:
+          type: boolean
+          description: Accept ACH debits
+        counterparty_filter:
+          $ref: '#/components/schemas/CounterpartyFilter'
+          default: accept_all
+        counterparty_company_ids_allowlist:
+          type: array
+          maxLength: 20
+          description: Allowed Company IDs when mode is allowlist_only
+          items:
+            $ref: '#/components/schemas/CompanyId'
+    CompanyId:
+      type: string
+      description: ACH Company Id
+      example: 1234567890
+      pattern: ^\d{10}$
+    ClientCustomerID:
+      type: string
+      description: The ID of your customer.
+      example: <your_customer_id>
+      maxLength: 64
+    InternalTransferControls:
+      type: object
+      description: Internal Transfer controls
+      properties:
+        incoming:
+          $ref: '#/components/schemas/IncomingInternalTransfer'
+        outgoing:
+          $ref: '#/components/schemas/OutgoingInternalTransfer'
+    AllowedUsDomesticCounterpartyAccount:
+      type: object
+      required:
+      - account_number
+      - routing_number
+      properties:
+        account_number:
+          type: string
+          example: 123412341234
+          maxLength: 17
+          minLength: 8
+          pattern: ^[a-zA-Z0-9]+$
+        routing_number:
+          type: string
+          example: 123412341234
+          minLength: 9
+          maxLength: 9
+          pattern: ^[0-9]+$
+    OutgoingWire:
+      type: object
+      description: Outgoing Wire payment controls
+      properties:
+        counterparty_filter:
+          $ref: '#/components/schemas/CounterpartyFilter'
+          default: accept_all
+        counterparty_account_numbers_allowlist:
+          type: array
+          maxLength: 20
+          description: Allowed destinations when mode is allowlist_only
+          items:
+            $ref: '#/components/schemas/AllowedCounterpartyAccount'
+    IncomingInternalTransfer:
+      type: object
+      description: Controls for receiving internal transfers
+      properties:
+        counterparty_filter:
+          $ref: '#/components/schemas/CounterpartyFilter'
+          default: accept_all
+        counterparty_account_number_ids_allowlist:
+          type: array
+          maxLength: 20
+          description: Allowlist of account_number IDs that can send
+          items:
+            $ref: '#/components/schemas/AccountNumberID'
+    AccountID:
+      type: string
+      description: The ID of the Account object.
+      example: account_xyz123
+      pattern: ^account_\w+$
+    InstantPaymentControls:
+      type: object
+      description: Instant Payment controls
+      properties:
+        incoming:
+          $ref: '#/components/schemas/IncomingInstantPayment'
+        outgoing:
+          $ref: '#/components/schemas/OutgoingInstantPayment'
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    AchControls:
+      type: object
+      description: ACH payment controls
+      properties:
+        originator_id:
+          $ref: '#/components/schemas/OriginatorID'
+        incoming:
+          $ref: '#/components/schemas/IncomingAch'
+        outgoing:
+          $ref: '#/components/schemas/OutgoingAch'
+    CounterpartyFilter:
+      type: string
+      description: Control mode for counterparty filtering
+      example: accept_all
+      enum:
+      - accept_all
+      - reject_all
+      - allowlist_only
+    OutgoingInternalTransfer:
+      type: object
+      description: Controls for sending internal transfers
+      properties:
+        counterparty_filter:
+          $ref: '#/components/schemas/CounterpartyFilter'
+          default: accept_all
+        counterparty_account_number_ids_allowlist:
+          type: array
+          maxLength: 20
+          description: Allowlist of account_number IDs to send to
+          items:
+            $ref: '#/components/schemas/AccountNumberID'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

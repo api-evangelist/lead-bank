@@ -1,0 +1,230 @@
+openapi: 3.0.1
+info:
+  title: Lead Bank Account Number Events API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: Events
+paths:
+  /v1/event/{event_id}:
+    get:
+      summary: Retrieve an event
+      tags:
+      - Events
+      description: Retrieves an event object.
+      operationId: retrieve-an-event
+      parameters:
+      - name: event_id
+        in: path
+        description: ID of the Event object you want to retrieve.
+        schema:
+          type: string
+          example: event_xyz001
+          pattern: ^event_\w+$
+        required: true
+      responses:
+        '200':
+          description: An Event object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+      deprecated: false
+  /v1/event:
+    get:
+      tags:
+      - Events
+      summary: List all events
+      description: List all event objects.
+      operationId: list-all-events
+      parameters:
+      - name: events
+        in: query
+        description: ID of the Event object you want to retrieve.
+        schema:
+          type: array
+          description: Return events of these type.
+          items:
+            $ref: '#/components/schemas/EventType'
+      - name: created_at
+        description: A set of filters on the list using the object’s field `created_at`.
+        in: query
+        style: deepObject
+        schema:
+          type: object
+          properties:
+            after:
+              type: string
+              format: date-time
+              description: Return objects where the `created_at` timestamp is after the entered timestamp.
+            on_or_after:
+              type: string
+              format: date-time
+              description: Return objects where the `created_at` timestamp is the same as or after the entered timestamp.
+            before:
+              type: string
+              format: date-time
+              description: Return objects where the `created_at` timestamp is before the entered timestamp.
+            on_or_before:
+              type: string
+              format: date-time
+              description: Return objects where the `created_at` timestamp is the same as or before the entered timestamp.
+      - name: limit
+        description: Maximum number of objects to be returned.
+        in: query
+        schema:
+          format: int32
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+      - name: starting_after
+        schema:
+          type: string
+          pattern: ^event_\w+$
+        description: A cursor for use in pagination; this is an Event ID that defines your place in the list.
+        in: query
+      - name: ending_before
+        schema:
+          type: string
+          pattern: ^event_\w+$
+        description: A cursor for use in pagination; this is an Event ID that defines your place in the list.
+        in: query
+      - name: object_id
+        in: query
+        description: Filter events by the ID of the associated object (e.g., wire_12345). If the object_id doesn't match the event filter's object type, returns empty results.
+        schema:
+          type: string
+          pattern: ^(ach|wire|account_number|internal_transfer|disbursement|instant_payment)_\w+$
+          example: wire_12345
+      responses:
+        '200':
+          description: A list of events
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - objects
+                - has_more
+                properties:
+                  objects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+                  has_more:
+                    type: boolean
+                    description: Indicates whether more results are available.
+        '422':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: parameters_invalid
+                title: Your request parameters did not validate.
+                detail: The object_id parameter must be a valid object ID (e.g., ach_xyz, wire_xyz, account_number_xyz, internal_transfer_xyz, or disbursement_xyz).
+                status: '422'
+components:
+  schemas:
+    EventType:
+      type: string
+      description: The type of event.
+      enum:
+      - ach.processing
+      - ach.submitted
+      - ach.posted
+      - ach.under_review
+      - ach.approved
+      - ach.rejected
+      - ach.pending_return
+      - ach.returned
+      - ach.corrected
+      - ach.canceled
+      - ach.scheduled
+      - ach.return_dishonored
+      - ach.return_contested
+      - account_number.created
+      - internal_transfer.succeeded
+      - internal_transfer.failed
+      - internal_transfer.posted
+      - internal_transfer.rejected
+      - lending.disbursement.processing
+      - lending.disbursement.succeeded
+      - lending.disbursement.failed
+      - lending.disbursement.ach_correction
+      - wire.created
+      - wire.under_review
+      - wire.scheduled
+      - wire.processing
+      - wire.posted
+      - wire.rejected
+      - wire.canceled
+      - wire.cancel_pending
+      - wire.return_request.received
+      - instant_payment.posted
+      - instant_payment.rejected
+      - instant_payment.under_review
+      - instant_payment.counterparty_status_updated
+      - instant_payment.return_request_response_needed
+      - instant_payment.return_request_status_updated
+      - funding.posted
+      - funding.rejected
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the Event object.
+        event:
+          $ref: '#/components/schemas/EventType'
+        created_at:
+          type: string
+          description: Timestamp at which the Event object was created.
+        object:
+          type: object
+          description: The object associated with this event.
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

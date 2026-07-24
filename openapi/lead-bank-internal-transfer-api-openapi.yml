@@ -1,0 +1,371 @@
+openapi: 3.0.1
+info:
+  title: Lead Bank Account Number Internal Transfer API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: Internal Transfer
+paths:
+  /v1/internal_transfer:
+    post:
+      tags:
+      - Internal Transfer
+      operationId: create-an-internal-transfer-v1
+      summary: Create an asynchronous Internal Transfer
+      description: Creates an asynchronous Internal Transfer.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+          minLength: 5
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: CreateInternalTransferRequestV1
+              type: object
+              required:
+              - sender_account_number_id
+              - receiver_account_number_id
+              - amount
+              - description
+              - currency_code
+              properties:
+                amount:
+                  $ref: '#/components/schemas/InternalTransferAmount'
+                currency_code:
+                  $ref: '#/components/schemas/CurrencyCode'
+                sender_account_number_id:
+                  $ref: '#/components/schemas/AccountNumberID'
+                receiver_account_number_id:
+                  $ref: '#/components/schemas/AccountNumberID'
+                description:
+                  type: string
+                  minLength: 5
+                  maxLength: 34
+                  description: Statement descriptor for the Internal Transfer
+                  example: Internal treasury transfer
+                metadata:
+                  $ref: '#/components/schemas/Metadata'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalTransferV1'
+              example:
+                id: internal_transfer_xyz123
+                amount: 5000
+                currency_code: USD
+                sender_account_id: account_xyz123
+                sender_account_number_id: account_number_xyz123
+                receiver_account_id: account_xyz123
+                receiver_account_number_id: account_number_xyz123
+                status: processing
+                description: string
+                metadata:
+                  additionalProp: string
+                created_at: '2022-06-27T11:22:33Z'
+                updated_at: '2022-06-27T11:22:33Z'
+        '400':
+          description: We couldn't parse your request body, please check that your request body is valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+    get:
+      tags:
+      - Internal Transfer
+      operationId: list-all-internal-transfers-v1
+      summary: List all Internal Transfers
+      description: List all Internal Transfers.
+      parameters:
+      - name: sender_account_number_id
+        in: query
+        example: account_number_xyz
+        schema:
+          type: string
+          pattern: ^account_number_\w+$
+        description: The sender account number ID.
+      - name: receiver_account_number_id
+        in: query
+        example: account_number_xyz
+        schema:
+          type: string
+          pattern: ^account_number_\w+$
+        description: The receiver account number ID.
+      - name: status
+        in: query
+        example: posted
+        schema:
+          $ref: '#/components/schemas/InternalTransferStatusV1'
+      - name: created_at
+        description: A set of filters on the list using the object’s field `created_at`.
+        in: query
+        style: deepObject
+        explode: true
+        schema:
+          type: object
+          properties:
+            after:
+              type: string
+              format: date-time
+              description: Return objects where the `created_at` timestamp is after the entered timestamp.
+            on_or_after:
+              type: string
+              format: date-time
+              description: Return objects where the `created_at` timestamp is the same as or after the entered timestamp.
+            before:
+              type: string
+              format: date-time
+              description: Return objects where the `created_at` timestamp is before the entered timestamp.
+            on_or_before:
+              type: string
+              format: date-time
+              description: Return objects where the `created_at` timestamp is the same as or before the entered timestamp.
+      - name: limit
+        description: Maximum number of objects to be returned.
+        in: query
+        example: 10
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+      - name: starting_after
+        in: query
+        example: internal_transfer_xyz123
+        schema:
+          type: string
+          pattern: ^internal_transfer_\w+$
+        description: A cursor for use in pagination; this is an ID that defines your place in the list.
+      - name: ending_before
+        in: query
+        example: internal_transfer_xyz456
+        schema:
+          type: string
+          pattern: ^internal_transfer_\w+$
+        description: A cursor for use in pagination; this is an ID that defines your place in the list.
+      responses:
+        '200':
+          description: List of Internal Transfer objects
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - objects
+                - has_more
+                properties:
+                  objects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InternalTransferV1'
+                  has_more:
+                    type: boolean
+                    description: Indicates whether more results are available.
+        '400':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v1/internal_transfer/{internal_transfer_id}:
+    get:
+      tags:
+      - Internal Transfer
+      operationId: retrieve-an-internal-transfer-v1
+      summary: Retrieve an Internal Transfer
+      description: Retrieve an Internal Transfer.
+      parameters:
+      - name: internal_transfer_id
+        in: path
+        required: true
+        example: internal_transfer_xyz23
+        schema:
+          type: string
+          minLength: 5
+          pattern: ^internal_transfer_\w+$
+        description: The ID of the internal transfer object to be retrieved.
+      responses:
+        '200':
+          description: An Internal Transfer object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalTransferV1'
+        '404':
+          description: The internal_transfer_id passed in is not a valid InternalTransfer ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+components:
+  schemas:
+    AccountID:
+      type: string
+      description: The ID of the Account object.
+      example: account_xyz123
+      pattern: ^account_\w+$
+    AccountNumberID:
+      type: string
+      description: The ID of the Lead Bank Account Number object.
+      example: account_number_xyz123
+      pattern: ^account_number_\w+$
+    InternalTransferStatusV1:
+      description: The current status of the InternalTransfer object.
+      type: string
+      example: posted
+      enum:
+      - processing
+      - posted
+      - rejected
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    InternalTransferAmount:
+      description: The amount of the internal transfer transaction in cents.
+      type: integer
+      format: int64
+      example: 5000
+      minimum: 1
+      maximum: 9900000000
+    InternalTransferV1:
+      type: object
+      required:
+      - id
+      - amount
+      - currency_code
+      - sender_account_id
+      - sender_account_number_id
+      - receiver_account_id
+      - receiver_account_number_id
+      - status
+      - description
+      - metadata
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: string
+          description: The ID of the Internal Transfer object.
+          example: internal_transfer_xyz123
+          pattern: ^internal_transfer_\w+$
+        amount:
+          $ref: '#/components/schemas/Amount'
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        sender_account_id:
+          $ref: '#/components/schemas/AccountID'
+        sender_account_number_id:
+          $ref: '#/components/schemas/AccountNumberID'
+        receiver_account_id:
+          $ref: '#/components/schemas/AccountID'
+        receiver_account_number_id:
+          $ref: '#/components/schemas/AccountNumberID'
+        status:
+          $ref: '#/components/schemas/InternalTransferStatusV1'
+        description:
+          type: string
+          description: Memo string for the transfer
+        rejection:
+          $ref: '#/components/schemas/InternalTransferRejectionReason'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        created_at:
+          type: string
+          format: date-time
+          description: The RFC3339 timestamp at which the InternalTransfer object was created.
+          example: '2022-06-27T11:22:33Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: The RFC3339 timestamp at which the InternalTransfer object was last updated.
+          example: '2022-06-27T11:22:33Z'
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
+    InternalTransferRejectionReason:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: The rejection code that indicates the type of rejection
+          example: account_number_not_active
+          enum:
+          - account_number_not_active
+          - beneficiary_account_number_unrecognized
+          - non_sufficient_funds
+          - ofac_rejection
+          - internal_error
+        details:
+          type: string
+          description: Additional info about the rejection
+          example: Account number account_123 is inactive.
+    Amount:
+      description: The amount of the transaction in cents.
+      type: integer
+      format: int64
+      example: 5000
+      minimum: 0
+      maximum: 9900000000
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

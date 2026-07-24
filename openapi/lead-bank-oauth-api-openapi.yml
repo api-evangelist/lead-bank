@@ -1,0 +1,128 @@
+openapi: 3.0.1
+info:
+  title: Lead Bank Account Number OAuth API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: OAuth
+paths:
+  /v1/oauth/token:
+    post:
+      security: []
+      tags:
+      - OAuth
+      operationId: get-an-access-token
+      summary: Get an Access Token
+      description: Exchange your client credentials for an access code.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - grant_type
+              - client_id
+              - client_secret
+              properties:
+                grant_type:
+                  description: The type of access token you want to request.
+                  type: string
+                  enum:
+                  - client_credentials
+                client_id:
+                  description: Your client ID.
+                  type: string
+                  example: <client_id>
+                client_secret:
+                  description: Your client secret.
+                  type: string
+                  example: <client_secret>
+                scope:
+                  description: A space delimited list of scopes your access token should be provisioned to allow.
+                  type: string
+                  example: ach/read
+                  enum:
+                  - account_number/read
+                  - account_number/read_write
+                  - ach/read
+                  - ach/read_write
+                  - wire/read
+                  - wire/read_write
+                  - instant_payment/read
+                  - instant_payment/read_write
+                  - event/read
+                  - internal_transfer/read
+                  - internal_transfer/read_write
+                  - lending/read
+                  - lending/read_write
+                  - entity/read
+                  - entity/read_write
+                  - funding/read
+                  - funding/read_write
+                  - subledger_balance/read
+                  - subledger_balance/read_write
+                  - account/read
+                  - account/read_write
+                  - application/read
+                  - application/read_write
+                  - blockchain_payment/read
+                  - blockchain_payment/read_write
+      responses:
+        '200':
+          description: Successful token exchange
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    description: A Base64 access token.
+                    type: string
+                    example: AN_ACCESS_TOKEN
+                  token_type:
+                    description: The token type.
+                    type: string
+                    example: Bearer
+                  scope:
+                    description: A space delimited list of scopes your access token is provisioned for.
+                    type: string
+                    example: ach/read account_number/read
+                  expires_in:
+                    description: The number of seconds the access token will expire in.
+                    type: integer
+                    example: 86400
+        '400':
+          description: Bad request. Invalid parameters in request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    description: HTTP status code of the response.
+                    example: 400
+                  code:
+                    type: string
+                    description: Error code.
+                    example: parameters_invalid
+                  title:
+                    type: string
+                    description: High level description of the error `code`.
+                    example: Your request body did not parse.
+                  detail:
+                    type: string
+                    description: Why the parameter is invalid.
+                    example: Invalid grant type.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,1114 @@
+openapi: 3.0.1
+info:
+  title: Lead Bank Account Number Simulation API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: Simulation
+paths:
+  /v1/simulate/ach/incoming_ach:
+    post:
+      tags:
+      - Simulation
+      operationId: simulate-incoming-ach
+      summary: Simulate Incoming ACH
+      description: Simulate an incoming ACH.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - account_number_id
+              - sec_code
+              - transaction_type
+              - amount
+              - currency_code
+              - statement_descriptor
+              - sender_name
+              - sender_company_id
+              - sender_routing_number
+              properties:
+                amount:
+                  $ref: '#/components/schemas/Amount'
+                currency_code:
+                  $ref: '#/components/schemas/CurrencyCode'
+                transaction_type:
+                  $ref: '#/components/schemas/TransactionType'
+                account_number_id:
+                  $ref: '#/components/schemas/AccountNumberID'
+                sec_code:
+                  $ref: '#/components/schemas/OutgoingSecCode'
+                statement_descriptor:
+                  $ref: '#/components/schemas/StatementDescriptor'
+                sender_name:
+                  $ref: '#/components/schemas/SenderName'
+                sender_company_id:
+                  $ref: '#/components/schemas/SenderCompanyID'
+                sender_routing_number:
+                  $ref: '#/components/schemas/SenderRoutingNumber'
+      responses:
+        '200':
+          description: Incoming ACH object created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulateResponse'
+        '400':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: We couldn't parse your request body, please check that your request body is valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v1/simulate/ach/{ach_id}/incoming_return:
+    post:
+      tags:
+      - Simulation
+      operationId: simulate-incoming-return
+      summary: Simulate Incoming Return
+      description: Simulate an incoming Return.
+      parameters:
+      - name: ach_id
+        description: ID of the ACH object you want to return.
+        example: ach_xyz001
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^ach_\w+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - return_code
+              properties:
+                return_code:
+                  $ref: '#/components/schemas/ReturnCode'
+                return_additional_information:
+                  type: string
+                  description: Additional information to be added to the return.
+      responses:
+        '200':
+          description: ACH return created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulateResponse'
+        '400':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: We couldn't parse your request body, please check that your request body is valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v1/simulate/ach/{ach_id}/advance:
+    post:
+      tags:
+      - Simulation
+      operationId: simulate-advance-ach
+      summary: Advance Sandbox ACH
+      description: Advance an ACH in Sandbox.
+      parameters:
+      - name: ach_id
+        description: ID of the ACH object you want to advance.
+        example: ach_xyz001
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^ach_\w+$
+      responses:
+        '200':
+          description: ACH Object advanced.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulateResponse'
+        '400':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: We couldn't parse your request body, please check that your request body is valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v1/simulate/wires/{wire_id}/advance:
+    post:
+      tags:
+      - Simulation
+      operationId: simulate-advance-wire
+      summary: Advance Sandbox Wire
+      description: Advance a Wire in Sandbox.
+      parameters:
+      - name: wire_id
+        description: ID of the Wire object you want to advance.
+        example: wire_xyz001
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^wire_\w+$
+      responses:
+        '200':
+          description: Wire Object advanced.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulateResponse'
+        '400':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: wire_id passed in is not a valid wire object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: We couldn't parse your request body, please check that your request body is valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v1/simulate/wires/incoming:
+    post:
+      tags:
+      - Simulation
+      operationId: simulate-incoming-wire
+      summary: Simulate Incoming Wire
+      description: Simulate an incoming Wire.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SimulateIncomingWireRequest'
+      responses:
+        '200':
+          description: Incoming Wire object created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulateResponse'
+        '400':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: We couldn't parse your request body, please check that your request body is valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v1/simulate/wires/{wire_id}/incoming_return:
+    post:
+      tags:
+      - Simulation
+      operationId: simulate-incoming-wire-return
+      summary: Simulate Incoming Wire Return
+      description: Simulate an incoming Wire Return.
+      parameters:
+      - name: wire_id
+        description: ID of the Wire object you want to return.
+        example: wire_xyz001
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^wire_\w+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - return_code
+              properties:
+                amount:
+                  $ref: '#/components/schemas/WireAmount'
+                  description: The amount to be returned in USD. Amount of the wire should be in currency's minor units.
+                return_code:
+                  $ref: '#/components/schemas/WireReturnCode'
+                return_additional_information:
+                  type: string
+                  description: Additional details about why the wire is being returned that will be included with the returned wire.
+                  minLength: 1
+                  maxLength: 105
+                  pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*[\w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]][ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+      responses:
+        '200':
+          description: Wire return object created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulateResponse'
+        '400':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: wire_id passed in is not a valid wire object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: We couldn't parse your request body, please check that your request body is valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v1/simulate/instant_payments/incoming:
+    post:
+      tags:
+      - Simulation
+      operationId: simulate-incoming-instant-payment
+      summary: Simulate Incoming Instant Payment
+      description: Simulate an incoming instant payment.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - creditor_account_number_id
+              - amount
+              - currency_code
+              - debtor
+              - debtor_agent
+              properties:
+                creditor_account_number_id:
+                  $ref: '#/components/schemas/AccountNumberID'
+                  description: The ID of the Account Number object receiving the instant payment.
+                amount:
+                  $ref: '#/components/schemas/InstantPaymentAmount'
+                  description: The amount of the instant payment in cents.
+                currency_code:
+                  $ref: '#/components/schemas/CurrencyCode'
+                  description: A three-letter currency code as defined in ISO 4217. Only USD is supported.
+                description:
+                  type: string
+                  maxLength: 140
+                  description: Free-form information on the reason for the payment.
+                  example: Payment for invoice 12345
+                debtor:
+                  $ref: '#/components/schemas/InstantPaymentParty'
+                  description: The details of the debtor (payer) sending the funds.
+                debtor_agent:
+                  $ref: '#/components/schemas/InstantPaymentAgent'
+                  description: The details of the financial institution where the debtor (payer) holds their account.
+                payment_identifiers:
+                  type: object
+                  description: Optional payment identifiers.
+                  properties:
+                    end_to_end_id:
+                      type: string
+                      description: The identifier assigned by the party initiating the instant payment to be delivered to the customer unchanged.
+                      maxLength: 35
+                      example: E2E-20240101-001
+      responses:
+        '200':
+          description: Intentionally empty - incoming instant payment will be created asynchronously.
+        '400':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: We couldn't process your request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v1/simulate/instant_payments/{instant_payment_id}/incoming_return:
+    post:
+      tags:
+      - Simulation
+      operationId: simulate-incoming-instant-payment-return
+      summary: Simulate Incoming Instant Payment Return
+      description: Simulate an incoming instant payment return.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+      - name: instant_payment_id
+        description: ID of the instant payment object you want to return.
+        example: instant_payment_xyz001
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^instant_payment_\w+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount
+              - reason
+              properties:
+                amount:
+                  $ref: '#/components/schemas/InstantPaymentAmount'
+                  description: The amount of the return in cents. Must be less than or equal to the original transaction amount.
+                reason:
+                  $ref: '#/components/schemas/OutgoingInstantPaymentReturnReason'
+                  description: The reason for the return.
+                additional_information:
+                  type: string
+                  maxLength: 140
+                  description: Accompanying free text explanation for the reason.
+      responses:
+        '200':
+          description: Intentionally empty - incoming instant payment return will be created asynchronously.
+        '400':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Instant payment not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: We couldn't process your request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v1/simulate/instant_payments/{instant_payment_id}/incoming_return_request:
+    post:
+      tags:
+      - Simulation
+      operationId: simulate-incoming-instant-payment-return-request
+      summary: Simulate Incoming Instant Payment Return Request
+      description: Simulate an incoming instant payment return request.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+      - name: instant_payment_id
+        description: ID of the instant payment object you want to request a return for.
+        example: instant_payment_xyz001
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^instant_payment_\w+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  $ref: '#/components/schemas/OutgoingInstantPaymentReturnRequestReason'
+                  description: The reason for the return request.
+                additional_information:
+                  type: string
+                  maxLength: 140
+                  description: Accompanying free text explanation for the reason.
+      responses:
+        '200':
+          description: Intentionally empty - instant payment record will be updated with return request details asynchronously.
+        '400':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Instant payment not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: We couldn't process your request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v1/simulate/instant_payments/{instant_payment_id}/incoming_return_request_rejection:
+    post:
+      tags:
+      - Simulation
+      operationId: simulate-incoming-instant-payment-return-request-rejection
+      summary: Simulate Incoming Instant Payment Return Request Rejection
+      description: Simulate an incoming instant payment return request rejection.
+      parameters:
+      - name: instant_payment_id
+        description: ID of the instant payment object whose return request you want to reject.
+        example: instant_payment_xyz001
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^instant_payment_\w+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  $ref: '#/components/schemas/IncomingInstantPaymentReturnRequestRejectionReason'
+                  description: The reason for rejecting the return request.
+                additional_information:
+                  type: string
+                  maxLength: 140
+                  description: Accompanying free text explanation for the reason.
+      responses:
+        '200':
+          description: Intentionally empty - return request will be rejected asynchronously.
+        '400':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Instant payment not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: We couldn't process your request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v1/simulate/instant_payments/{instant_payment_id}/incoming_return_request_acceptance:
+    post:
+      tags:
+      - Simulation
+      operationId: simulate-incoming-instant-payment-return-request-acceptance
+      summary: Simulate Incoming Instant Payment Return Request Acceptance
+      description: Simulate an incoming instant payment return request acceptance.
+      parameters:
+      - name: instant_payment_id
+        description: ID of the instant payment object whose return request you want to accept.
+        example: instant_payment_xyz001
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^instant_payment_\w+$
+      responses:
+        '200':
+          description: Intentionally empty - return request will be accepted asynchronously.
+        '400':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Instant payment not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: We couldn't process your request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+components:
+  schemas:
+    AccountNumberID:
+      type: string
+      description: The ID of the Lead Bank Account Number object.
+      example: account_number_xyz123
+      pattern: ^account_number_\w+$
+    SenderCompanyID:
+      type: string
+      description: The company id of the sender. Maximum number of characters is 10.
+      example: 1234567890
+    SimulateIncomingWireRequest:
+      type: object
+      description: Request body to simulate an incoming wire.
+      required:
+      - amount
+      - creditor_account_number_id
+      - debtor
+      - debtor_agent
+      properties:
+        amount:
+          $ref: '#/components/schemas/WireAmount'
+        creditor_account_number_id:
+          $ref: '#/components/schemas/AccountNumberID'
+          description: The ID of the creditor account number associated with the wire.
+        debtor:
+          $ref: '#/components/schemas/SimulateWireDebtorRequest'
+          description: Details of the debtor sending funds.
+        remittance_details:
+          type: object
+          description: Details of the remittance information for the wire.
+          properties:
+            message_to_creditor:
+              type: string
+              description: Information intended specifically for the creditor.
+              example: Payment for invoice 12345
+              maxLength: 140
+              pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+        payment_identifiers:
+          type: object
+          description: Payment identifiers for the wire.
+          properties:
+            end_to_end_identification:
+              type: string
+              description: Unique identification that the initiating party in a wire message can use to unambiguously identify the transaction. This is passed through, unchanged, throughout the entire wire chain.
+              maxLength: 35
+              pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+              example: EndtoEnd12345
+        debtor_agent:
+          $ref: '#/components/schemas/DebtorAgent'
+          description: Debtor Agent financial institution details.
+    Amount:
+      description: The amount of the transaction in cents.
+      type: integer
+      format: int64
+      example: 5000
+      minimum: 0
+      maximum: 9900000000
+    WireAmount:
+      description: The amount of the wire transaction in cents.
+      type: integer
+      format: int64
+      example: 5000
+      minimum: 1
+      maximum: 990000000000
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+    SenderName:
+      type: string
+      description: The name of the sender. Maximum number of characters is 16.
+      example: Lorum Inc.
+    TransactionType:
+      type: string
+      description: ACH transaction type.
+      example: credit
+      enum:
+      - credit
+      - debit
+    InstantPaymentParty:
+      type: object
+      description: Details of a party in an instant payment.
+      required:
+      - name
+      - account_number
+      properties:
+        name:
+          type: string
+          description: The party's name.
+          minLength: 3
+          maxLength: 35
+          example: Alex Smith
+        account_number:
+          type: string
+          description: The party's account number.
+          minLength: 1
+          maxLength: 17
+          example: '1234567890'
+    DebtorAgent:
+      type: object
+      description: Details of the debtor agent financial institution.
+      properties:
+        routing_number:
+          type: string
+          description: Nine-character numeric ABA routing number for the debtor agent financial institution.
+          minLength: 9
+          maxLength: 9
+          pattern: ^[0-9]+$
+          example: '021000021'
+    IncomingInstantPaymentReturnRequestRejectionReason:
+      type: string
+      description: 'The reason for a rejected return request.
+
+        * `account_closed` - Account closed
+
+        * `non_sufficient_funds` - Insufficient funds
+
+        * `customer_requested` - Customer decision
+
+        * `legal_decision` - Legal decision
+
+        * `customer_no_response` - No answer from customer
+
+        * `returned_previously` - Already returned
+
+        * `narrative` - Narrative reason, additional_information required
+
+        * `per_agent_request` - Agent decision
+
+        * `other` - Other'
+      example: customer_no_response
+      enum:
+      - account_closed
+      - non_sufficient_funds
+      - customer_requested
+      - legal_decision
+      - customer_no_response
+      - returned_previously
+      - narrative
+      - per_agent_request
+      - other
+    OutgoingInstantPaymentReturnReason:
+      type: string
+      description: 'The reason for initiating an return.
+
+        * `honor_return_request` - Honoring a return request
+
+        * `wrong_amount` - Wrong amount
+
+        * `duplication` - Duplicate payment
+
+        * `initiating_party_unrecognized` - Unknown sender
+
+        * `fraud_suspected` - Fraud suspected
+
+        * `undue_payment` - Unduly paid
+
+        * `narrative` - Narrative reason, additional_information required
+
+        * `customer_requested` - Requested by customer'
+      example: duplication
+      enum:
+      - honor_return_request
+      - wrong_amount
+      - duplication
+      - initiating_party_unrecognized
+      - fraud_suspected
+      - undue_payment
+      - narrative
+      - customer_requested
+    InstantPaymentAmount:
+      description: The amount of the instant payment in cents.
+      type: integer
+      format: int64
+      example: 5000
+      minimum: 0
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    SimulateWireDebtorRequest:
+      type: object
+      description: The person or entity sending the wire.
+      required:
+      - name
+      - account_identifier
+      - address
+      properties:
+        name:
+          type: string
+          description: Name of the person or entity sending the wire.
+          minLength: 3
+          maxLength: 35
+          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*[\w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]][ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+          example: Allan Scott
+        account_identifier:
+          type: object
+          description: Account identifier of the debtor.
+          required:
+          - type
+          - value
+          properties:
+            type:
+              type: string
+              description: Indicator for the type of account identifier sending the wire.
+              enum:
+              - account_number
+              example: account_number
+            value:
+              type: string
+              description: The value associated with the account identifier sending the wire.
+              minLength: 1
+              maxLength: 17
+              pattern: ^[a-zA-Z0-9 ]*[a-zA-Z0-9]+$
+              example: '1032345678'
+        address:
+          description: Address of the debtor.
+          $ref: '#/components/schemas/WirePostalAddress'
+          required:
+          - line_one
+    WireReturnCode:
+      type: string
+      description: 'List of eligible return reason codes for wire transfers.
+
+        * `AC06` - account_blocked
+
+        * `AM09` - wrong_amount
+
+        * `BE01` - creditor_name_mismatch
+
+        * `FOCR` - honor_return_request
+
+        * `FR01` - fraud_suspected
+
+        * `MS02` - creditor_request
+
+        * `NARR` - narrative
+
+        * `RR02` - missing_debtor_data
+
+        * `RR03` - missing_creditor_data'
+      example: AC06
+      enum:
+      - AC06
+      - AM09
+      - BE01
+      - FOCR
+      - FR01
+      - MS02
+      - NARR
+      - RR02
+      - RR03
+    SenderRoutingNumber:
+      type: integer
+      format: int32
+      description: The 9 digit routing number of the sender.
+      example: 111122222
+      minLength: 9
+      maxLength: 9
+    ReturnCode:
+      type: string
+      description: NACHA Return codes.
+      example: R02
+      enum:
+      - R01
+      - R02
+      - R03
+      - R04
+      - R05
+      - R06
+      - R07
+      - R08
+      - R09
+      - R10
+      - R11
+      - R12
+      - R13
+      - R14
+      - R15
+      - R16
+      - R17
+      - R18
+      - R19
+      - R20
+      - R21
+      - R22
+      - R23
+      - R24
+      - R25
+      - R26
+      - R27
+      - R28
+      - R29
+      - R30
+      - R31
+      - R32
+      - R33
+      - R34
+      - R35
+      - R36
+      - R37
+      - R38
+      - R39
+      - R40
+      - R41
+      - R42
+      - R43
+      - R44
+      - R45
+      - R46
+      - R47
+      - R50
+      - R51
+      - R52
+      - R53
+      - R61
+      - R62
+      - R67
+      - R68
+      - R69
+      - R70
+      - R71
+      - R72
+      - R73
+      - R74
+      - R75
+      - R76
+      - R77
+      - R80
+      - R81
+      - R82
+      - R83
+      - R84
+      - R85
+    StatementDescriptor:
+      type: string
+      description: The description you would like to appear on your customers’ statement. Maximum number of characters is 10.
+      example: P2P Credit
+      minLength: 1
+      maxLength: 10
+      pattern: ^(?!0+$)(?! +$)[\x20-\x7E]*$
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    WirePostalAddress:
+      type: object
+      properties:
+        department:
+          type: string
+          description: Identification of a division of a large organization or building.
+          example: Procurement Department
+        sub_department:
+          type: string
+          description: Identification of a sub-division of a large organization or building.
+          example: IT Procurement
+        street_name:
+          type: string
+          description: Name of a street or thoroughfare.
+          example: Main Street
+        building_number:
+          type: string
+          description: Number that identifies the position of a building on a street.
+          example: '100'
+        building_name:
+          type: string
+          description: Name of the building or house.
+          example: City Hall
+        floor:
+          type: string
+          description: Floor or storey within a building.
+          example: 4th Floor
+        post_box:
+          type: string
+          description: Numbered box in a post office, assigned to a person or organisation, where letters are kept until called for.
+          example: PO Box 12345
+        room:
+          type: string
+          description: Building room number.
+          example: '600'
+        post_code:
+          type: string
+          description: Identifier consisting of a group of letters and/or numbers that is added to a postal address to assist the sorting of mail.
+          example: '12345'
+        town_name:
+          type: string
+          description: Name of a built-up area, with defined boundaries, and a local government.
+          example: Kansas City
+        town_location_name:
+          type: string
+          description: Specific location name within the town. Note that this field is not commonly used for US-based addresses.
+          example: Westside North
+        district_name:
+          type: string
+          description: Identifies a subdivision within a country sub-division. Note that this field is not commonly used for US-based addresses.
+          example: Manhattan
+        country_sub_division:
+          type: string
+          description: Identifies a subdivision of a country such as state, region, county.
+          example: NY
+        country:
+          type: string
+          description: ISO 3166, alpha-2 code representing a nation with its own government.
+          example: US
+          pattern: '[A-Z]{2,2}'
+        line_one:
+          type: string
+          description: Line one address of the party represented in an unstructured format.
+          minLength: 1
+          maxLength: 35
+          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*[\w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]][ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+          example: 123 Main St
+        line_two:
+          type: string
+          description: Line two address of the party represented in an unstructured format.
+          maxLength: 35
+          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+          example: Suite 100
+        line_three:
+          type: string
+          description: Line three address of the party represented in an unstructured format.
+          maxLength: 35
+          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+          example: Kansas City, MO 64105
+    OutgoingSecCode:
+      type: string
+      description: 'The Standard Entry Class, SEC, to code the outgoing ACH.
+
+        Lead currently supports:
+
+        * `CCD`: Corporate payment
+
+        * `PPD`: Written authorization to initiate payment
+
+        * `TEL`: Telephone initiated payment
+
+        * `WEB`: Web initiated payment
+
+        * `CIE`: Customer initiated entry
+
+        '
+      example: WEB
+      enum:
+      - CCD
+      - PPD
+      - TEL
+      - WEB
+      - CIE
+    SimulateResponse:
+      type: object
+    InstantPaymentAgent:
+      type: object
+      description: Details of a financial institution in an instant payment.
+      required:
+      - routing_number
+      properties:
+        routing_number:
+          type: string
+          description: The party's routing number.
+          minLength: 9
+          maxLength: 9
+          pattern: ^[0-9]+$
+          example: '111000111'
+    OutgoingInstantPaymentReturnRequestReason:
+      type: string
+      description: 'The reason for initiating a return request.
+
+        * `creditor_account_number_invalid` - Invalid creditor account number
+
+        * `wrong_amount` - Wrong amount
+
+        * `customer_requested` - Requested by customer
+
+        * `duplication` - Duplicate payment
+
+        * `fraud_suspected` - Fraud suspected
+
+        * `narrative` - Narrative reason, additional_information required
+
+        * `service_not_rendered` - Service not rendered
+
+        * `technical_problem` - Technical problem
+
+        * `undue_payment` - Unduly paid'
+      example: duplication
+      enum:
+      - creditor_account_number_invalid
+      - wrong_amount
+      - customer_requested
+      - duplication
+      - fraud_suspected
+      - narrative
+      - service_not_rendered
+      - technical_problem
+      - undue_payment
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

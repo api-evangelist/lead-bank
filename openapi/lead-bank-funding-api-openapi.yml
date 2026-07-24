@@ -1,0 +1,402 @@
+openapi: 3.0.1
+info:
+  title: Lead Bank Account Number Funding API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: Funding
+paths:
+  /v0/fundings:
+    post:
+      tags:
+      - Funding
+      operationId: create-a-funding-v0
+      summary: Create a Funding
+      description: Creates a Funding object to request that Lead move funds from a Lead GL to the partner's funding FBO account.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+          minLength: 5
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: CreateFundingRequestV0
+              type: object
+              required:
+              - subledger_balance_id
+              - currency_code
+              - principal
+              properties:
+                subledger_balance_id:
+                  type: string
+                  maxLength: 64
+                  description: Unique ID of the credit subledger balance object that a funding object is being created for. The referenced Subledger Balance must be in an `active` status. If the Subledger Balance has an `expected_maturity_date`, it must not be in the past.
+                  example: subledger_balance_1HCpXwx2EK9oYluWbacgeCnFcLf
+                currency_code:
+                  $ref: '#/components/schemas/FundingCurrencyCode'
+                principal:
+                  type: object
+                  description: The total amount of funding that is part of the loan product's principal. All amounts are in minor units. If the referenced Subledger Balance has a `details.structure` of `non_revolving`, the sum of all `principal.*` fields on this request plus the sum of `principal.*` fields on any prior Funding in a `posted` or `processing` status associated with that Subledger Balance must not exceed the Subledger Balance's `max_funding_amount`.
+                  properties:
+                    external_disbursement_amount:
+                      type: integer
+                      description: The portion of the principal amount that will be made available for external disbursement at the time of funding (in minor units). Either this field or `withheld_amount` must be greater than 0.
+                      example: 100000
+                    withheld_amount:
+                      type: integer
+                      description: The portion of the principal amount that will be withheld and not disbursed externally at the time of funding (in minor units). Either this field or `external_disbursement_amount` must be greater than 0.
+                      example: 1000
+                    merchant_origination_fee_amount:
+                      type: integer
+                      description: The amount of origination fees charged to the merchant that is included in the principal amount (in minor units). Must be less than `external_disbursement_amount` + `withheld_amount`.
+                      example: 100
+                other_fees:
+                  type: object
+                  description: Fees relating to the funding request that Lead needs awareness of for bookkeeping purposes only.
+                  properties:
+                    borrower_origination_fee_amount:
+                      type: integer
+                      description: Non-capitalized origination fee charged to the borrower at the point of funding (in minor units).
+                      example: 200
+                metadata:
+                  type: object
+                  description: Additional metadata associated with the funding.
+                  additionalProperties: true
+                  example:
+                    client_draw_id: X67BU
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundingV0'
+              example:
+                id: funding_0o5Fs0EELR0fUjHjbCnEtdUwQe3
+                subledger_balance_id: subledger_balance_1HCpXwx2EK9oYluWbacgeCnFcLf
+                currency_code: USD
+                principal:
+                  external_disbursement_amount: 100000
+                  withheld_amount: 1000
+                  merchant_origination_fee_amount: 100
+                other_fees:
+                  borrower_origination_fee_amount: 200
+                metadata:
+                  client_draw_id: X67BU
+                status: processing
+                rejection:
+                  reason: ''
+                  details: ''
+                created_at: '2025-09-02T11:01:36Z'
+                updated_at: '2025-09-02T11:05:00Z'
+        '400':
+          description: We couldn't parse your request body, please check that your request body is valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '401':
+          description: Valid access token was not used to call the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Valid access token was provided but lacks the proper scopes/permissions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v0/fundings/{id}:
+    get:
+      tags:
+      - Funding
+      operationId: retrieve-a-funding-v0
+      summary: Retrieve a Funding
+      description: Retrieve a Funding object.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        example: funding_0o5Fs0EELR0fUjHjbCnEtdUwQe3
+        schema:
+          type: string
+          maxLength: 64
+        description: The ID of the funding object to be retrieved.
+      responses:
+        '200':
+          description: A Funding object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundingV0'
+              example:
+                id: funding_0o5Fs0EELR0fUjHjbCnEtdUwQe3
+                subledger_balance_id: subledger_balance_1HCpXwx2EK9oYluWbacgeCnFcLf
+                currency_code: USD
+                principal:
+                  external_disbursement_amount: 100000
+                  withheld_amount: 1000
+                  merchant_origination_fee_amount: 100
+                other_fees:
+                  borrower_origination_fee_amount: 200
+                metadata:
+                  client_draw_id: X67BU
+                status: posted
+                rejection:
+                  reason: ''
+                  details: ''
+                created_at: '2025-09-02T11:01:36Z'
+                updated_at: '2025-09-02T11:05:00Z'
+        '400':
+          description: The format of the funding ID passed in is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Valid access token was not used to call the API or lacks proper permissions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: The funding_id passed in is not a valid Funding ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v0/fundings/{id}/advance:
+    post:
+      tags:
+      - Funding
+      operationId: advance-a-funding-v0
+      summary: Advance a Funding (Simulation)
+      description: Advances a Funding object from processing to posted status in the Sandbox environment.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        example: funding_0o5Fs0EELR0fUjHjbCnEtdUwQe3
+        schema:
+          type: string
+          maxLength: 64
+        description: The ID of the funding object to advance.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        '400':
+          description: The format of the funding ID is invalid or the funding object is not in a processing status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Valid access token was not used to call the API or lacks proper permissions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: The funding_id passed in is not a valid Funding ID or this endpoint is only available in Sandbox.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+components:
+  schemas:
+    FundingStatus:
+      type: string
+      description: The current status of the Funding object.
+      enum:
+      - processing
+      - posted
+      - rejected
+      example: processing
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    FundingV0:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique ID of the funding object.
+          maxLength: 64
+          example: funding_123
+          pattern: ^funding_\w+$
+        subledger_balance_id:
+          type: string
+          description: Unique ID of the credit subledger balance object that a funding object is being created for. The referenced Subledger Balance must be in an `active` status. If the Subledger Balance has an `expected_maturity_date`, it must not be in the past.
+          maxLength: 64
+          example: subledger_balance_123
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        principal:
+          type: object
+          description: 'The total amount of funding that is part of the loan product''s principal. Note that upon funding, this amount will be considered disbursed, and Lead will begin applying imputed interest. All amounts will be assumed to be in the currency set on the Subledger Balance object.
+
+            Invariant: (external_disbursement_amount > 0) OR (withheld_amount > 0).'
+          properties:
+            external_disbursement_amount:
+              type: integer
+              description: The portion of the principal amount that will be made available for external disbursement at the time of funding (in minor units). Either this field or `withheld_amount` must be greater than 0.
+              example: 100000
+            withheld_amount:
+              type: integer
+              description: The portion of the principal amount that will be withheld and not disbursed externally at the time of funding (in minor units). Either this field or `external_disbursement_amount` must be greater than 0.
+              example: 1000
+            merchant_origination_fee_amount:
+              type: integer
+              description: The amount of origination fees charged to the merchant that is included in the principal amount (in minor units). Must be less than `external_disbursement_amount` + `withheld_amount`.
+              example: 100
+        other_fees:
+          type: object
+          description: Fees relating to the funding request that Lead needs awareness of for bookkeeping purposes only.
+          properties:
+            borrower_origination_fee_amount:
+              type: integer
+              description: Non-capitalized origination fee charged to the borrower at the point of funding (in minor units).
+              example: 200
+        metadata:
+          type: object
+          description: Additional metadata associated with the funding.
+          additionalProperties: true
+          example:
+            client_draw_id: X67BU
+        status:
+          $ref: '#/components/schemas/FundingStatus'
+        rejection:
+          $ref: '#/components/schemas/FundingRejection'
+        created_at:
+          type: string
+          format: date-time
+          description: The ISO-8601 timestamp at which the Funding object was created.
+          example: '2025-09-02T11:01:36Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: The ISO-8601 timestamp at which the Funding object was last updated.
+          example: '2025-09-02T11:05:00Z'
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    FundingRejection:
+      type: object
+      description: Object containing information relevant for cases where the Funding object is in a rejected status. When the object is not in a rejected status, fields will still be present with empty strings.
+      properties:
+        reason:
+          $ref: '#/components/schemas/FundingRejectionReason'
+        details:
+          type: string
+          description: Additional info about the rejection. Reserved for future use.
+          example: Funding object rejected due to an internal error.
+    FundingCurrencyCode:
+      type: string
+      description: A three-letter currency code as defined in ISO 4217. Must match the `currency_code` on the associated Subledger Balance object.
+      example: USD
+      enum:
+      - USD
+    FundingRejectionReason:
+      type: string
+      description: The rejection code that indicates the type of rejection. Note that Lead may introduce additional enums in the future; partner integrations should be ready to handle them as non-breaking changes.
+      enum:
+      - internal_error
+      example: internal_error
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

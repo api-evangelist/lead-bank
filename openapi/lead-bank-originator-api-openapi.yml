@@ -1,0 +1,797 @@
+openapi: 3.0.1
+info:
+  title: Lead Bank Account Number Originator API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: Originator
+paths:
+  /v0/originators:
+    post:
+      tags:
+      - Originator
+      operationId: create-an-originator
+      summary: Create an Originator
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: false
+        schema:
+          type: string
+          maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: CreateOriginatorRequest
+              type: object
+              properties:
+                account_id:
+                  type: string
+                  pattern: ^account_\w+$
+                  description: The account ID to create the originator for.
+                  example: account_xyz123
+                entity_id:
+                  $ref: '#/components/schemas/EntityID'
+                company_name:
+                  example: Company, Inc.
+                  type: string
+                ach:
+                  $ref: '#/components/schemas/AchOriginatorParameters'
+                metadata:
+                  $ref: '#/components/schemas/Metadata'
+              required:
+              - entity_id
+              - ach
+              - company_name
+              - account_id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Originator'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: parameters_invalid
+                title: Your request parameters did not validate.
+                status: '400'
+        '403':
+          description: Operation Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: operation_not_allowed
+                title: Operation cannot be done on this object.
+                status: '403'
+        '422':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '429':
+          description: You've reached the rate limit for this call, your request was not processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+    get:
+      tags:
+      - Originator
+      operationId: list-all-originators
+      summary: List all Originators
+      description: List all Originators.
+      parameters:
+      - name: account_id
+        in: query
+        required: true
+        example: account_xyz123
+        schema:
+          type: string
+          pattern: ^account_\w+$
+        description: The account ID to retrieve the originators for.
+      - name: limit
+        description: Maximum number of objects to be returned.
+        in: query
+        example: 10
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+      - name: starting_after
+        in: query
+        example: originator_xyz123
+        schema:
+          type: string
+          pattern: ^originator_\w+$
+        description: The ID of the originator to start the list after.
+      - name: ending_before
+        in: query
+        example: originator_xyz123
+        schema:
+          type: string
+          pattern: ^originator_\w+$
+        description: The ID of the originator to end the list before.
+      - name: status
+        in: query
+        example: active
+        schema:
+          type: string
+        description: The status of the originator.
+      responses:
+        '200':
+          description: List of Originators
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOriginator'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: parameters_invalid
+                title: Your request parameters did not validate.
+                status: '400'
+        '403':
+          description: Operation Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: operation_not_allowed
+                title: Operation cannot be done on this object.
+                status: '403'
+        '422':
+          description: Unprocessable request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v0/originators/{originator_id}:
+    patch:
+      tags:
+      - Originator
+      operationId: update-an-originator
+      summary: Update an Originator
+      description: Update an Originator's parameters.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: false
+        schema:
+          type: string
+          maxLength: 255
+      - name: originator_id
+        in: path
+        required: true
+        example: originator_xyz123
+        schema:
+          type: string
+          pattern: ^originator_\w+$
+        description: The ID of the originator to be retrieved.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: UpdateOriginatorRequest
+              type: object
+              properties:
+                ach:
+                  $ref: '#/components/schemas/AchOriginatorUpdateParameters'
+                company_name:
+                  type: string
+                metadata:
+                  $ref: '#/components/schemas/Metadata'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Originator'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: parameters_invalid
+                title: Your request parameters did not validate.
+                status: '400'
+        '403':
+          description: Operation Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: operation_not_allowed
+                title: Operation cannot be done on this object.
+                status: '403'
+        '404':
+          description: Originator ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '429':
+          description: You've reached the rate limit for this call, your request was not processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+    get:
+      tags:
+      - Originator
+      operationId: retrieve-an-originator
+      summary: Retrieve an Originator
+      description: Retrieve an Originator.
+      parameters:
+      - name: originator_id
+        in: path
+        required: true
+        example: originator_xyz123
+        schema:
+          type: string
+          pattern: ^originator_\w+$
+        description: The ID of the originator to be retrieved.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Originator'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: parameters_invalid
+                title: Your request parameters did not validate.
+                status: '400'
+        '403':
+          description: Operation Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: operation_not_allowed
+                title: Operation cannot be done on this object.
+                status: '403'
+        '404':
+          description: Originator ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v0/originators/{originator_id}/activate:
+    post:
+      tags:
+      - Originator
+      operationId: activate-an-originator
+      summary: Activate an Originator
+      description: Activate an Originator.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: false
+        schema:
+          type: string
+          maxLength: 255
+      - name: originator_id
+        in: path
+        required: true
+        example: originator_xyz123
+        schema:
+          type: string
+          pattern: ^originator_\w+$
+        description: The ID of the originator to be activated.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              title: ActivateOriginatorRequest
+              type: object
+              properties:
+                metadata:
+                  $ref: '#/components/schemas/Metadata'
+                  description: Updated metadata for the Originator.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Originator'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: parameters_invalid
+                title: Your request parameters did not validate.
+                status: '400'
+        '403':
+          description: Operation Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: operation_not_allowed
+                title: Operation cannot be done on this object.
+                status: '403'
+        '404':
+          description: Originator ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Operation cannot be done on this object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v0/originators/{originator_id}/deactivate:
+    post:
+      tags:
+      - Originator
+      operationId: deactivate-an-originator
+      summary: Deactivate an Originator
+      description: Deactivate an Originator.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: false
+        schema:
+          type: string
+          maxLength: 255
+      - name: originator_id
+        in: path
+        required: true
+        example: originator_xyz123
+        schema:
+          type: string
+          pattern: ^originator_\w+$
+        description: The ID of the originator to be deactivated.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              title: DeactivateOriginatorRequest
+              type: object
+              properties:
+                metadata:
+                  $ref: '#/components/schemas/Metadata'
+                  description: Updated metadata for the Originator.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Originator'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: parameters_invalid
+                title: Your request parameters did not validate.
+                status: '400'
+        '403':
+          description: Operation Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: operation_not_allowed
+                title: Operation cannot be done on this object.
+                status: '403'
+        '404':
+          description: Originator ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Operation cannot be done on this object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v0/originators/{originator_id}/cancel:
+    post:
+      tags:
+      - Originator
+      operationId: cancel-an-originator
+      summary: Cancel an Originator
+      description: Cancel an Originator.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: false
+        schema:
+          type: string
+          maxLength: 255
+      - name: originator_id
+        in: path
+        required: true
+        example: originator_xyz123
+        schema:
+          type: string
+          pattern: ^originator_\w+$
+        description: The ID of the originator to be cancelled.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              title: CancelAnOriginatorRequest
+              type: object
+              properties:
+                metadata:
+                  $ref: '#/components/schemas/Metadata'
+                  description: Updated metadata for the Originator.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Originator'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: parameters_invalid
+                title: Your request parameters did not validate.
+                status: '400'
+        '403':
+          description: Operation Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: operation_not_allowed
+                title: Operation cannot be done on this object.
+                status: '403'
+        '404':
+          description: Originator ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Operation cannot be done on this object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+components:
+  schemas:
+    AccountID:
+      type: string
+      description: The ID of the Account object.
+      example: account_xyz123
+      pattern: ^account_\w+$
+    AchOriginatorUpdateParameters:
+      type: object
+      description: ACH controls for updating originators.
+      properties:
+        allowed_sec_codes:
+          type: array
+          description: List of allowed SEC codes for ACH transactions.
+          items:
+            $ref: '#/components/schemas/OutgoingSecCode'
+        nested_third_parties:
+          type: array
+          description: List of nested third-party entity IDs.
+          maxItems: 5
+          items:
+            $ref: '#/components/schemas/EntityID'
+        limits:
+          $ref: '#/components/schemas/AchOriginatorUpdateLimits'
+          description: The ACH limits for the originator.
+    OriginatorStatus:
+      type: string
+      description: Originator Status
+      example: active
+      enum:
+      - pending
+      - active
+      - inactive
+      - rejected
+      - canceled
+      - suspended
+    ListOriginator:
+      type: object
+      required:
+      - objects
+      - has_more
+      properties:
+        objects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Originator'
+        has_more:
+          type: boolean
+          description: Indicates if there are more originators to retrieve.
+    AchOriginatorUpdateLimits:
+      type: object
+      properties:
+        calendar_day_maximum_amount:
+          $ref: '#/components/schemas/AchCalendarDayMaximumAmount'
+          description: Maximum amount per calendar day.
+        rolling_30_calendar_day_maximum_amount:
+          $ref: '#/components/schemas/AchRolling30CalendarDayMaximumAmount'
+          description: Maximum amount per rolling 30 calendar days.
+    AchRolling30CalendarDayMaximumAmount:
+      type: object
+      required:
+      - credit
+      - debit
+      properties:
+        credit:
+          type: integer
+          format: int64
+          description: Credit limit per transaction in cents.
+          minimum: 0
+          maximum: 990000000000
+        debit:
+          type: integer
+          format: int64
+          description: Debit limit per transaction in cents.
+          minimum: 0
+          maximum: 990000000000
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    EntityID:
+      type: string
+      description: The ID of your entity.
+      example: entity_xyz123
+      pattern: ^entity_[^\s]{1,33}$
+    Originator:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the Originator.
+          example: originator_xyz123
+          pattern: ^originator_\w+$
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+        entity_id:
+          $ref: '#/components/schemas/EntityID'
+        status:
+          $ref: '#/components/schemas/OriginatorStatus'
+        company_name:
+          type: string
+          example: Acme Inc.
+          maxLength: 16
+        company_id:
+          $ref: '#/components/schemas/CompanyId'
+        ach:
+          $ref: '#/components/schemas/AchOriginatorParameters'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        created_at:
+          type: string
+          format: date-time
+          example: '2022-06-27T11:22:33Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2022-06-27T11:22:33Z'
+    CompanyId:
+      type: string
+      description: ACH Company Id
+      example: 1234567890
+      pattern: ^\d{10}$
+    AchCalendarDayMaximumAmount:
+      type: object
+      required:
+      - credit
+      - debit
+      properties:
+        credit:
+          type: integer
+          format: int64
+          description: Credit limit per transaction in cents.
+          minimum: 0
+          maximum: 990000000000
+        debit:
+          type: integer
+          format: int64
+          description: Debit limit per transaction in cents.
+          minimum: 0
+          maximum: 990000000000
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
+    AchOriginatorLimits:
+      type: object
+      required:
+      - calendar_day_maximum_amount
+      - rolling_30_calendar_day_maximum_amount
+      properties:
+        calendar_day_maximum_amount:
+          $ref: '#/components/schemas/AchCalendarDayMaximumAmount'
+          description: Maximum amount per calendar day.
+        rolling_30_calendar_day_maximum_amount:
+          $ref: '#/components/schemas/AchRolling30CalendarDayMaximumAmount'
+          description: Maximum amount per rolling 30 calendar days.
+    OutgoingSecCode:
+      type: string
+      description: 'The Standard Entry Class, SEC, to code the outgoing ACH.
+
+        Lead currently supports:
+
+        * `CCD`: Corporate payment
+
+        * `PPD`: Written authorization to initiate payment
+
+        * `TEL`: Telephone initiated payment
+
+        * `WEB`: Web initiated payment
+
+        * `CIE`: Customer initiated entry
+
+        '
+      example: WEB
+      enum:
+      - CCD
+      - PPD
+      - TEL
+      - WEB
+      - CIE
+    AchOriginatorParameters:
+      type: object
+      description: ACH controls for originators.
+      required:
+      - limits
+      - allowed_sec_codes
+      properties:
+        allowed_sec_codes:
+          type: array
+          description: List of allowed SEC codes for ACH transactions.
+          items:
+            $ref: '#/components/schemas/OutgoingSecCode'
+        nested_third_parties:
+          type: array
+          description: List of nested third-party entity IDs.
+          items:
+            $ref: '#/components/schemas/EntityID'
+          maxItems: 5
+        limits:
+          $ref: '#/components/schemas/AchOriginatorLimits'
+          description: The ACH limits for the originator.
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
