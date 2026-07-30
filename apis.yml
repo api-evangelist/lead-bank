@@ -14,7 +14,20 @@ description: >-
   docs.lead.bank but access is gated through Lead Bank's partner-onboarding
   process. Recognized on the Forbes Next Billion-Dollar Startups and CNBC
   Disruptor 50 lists.
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: free
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Free · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/lead-bank.png
 tags:
   - Banking
   - Sponsor Bank
@@ -28,98 +41,255 @@ created: '2026-05-23'
 modified: '2026-05-23'
 specificationVersion: '0.19'
 apis:
-  - aid: lead-bank:lend
-    name: Lead Bank Lend API
-    description: >-
-      Embedded-credit API supporting term loans, revolving lines of credit,
-      in-app financing, and buy-now-pay-later products. Covers origination,
-      underwriting, servicing, and disbursement.
-    humanURL: https://docs.lead.bank/api-integrations/overview
-    baseURL: gated-partner-access
-    tags:
-      - Lending
-      - Credit
-      - BNPL
-      - Origination
-    properties:
-      - type: Documentation
-        url: https://docs.lead.bank/api-integrations/overview
-  - aid: lead-bank:move
-    name: Lead Bank Move API
-    description: >-
-      Money-movement API spanning ACH, instant payments (RTP / FedNow),
-      domestic and international wires, stablecoin transfers, and
-      partner-configurable payment controls.
-    humanURL: https://docs.lead.bank/api-integrations/overview
-    baseURL: gated-partner-access
-    tags:
-      - Payments
-      - ACH
-      - RTP
-      - FedNow
-      - Wires
-      - Stablecoin
-    properties:
-      - type: Documentation
-        url: https://docs.lead.bank/api-integrations/overview
-  - aid: lead-bank:issue
-    name: Lead Bank Issue API
-    description: >-
-      Card-issuing API for physical and virtual credit and debit cards plus
-      custom-generated account numbers used in card-program back-ends.
-    humanURL: https://docs.lead.bank/api-integrations/overview
-    baseURL: gated-partner-access
-    tags:
-      - Cards
-      - Issuing
-      - Virtual Cards
-    properties:
-      - type: Documentation
-        url: https://docs.lead.bank/api-integrations/overview
-  - aid: lead-bank:store
-    name: Lead Bank Store API
-    description: >-
-      Deposit-account API for opening and managing FDIC-insured accounts on
-      behalf of partner-program end users, including multi-currency balances
-      and flexible account structures.
-    humanURL: https://docs.lead.bank/api-integrations/overview
-    baseURL: gated-partner-access
-    tags:
-      - Accounts
-      - Deposits
-      - FDIC
-      - Multi-Currency
-    properties:
-      - type: Documentation
-        url: https://docs.lead.bank/api-integrations/overview
-  - aid: lead-bank:file-integrations
-    name: Lead Bank File Integrations (SFTP)
-    description: >-
-      File-based integration channel over SFTP for partners that ingest or
-      emit batch files (NACHA, reconciliation, settlement reports).
-    humanURL: https://docs.lead.bank/file-integrations/sftp-setup
-    baseURL: gated-partner-access
-    tags:
-      - SFTP
-      - File Integration
-      - Batch
-      - NACHA
-    properties:
-      - type: Documentation
-        url: https://docs.lead.bank/file-integrations/sftp-setup
-  - aid: lead-bank:webhooks
-    name: Lead Bank Webhooks
-    description: >-
-      Outbound webhook events covering account, payment, card, and lending
-      lifecycle changes. Endpoints configured per partner program.
-    humanURL: https://docs.lead.bank
-    baseURL: customer-configured
-    tags:
-      - Webhooks
-      - Events
-    properties:
-      - type: Documentation
-        url: https://docs.lead.bank
+- aid: lead-bank:lend
+  name: Lead Bank Lend API
+  description: >-
+    Embedded-credit API supporting term loans, revolving lines of credit, in-app financing, and buy-now-pay-later
+    products. Covers origination, underwriting, servicing, and disbursement.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Lending
+  - Credit
+  - BNPL
+  - Origination
+  properties:
+  - type: Documentation
+    url: https://docs.lead.bank/api-integrations/overview
+- aid: lead-bank:move
+  name: Lead Bank Move API
+  description: >-
+    Money-movement API spanning ACH, instant payments (RTP / FedNow), domestic and international wires,
+    stablecoin transfers, and partner-configurable payment controls.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Payments
+  - ACH
+  - RTP
+  - FedNow
+  - Wires
+  - Stablecoin
+  properties:
+  - type: Documentation
+    url: https://docs.lead.bank/api-integrations/overview
+- aid: lead-bank:issue
+  name: Lead Bank Issue API
+  description: >-
+    Card-issuing API for physical and virtual credit and debit cards plus custom-generated account numbers
+    used in card-program back-ends.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Cards
+  - Issuing
+  - Virtual Cards
+  properties:
+  - type: Documentation
+    url: https://docs.lead.bank/api-integrations/overview
+- aid: lead-bank:store
+  name: Lead Bank Store API
+  description: >-
+    Deposit-account API for opening and managing FDIC-insured accounts on behalf of partner-program end
+    users, including multi-currency balances and flexible account structures.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Accounts
+  - Deposits
+  - FDIC
+  - Multi-Currency
+  properties:
+  - type: Documentation
+    url: https://docs.lead.bank/api-integrations/overview
+- aid: lead-bank:file-integrations
+  name: Lead Bank File Integrations (SFTP)
+  description: >-
+    File-based integration channel over SFTP for partners that ingest or emit batch files (NACHA, reconciliation,
+    settlement reports).
+  humanURL: https://docs.lead.bank/file-integrations/sftp-setup
+  baseURL: gated-partner-access
+  tags:
+  - SFTP
+  - File Integration
+  - Batch
+  - NACHA
+  properties:
+  - type: Documentation
+    url: https://docs.lead.bank/file-integrations/sftp-setup
+- aid: lead-bank:webhooks
+  name: Lead Bank Webhooks
+  description: >-
+    Outbound webhook events covering account, payment, card, and lending lifecycle changes. Endpoints
+    configured per partner program.
+  humanURL: https://docs.lead.bank
+  baseURL: customer-configured
+  tags:
+  - Webhooks
+  - Events
+  properties:
+  - type: Documentation
+    url: https://docs.lead.bank
+- aid: lead-bank:lead-bank-account-number-api
+  name: Lead Bank Account Number API
+  description: The Account Number API from Lead Bank — 7 operation(s) for account number.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Account Number
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-account-number-api-openapi.yml
+- aid: lead-bank:lead-bank-ach-api
+  name: Lead Bank ACH API
+  description: The ACH API from Lead Bank — 5 operation(s) for ach.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - ACH
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-ach-api-openapi.yml
+- aid: lead-bank:lead-bank-blockchain-payment-api
+  name: Lead Bank Blockchain Payment API
+  description: The Blockchain Payment API from Lead Bank — 2 operation(s) for blockchain payment.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Blockchain Payment
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-blockchain-payment-api-openapi.yml
+- aid: lead-bank:lead-bank-compliance-api
+  name: Lead Bank Compliance API
+  description: The Compliance API from Lead Bank — 11 operation(s) for compliance.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Compliance
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-compliance-api-openapi.yml
+- aid: lead-bank:lead-bank-entity-api
+  name: Lead Bank Entity API
+  description: The Entity API from Lead Bank — 2 operation(s) for entity.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Entity
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-entity-api-openapi.yml
+- aid: lead-bank:lead-bank-events-api
+  name: Lead Bank Events API
+  description: The Events API from Lead Bank — 2 operation(s) for events.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Events
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-events-api-openapi.yml
+- aid: lead-bank:lead-bank-funding-api
+  name: Lead Bank Funding API
+  description: The Funding API from Lead Bank — 3 operation(s) for funding.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Funding
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-funding-api-openapi.yml
+- aid: lead-bank:lead-bank-instant-payments-api
+  name: Lead Bank Instant Payments API
+  description: The Instant Payments API from Lead Bank — 7 operation(s) for instant payments.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Instant Payments
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-instant-payments-api-openapi.yml
+- aid: lead-bank:lead-bank-internal-transfer-api
+  name: Lead Bank Internal Transfer API
+  description: The Internal Transfer API from Lead Bank — 2 operation(s) for internal transfer.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Internal Transfer
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-internal-transfer-api-openapi.yml
+- aid: lead-bank:lead-bank-lending-api
+  name: Lead Bank Lending API
+  description: The Lending API from Lead Bank — 3 operation(s) for lending.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Lending
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-lending-api-openapi.yml
+- aid: lead-bank:lead-bank-lending-simulation-api
+  name: Lead Bank Lending Simulation API
+  description: The Lending Simulation API from Lead Bank — 1 operation(s) for lending simulation.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Lending Simulation
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-lending-simulation-api-openapi.yml
+- aid: lead-bank:lead-bank-oauth-api
+  name: Lead Bank OAuth API
+  description: The OAuth API from Lead Bank — 1 operation(s) for oauth.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - OAuth
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-oauth-api-openapi.yml
+- aid: lead-bank:lead-bank-originator-api
+  name: Lead Bank Originator API
+  description: The Originator API from Lead Bank — 5 operation(s) for originator.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Originator
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-originator-api-openapi.yml
+- aid: lead-bank:lead-bank-simulation-api
+  name: Lead Bank Simulation API
+  description: The Simulation API from Lead Bank — 11 operation(s) for simulation.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Simulation
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-simulation-api-openapi.yml
+- aid: lead-bank:lead-bank-subledger-balances-api
+  name: Lead Bank Subledger Balances API
+  description: The Subledger Balances API from Lead Bank — 2 operation(s) for subledger balances.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Subledger Balances
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-subledger-balances-api-openapi.yml
+- aid: lead-bank:lead-bank-wire-api
+  name: Lead Bank Wire API
+  description: The Wire API from Lead Bank — 4 operation(s) for wire.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Wire
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-wire-api-openapi.yml
 common:
   - type: AgenticAccess
     url: agentic-access/lead-bank-agentic-access.yml
