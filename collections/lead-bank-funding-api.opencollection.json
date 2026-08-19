@@ -1,0 +1,83 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lead Bank Account Number Funding API",
+    "version": "v1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Funding",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a Funding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/fundings",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a Funding object to request that Lead move funds from a Lead GL to the partner's funding FBO account."
+        },
+        {
+          "info": {
+            "name": "Retrieve a Funding",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/fundings/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "funding_0o5Fs0EELR0fUjHjbCnEtdUwQe3",
+                "type": "path",
+                "description": "The ID of the funding object to be retrieved."
+              }
+            ]
+          },
+          "docs": "Retrieve a Funding object."
+        },
+        {
+          "info": {
+            "name": "Advance a Funding (Simulation)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/fundings/:id/advance",
+            "params": [
+              {
+                "name": "id",
+                "value": "funding_0o5Fs0EELR0fUjHjbCnEtdUwQe3",
+                "type": "path",
+                "description": "The ID of the funding object to advance."
+              }
+            ]
+          },
+          "docs": "Advances a Funding object from processing to posted status in the Sandbox environment."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

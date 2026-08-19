@@ -1,0 +1,259 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lead Bank Account Number ACH API",
+    "version": "v1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "ACH",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all ACHes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/ach",
+            "params": [
+              {
+                "name": "account_id",
+                "value": "",
+                "type": "query",
+                "description": "Return ACHes associated with this `account_id`."
+              },
+              {
+                "name": "account_number",
+                "value": "",
+                "type": "query",
+                "description": "Return ACHes associated with this `account_number`."
+              },
+              {
+                "name": "account_number_id",
+                "value": "",
+                "type": "query",
+                "description": "Return ACHes associated with this `account_number_id`."
+              },
+              {
+                "name": "counterparty_account_number",
+                "value": "",
+                "type": "query",
+                "description": "Return ACHes associated with this counterparty's account_number."
+              },
+              {
+                "name": "direction",
+                "value": "",
+                "type": "query",
+                "description": "Return ACHes with this `direction`."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Return ACHes with this `status`."
+              },
+              {
+                "name": "transaction_type",
+                "value": "",
+                "type": "query",
+                "description": "Return ACHes with this `transaction_type`."
+              },
+              {
+                "name": "created_at",
+                "value": "",
+                "type": "query",
+                "description": "A set of filters on the list using the object’s field `created_at`."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              },
+              {
+                "name": "ending_before",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              }
+            ]
+          },
+          "docs": "List all ACH objects."
+        },
+        {
+          "info": {
+            "name": "Create an ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/ach",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates an outgoing ACH."
+        },
+        {
+          "info": {
+            "name": "Retrieve an ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/ach/:ach_id",
+            "params": [
+              {
+                "name": "ach_id",
+                "value": "ach_xyz001",
+                "type": "path",
+                "description": "ID of the ACH object you want to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve an ACH object."
+        },
+        {
+          "info": {
+            "name": "Update an ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.sandbox.lead.bank/v1/ach/:ach_id",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "ach_id",
+                "value": "ach_xyz001",
+                "type": "path",
+                "description": "ID of the ACH object you want to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update an ACH object."
+        },
+        {
+          "info": {
+            "name": "Cancel an ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/ach/:ach_id/cancel",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "ach_id",
+                "value": "ach_xyz001",
+                "type": "path",
+                "description": "ID of the ACH to be canceled."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Cancel an outgoing ACH."
+        },
+        {
+          "info": {
+            "name": "Return an ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/ach/:ach_id/return",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "ach_id",
+                "value": "ach_xyz001",
+                "type": "path",
+                "description": "ID of the ACH object to be returned."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Issue a return against an incoming ACH."
+        },
+        {
+          "info": {
+            "name": "Reverse an ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/ach/:ach_id/reverse",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "ach_id",
+                "value": "ach_xyz001",
+                "type": "path",
+                "description": "ID of the ACH you want to return."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Reverse an outgoing ACH."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

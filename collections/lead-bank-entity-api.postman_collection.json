@@ -1,0 +1,1802 @@
+{
+  "item": [
+    {
+      "id": "b5307a54-8461-4887-b642-dcfe18670b27",
+      "name": "Entity",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "ae3521fa-7f33-4045-941f-c585efa6fae5",
+          "name": "Create an entity",
+          "request": {
+            "name": "Create an entity",
+            "description": {
+              "content": "Create an Individual, Sole Prop or Business Entity.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v0",
+                "entities"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"individual\",\n  \"individual_details\": {\n    \"first_name\": \"<string>\",\n    \"last_name\": \"<string>\",\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"preferred_first_name\": \"<string>\",\n    \"middle_name\": \"<string>\",\n    \"date_of_birth\": \"<date>\",\n    \"occupation\": \"<string>\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"<string>\",\n        \"city\": \"<string>\",\n        \"country\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"<string>\",\n        \"city\": \"<string>\",\n        \"country\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"client_customer_id\": \"<string>\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "92938038-72fe-481b-a497-483860ef5cd5",
+              "name": "Entity object created.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"individual\",\n  \"individual_details\": {\n    \"first_name\": \"<string>\",\n    \"last_name\": \"<string>\",\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"preferred_first_name\": \"<string>\",\n    \"middle_name\": \"<string>\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"<string>\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"client_customer_id\": \"<string>\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"type\": \"individual\",\n  \"created_at\": \"2023-07-13T02:29:31.195Z\",\n  \"updated_at\": \"1981-06-18T19:06:59.927Z\",\n  \"client_customer_id\": \"string\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"individual_details\": {\n    \"first_name\": \"<string>\",\n    \"last_name\": \"<string>\",\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"preferred_first_name\": \"<string>\",\n    \"middle_name\": \"<string>\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"<string>\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"role_details\": [\n    {\n      \"name\": \"<string>\",\n      \"status\": \"active\",\n      \"criteria_details\": [\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        },\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        }\n      ]\n    },\n    {\n      \"name\": \"<string>\",\n      \"status\": \"active\",\n      \"criteria_details\": [\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        },\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        }\n      ]\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\",\n    \"key_2\": \"<string>\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "660dc185-c2ce-4441-87cf-0f09d8bcbf58",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"individual\",\n  \"individual_details\": {\n    \"first_name\": \"<string>\",\n    \"last_name\": \"<string>\",\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"preferred_first_name\": \"<string>\",\n    \"middle_name\": \"<string>\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"<string>\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"client_customer_id\": \"<string>\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d65870ff-e5fa-4faf-a19b-f2f69acb8a70",
+              "name": "An entity with the same client_customer_id already exists.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"individual\",\n  \"individual_details\": {\n    \"first_name\": \"<string>\",\n    \"last_name\": \"<string>\",\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"preferred_first_name\": \"<string>\",\n    \"middle_name\": \"<string>\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"<string>\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"client_customer_id\": \"<string>\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "50192765-0b59-4b37-a1ca-a61ecc57716f",
+              "name": "We couldn't parse your request body, please check that your request body is valid JSON.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"individual\",\n  \"individual_details\": {\n    \"first_name\": \"<string>\",\n    \"last_name\": \"<string>\",\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"preferred_first_name\": \"<string>\",\n    \"middle_name\": \"<string>\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"<string>\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"client_customer_id\": \"<string>\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "8a1ececf-7ef2-4464-a61b-6e52ac15d503",
+              "name": "Too many requests. Please slow down your request rate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"individual\",\n  \"individual_details\": {\n    \"first_name\": \"<string>\",\n    \"last_name\": \"<string>\",\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"preferred_first_name\": \"<string>\",\n    \"middle_name\": \"<string>\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"<string>\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"client_customer_id\": \"<string>\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a0bec208-23b4-4af6-a5dd-f8bcb26e525b",
+              "name": "Server error. Please try your request again.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"individual\",\n  \"individual_details\": {\n    \"first_name\": \"<string>\",\n    \"last_name\": \"<string>\",\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"preferred_first_name\": \"<string>\",\n    \"middle_name\": \"<string>\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"<string>\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"client_customer_id\": \"<string>\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "987910f1-c692-49fd-8969-31e5854cbd09",
+              "name": "Service unavailable. Please try your request again.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"individual\",\n  \"individual_details\": {\n    \"first_name\": \"<string>\",\n    \"last_name\": \"<string>\",\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"preferred_first_name\": \"<string>\",\n    \"middle_name\": \"<string>\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"<string>\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"client_customer_id\": \"<string>\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "bd192a79-4745-4717-ab36-894de9ede95d",
+          "name": "Retrieve an entity by client customer id",
+          "request": {
+            "name": "Retrieve an entity by client customer id",
+            "description": {
+              "content": "Retrieve an entity by the client customer id",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v0",
+                "entities"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "client_customer_id",
+                  "value": "<string>",
+                  "description": "(Required) Client Customer ID of the entity object you want to retrieve."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "1cfa1d43-9b76-4995-b5d9-9095d73d3452",
+              "name": "An entity object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "client_customer_id",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"type\": \"individual\",\n  \"created_at\": \"2022-04-04T06:34:14.050Z\",\n  \"updated_at\": \"1958-12-01T15:44:53.928Z\",\n  \"client_customer_id\": \"string\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"individual_details\": {\n    \"first_name\": \"<string>\",\n    \"last_name\": \"<string>\",\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"preferred_first_name\": \"<string>\",\n    \"middle_name\": \"<string>\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"<string>\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"role_details\": [\n    {\n      \"name\": \"<string>\",\n      \"status\": \"active\",\n      \"criteria_details\": [\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        },\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        }\n      ]\n    },\n    {\n      \"name\": \"<string>\",\n      \"status\": \"active\",\n      \"criteria_details\": [\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        },\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        }\n      ]\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b1ccc14e-1817-4926-a0d8-6371e8f62bf0",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "client_customer_id",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "9dc35334-dd2e-458a-a5ae-c735915e2ae5",
+              "name": "id passed in doesn't correspond to an entity",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "client_customer_id",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c8c805bc-218c-4731-a4e2-45f02bf937bf",
+              "name": "Too many requests. Please slow down your request rate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "client_customer_id",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "1a43bf6d-3980-4ac6-98f0-4c41595f1900",
+              "name": "Server error. Please try your request again.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "client_customer_id",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "978a394a-0874-47f0-b05a-51244e6040c7",
+              "name": "Service unavailable. Please try your request again.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "client_customer_id",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "ce514d6d-5369-45c8-a0a5-daab331b5c75",
+          "name": "Update an entity",
+          "request": {
+            "name": "Update an entity",
+            "description": {
+              "content": "Certain updates on Entity trigger KYC re-screening, requiring an updated kyc_details.result and kyc_details.screened_at.\n\nFor individual entities, KYC re-screening is triggered by changes to: first name, last name, date of birth, tax ID (for US entities), existing identification document (for non-US entities), and switching between US vs. non-US entities.\n\nFor business and sole proprietorship entities, KYC re-screening is triggered by changes to: business name, business type, tax ID (US entities), and existing identification document (non-US entities).\n\nNote: Business and sole proprietors cannot switch between US and non-US entities. A new entity must be created in such case.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v0",
+                "entities",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) Entity ID"
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"individual\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"individual_details\": {\n    \"first_name\": \"<string>\",\n    \"preferred_first_name\": \"<string>\",\n    \"middle_name\": \"<string>\",\n    \"last_name\": \"<string>\",\n    \"date_of_birth\": \"<date>\",\n    \"occupation\": \"<string>\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\",\n    \"key_2\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "7b679e8d-46de-4e55-918a-f59bb532df4b",
+              "name": "Entity object updated.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Entity ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"individual\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"individual_details\": {\n    \"first_name\": \"Lucy\",\n    \"preferred_first_name\": \"Lu\",\n    \"middle_name\": \"Reginald\",\n    \"last_name\": \"Collins\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"Author\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"type\": \"individual\",\n  \"created_at\": \"2022-04-04T06:34:14.050Z\",\n  \"updated_at\": \"1958-12-01T15:44:53.928Z\",\n  \"client_customer_id\": \"string\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"individual_details\": {\n    \"first_name\": \"<string>\",\n    \"last_name\": \"<string>\",\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"preferred_first_name\": \"<string>\",\n    \"middle_name\": \"<string>\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"<string>\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"role_details\": [\n    {\n      \"name\": \"<string>\",\n      \"status\": \"active\",\n      \"criteria_details\": [\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        },\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        }\n      ]\n    },\n    {\n      \"name\": \"<string>\",\n      \"status\": \"active\",\n      \"criteria_details\": [\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        },\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        }\n      ]\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c57f8410-44fd-46c3-9d70-115c96a1c137",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Entity ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"individual\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"individual_details\": {\n    \"first_name\": \"Lucy\",\n    \"preferred_first_name\": \"Lu\",\n    \"middle_name\": \"Reginald\",\n    \"last_name\": \"Collins\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"Author\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "9a386590-fabf-4574-aa3d-a1bd8bc87b1d",
+              "name": "id passed in doesn't correspond to an entity",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Entity ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"individual\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"individual_details\": {\n    \"first_name\": \"Lucy\",\n    \"preferred_first_name\": \"Lu\",\n    \"middle_name\": \"Reginald\",\n    \"last_name\": \"Collins\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"Author\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "63b28b15-dae0-4598-8e6c-c6c55ecada20",
+              "name": "A request to update this entity is already in progress.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Entity ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"individual\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"individual_details\": {\n    \"first_name\": \"Lucy\",\n    \"preferred_first_name\": \"Lu\",\n    \"middle_name\": \"Reginald\",\n    \"last_name\": \"Collins\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"Author\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "98e1a489-3d23-4237-abf5-03041ebc9352",
+              "name": "We couldn't parse your request body, please check that your request body is valid JSON.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Entity ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"individual\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"individual_details\": {\n    \"first_name\": \"Lucy\",\n    \"preferred_first_name\": \"Lu\",\n    \"middle_name\": \"Reginald\",\n    \"last_name\": \"Collins\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"Author\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "cb8b3460-f635-4e3f-985f-055885c1b3dd",
+              "name": "Too many requests. Please slow down your request rate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Entity ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"individual\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"individual_details\": {\n    \"first_name\": \"Lucy\",\n    \"preferred_first_name\": \"Lu\",\n    \"middle_name\": \"Reginald\",\n    \"last_name\": \"Collins\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"Author\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "93c3df6f-4785-400c-b9c0-12976f1ca83e",
+              "name": "Server error. Please try your request again.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Entity ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"individual\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"individual_details\": {\n    \"first_name\": \"Lucy\",\n    \"preferred_first_name\": \"Lu\",\n    \"middle_name\": \"Reginald\",\n    \"last_name\": \"Collins\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"Author\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f66682dc-e671-4f19-99a3-4c98c2c9c9f9",
+              "name": "Service unavailable. Please try your request again.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Entity ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"individual\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"individual_details\": {\n    \"first_name\": \"Lucy\",\n    \"preferred_first_name\": \"Lu\",\n    \"middle_name\": \"Reginald\",\n    \"last_name\": \"Collins\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"Author\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"<string>\",\n        \"line_2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"<string>\",\n        \"country\": \"<string>\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "d86b4317-1a65-4e0e-889e-9027db3631e5",
+          "name": "Retrieve an entity by entity id",
+          "request": {
+            "name": "Retrieve an entity by entity id",
+            "description": {
+              "content": "Retrieve an entity by entity id",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v0",
+                "entities",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) Entity ID of the entity object you want to retrieve."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "de970072-8e5b-49eb-b54b-88caad98671e",
+              "name": "An entity object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Entity ID of the entity object you want to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"type\": \"individual\",\n  \"created_at\": \"2022-04-04T06:34:14.050Z\",\n  \"updated_at\": \"1958-12-01T15:44:53.928Z\",\n  \"client_customer_id\": \"string\",\n  \"intended_roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"risk_score\": \"<string>\",\n  \"individual_details\": {\n    \"first_name\": \"<string>\",\n    \"last_name\": \"<string>\",\n    \"identification_details\": {\n      \"type\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"tax_identification\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"identification_documents\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ]\n    },\n    \"preferred_first_name\": \"<string>\",\n    \"middle_name\": \"<string>\",\n    \"date_of_birth\": \"2002-02-15\",\n    \"occupation\": \"<string>\",\n    \"contact_methods\": [\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      {\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"email\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ],\n    \"address_details\": {\n      \"physical_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"mailing_address\": {\n        \"line_1\": \"123 Main St.\",\n        \"city\": \"Denver\",\n        \"country\": \"US\",\n        \"line_2\": \"Apt 25\",\n        \"postal_code\": \"<string>\",\n        \"state\": \"CO\"\n      },\n      \"other_addresses\": [\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"line_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"city\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"country\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"line_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"postal_code\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"state\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    },\n    \"additional_documents\": [\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"client_document_id\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ]\n  },\n  \"rfi_details\": {\n    \"result\": \"<string>\",\n    \"requested_at\": \"<dateTime>\"\n  },\n  \"ofac_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"kyc_details\": {\n    \"result\": \"<string>\",\n    \"screened_at\": \"<dateTime>\"\n  },\n  \"credit_details\": [\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    },\n    {\n      \"credit_score\": \"<string>\",\n      \"credit_report_source\": \"<string>\",\n      \"credit_pulled_at\": \"<dateTime>\"\n    }\n  ],\n  \"role_details\": [\n    {\n      \"name\": \"<string>\",\n      \"status\": \"active\",\n      \"criteria_details\": [\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        },\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        }\n      ]\n    },\n    {\n      \"name\": \"<string>\",\n      \"status\": \"active\",\n      \"criteria_details\": [\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        },\n        {\n          \"failed_checks\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"entity_id\": \"string\"\n        }\n      ]\n    }\n  ],\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "958833c0-e7bd-48d5-9e3a-ab54ced80728",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Entity ID of the entity object you want to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c12059f7-4684-48ce-94ab-4f244212c048",
+              "name": "id passed in doesn't correspond to an entity",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Entity ID of the entity object you want to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "73be5b5d-846e-422a-960f-a4abd9b219be",
+              "name": "Too many requests. Please slow down your request rate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Entity ID of the entity object you want to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "1e82c67c-1041-494d-bcc9-3d7f44aca614",
+              "name": "Server error. Please try your request again.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Entity ID of the entity object you want to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "6dff6184-908d-4a7a-96e7-d046c7371093",
+              "name": "Service unavailable. Please try your request again.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "entities",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Entity ID of the entity object you want to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.sandbox.lead.bank",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "73445023-cac6-4add-99d6-0b5b9e9ded1c",
+    "name": "Lead Bank Account Number Entity API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Lead Bank's APIs",
+      "type": "text/plain"
+    }
+  }
+}

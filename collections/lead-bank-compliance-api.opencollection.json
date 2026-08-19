@@ -1,0 +1,367 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lead Bank Account Number Compliance API",
+    "version": "v1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Compliance",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create an application",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/applications",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "app-create-12345-abc"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new credit application in terminal status.\n\n## Business Rules\n- Applications MUST be created in terminal status (approved, declined, canceled)\n- Maximum 20 entities per relationship type\n- Cannot mix individual entities with business or sole_prop entities in account_holders; business and sole_prop entities may be combined\n- Credit fields required for all applications\n- Adverse action notice required for declined applications\n- Authorized signers required for commercial account holders\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve an application",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/applications/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Server-generated ID (application_*) application ID"
+              }
+            ]
+          },
+          "docs": "Retrieves a specific application by its ID.\nAccepts either a server-generated ID (application_*) or client-provided application ID.\nThe server detects the ID type by prefix.\n"
+        },
+        {
+          "info": {
+            "name": "Update an application",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.sandbox.lead.bank/v0/applications/:id",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "app-update-12345-abc"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Application ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates properties on an existing application.\n\nUses JSON Merge Patch semantics (RFC 7396): omitted fields are unchanged,\nexplicit values overwrite, nested objects merge recursively.\n\nNote: Entity relationships cannot be modified via this endpoint.\nUse POST /entity_relationships/batch to add and DELETE /entity_relationships/{entity_id} to remove.\n\n## Idempotency\nThe Idempotency-Key header is required.\n"
+        },
+        {
+          "info": {
+            "name": "List application entity relationships",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/applications/:id/entity_relationships",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Application ID"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of results to return. Defaults to 25, max 100."
+              },
+              {
+                "name": "starting_after",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for pagination. Returns results starting after this cursor."
+              }
+            ]
+          },
+          "docs": "Lists all entity relationships for a specific application."
+        },
+        {
+          "info": {
+            "name": "Create an account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/accounts",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "acct-create-12345-abc"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new account.\n\n## Business Rules\n- Status is set to `active` by default on creation\n- Maximum 20 entities per relationship type\n- Cannot mix individual entities with business or sole_prop entities in account_holders; business and sole_prop entities may be combined\n- Authorized signers required for business/sole_prop account holders\n- application_id is required for credit accounts\n\n## Idempotency\nThe Idempotency-Key header is required. Reusing a key with a different request\nbody will ret"
+        },
+        {
+          "info": {
+            "name": "Retrieve an account",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "account_2N5Hk8xYmQpL9rBvC3jD",
+                "type": "path",
+                "description": "Account ID"
+              }
+            ]
+          },
+          "docs": "Retrieves a specific account by its ID.\nAccepts a server-generated ID (account_*).\n\nNote: Entity relationships are not included in the response.\nUse GET /v0/accounts/{id}/entity_relationships to retrieve them.\n"
+        },
+        {
+          "info": {
+            "name": "Update an account",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "acct-update-12345-abc"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Account ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates properties on an existing account.\n\nNote: To manage entity relationships, use the /entity_relationships endpoints.\nStatus changes should use dedicated endpoints (/activate, /deactivate, /close).\n\n## Idempotency\nThe Idempotency-Key header is required.\n"
+        },
+        {
+          "info": {
+            "name": "Activate an account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id/activate",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "acct-activate-12345-abc"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Account ID"
+              }
+            ]
+          },
+          "docs": "Transitions an account from `inactive` to `active` status.\n\n## Idempotency\nThe Idempotency-Key header is required.\n"
+        },
+        {
+          "info": {
+            "name": "Deactivate an account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id/deactivate",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "acct-deactivate-12345-abc"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Account ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Transitions an account from `active` to `inactive` status.\n\n## Idempotency\nThe Idempotency-Key header is required.\n"
+        },
+        {
+          "info": {
+            "name": "Close an account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id/close",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "acct-close-12345-abc"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Account ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Transitions an account to `closed` status (terminal state).\nThis action cannot be undone.\n\n## Idempotency\nThe Idempotency-Key header is required.\n"
+        },
+        {
+          "info": {
+            "name": "List account entity relationships",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id/entity_relationships",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Account ID"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of results to return. Defaults to 25, max 100."
+              },
+              {
+                "name": "starting_after",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for pagination. Returns results starting after this cursor."
+              }
+            ]
+          },
+          "docs": "Lists all entity relationships for a specific account."
+        },
+        {
+          "info": {
+            "name": "Delete account entity relationship",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id/entity_relationships/:entity_id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Account ID"
+              },
+              {
+                "name": "entity_id",
+                "value": "",
+                "type": "path",
+                "description": "Entity ID to remove from the account relationships"
+              },
+              {
+                "name": "relationship_type",
+                "value": "",
+                "type": "query",
+                "description": "The specific relationship type to delete for the entity."
+              }
+            ]
+          },
+          "docs": "Deletes a specific entity relationship from an account and returns the updated list of entity relationships.\nThe relationship_type must be specified to identify which relationship to delete.\n"
+        },
+        {
+          "info": {
+            "name": "Batch create account entity relationships",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/accounts/:id/entity_relationships/batch",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": "batch-entity-rel-12345-abc"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Account ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Associates multiple entities with an account under a single relationship type.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

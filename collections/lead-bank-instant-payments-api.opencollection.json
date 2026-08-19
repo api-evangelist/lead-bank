@@ -1,0 +1,252 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lead Bank Account Number Instant Payments API",
+    "version": "v1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Instant Payments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all instant payments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments",
+            "params": [
+              {
+                "name": "account_id",
+                "value": "",
+                "type": "query",
+                "description": "Returns instant payments associated with this `account_id`."
+              },
+              {
+                "name": "account_number_id",
+                "value": "",
+                "type": "query",
+                "description": "Returns instant payments associated with this `account_number_id`."
+              },
+              {
+                "name": "direction",
+                "value": "",
+                "type": "query",
+                "description": "Returns instant payments with the given direction."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Returns instant payments with the given status."
+              },
+              {
+                "name": "counterparty_status",
+                "value": "",
+                "type": "query",
+                "description": "Returns instant payments with the given counterparty status."
+              },
+              {
+                "name": "return_request_status",
+                "value": "",
+                "type": "query",
+                "description": "Returns instant payments that have a return request with the given status."
+              },
+              {
+                "name": "created_at",
+                "value": "",
+                "type": "query",
+                "description": "A set of filters on the list using the object's field `created_at`."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              },
+              {
+                "name": "ending_before",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              }
+            ]
+          },
+          "docs": "List instant payments with optional filtering."
+        },
+        {
+          "info": {
+            "name": "Create an instant payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Initiates an outgoing instant payment."
+        },
+        {
+          "info": {
+            "name": "Retrieve an instant payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments/:instant_payment_id",
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object you want to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve the details of an instant payment."
+        },
+        {
+          "info": {
+            "name": "Return an instant payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments/:instant_payment_id/return",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object you want to return."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Initiates an outgoing instant payment return. If there is an outstanding return request, invoking this endpoint is\nalso understood as accepting the active return request."
+        },
+        {
+          "info": {
+            "name": "Cancel an instant payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments/:instant_payment_id/cancel",
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object you want to cancel."
+              }
+            ]
+          },
+          "docs": "Attempt to cancel an outgoing instant payment that is currently in \"created\" or \"under_review\"\nstatus."
+        },
+        {
+          "info": {
+            "name": "Request return for an instant payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments/:instant_payment_id/request_return",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object you want to request a return for."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Send a return request to the counterparty for a previously posted outgoing instant payment.\nReturns the updated instant payment object with a new entry in the return_requests array."
+        },
+        {
+          "info": {
+            "name": "Reject return request for an instant payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments/:instant_payment_id/reject_return_request",
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object whose return request you want to reject."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Reject the active return request associated with an incoming instant payment.\nReturns the updated instant payment object with the status of the active return request set to \"rejected\"."
+        },
+        {
+          "info": {
+            "name": "Check instant payment availability",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/instant_payments/check_availability",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Check if a given routing number is eligible to receive an instant payment."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

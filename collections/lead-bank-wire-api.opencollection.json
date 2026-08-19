@@ -1,0 +1,202 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lead Bank Account Number Wire API",
+    "version": "v1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Wire",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve a wire V1",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/wires/:wire_id",
+            "params": [
+              {
+                "name": "wire_id",
+                "value": "wire_xyz001",
+                "type": "path",
+                "description": "ID of the wire object you want to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a wire object."
+        },
+        {
+          "info": {
+            "name": "Update a wire V1",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.sandbox.lead.bank/v1/wires/:wire_id",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "wire_id",
+                "value": "wire_xyz001",
+                "type": "path",
+                "description": "ID of the wire object you want to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a wire."
+        },
+        {
+          "info": {
+            "name": "List all wires V1",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/wires",
+            "params": [
+              {
+                "name": "account_id",
+                "value": "",
+                "type": "query",
+                "description": "Returns wires associated with this `account_id`."
+              },
+              {
+                "name": "account_number_id",
+                "value": "",
+                "type": "query",
+                "description": "Returns wires associated with this `account_number_id`."
+              },
+              {
+                "name": "direction",
+                "value": "",
+                "type": "query",
+                "description": "Returns wires with this `direction`."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Returns wires with this `status`."
+              },
+              {
+                "name": "created_at",
+                "value": "",
+                "type": "query",
+                "description": "A set of filters on the list using the object’s field `created_at`."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              },
+              {
+                "name": "ending_before",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              }
+            ]
+          },
+          "docs": "List all wire objects."
+        },
+        {
+          "info": {
+            "name": "Create a wire V1",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/wires",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new outgoing wire."
+        },
+        {
+          "info": {
+            "name": "Return a wire V1",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/wires/:wire_id/return",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "wire_id",
+                "value": "wire_xyz001",
+                "type": "path",
+                "description": "ID of the wire object you want to return."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Initiate a return against an incoming wire."
+        },
+        {
+          "info": {
+            "name": "Cancel a wire V1",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/wires/:wire_id/cancel",
+            "params": [
+              {
+                "name": "wire_id",
+                "value": "wire_xyz001",
+                "type": "path",
+                "description": "ID of the wire object you want to cancel."
+              }
+            ]
+          },
+          "docs": "Cancel a wire object."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

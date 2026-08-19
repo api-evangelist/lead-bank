@@ -1,0 +1,118 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lead Bank Account Number Internal Transfer API",
+    "version": "v1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Internal Transfer",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all Internal Transfers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/internal_transfer",
+            "params": [
+              {
+                "name": "sender_account_number_id",
+                "value": "account_number_xyz",
+                "type": "query",
+                "description": "The sender account number ID."
+              },
+              {
+                "name": "receiver_account_number_id",
+                "value": "account_number_xyz",
+                "type": "query",
+                "description": "The receiver account number ID."
+              },
+              {
+                "name": "status",
+                "value": "posted",
+                "type": "query"
+              },
+              {
+                "name": "created_at",
+                "value": "",
+                "type": "query",
+                "description": "A set of filters on the list using the object’s field `created_at`."
+              },
+              {
+                "name": "limit",
+                "value": "10",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "internal_transfer_xyz123",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              },
+              {
+                "name": "ending_before",
+                "value": "internal_transfer_xyz456",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              }
+            ]
+          },
+          "docs": "List all Internal Transfers."
+        },
+        {
+          "info": {
+            "name": "Create an asynchronous Internal Transfer",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/internal_transfer",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates an asynchronous Internal Transfer."
+        },
+        {
+          "info": {
+            "name": "Retrieve an Internal Transfer",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/internal_transfer/:internal_transfer_id",
+            "params": [
+              {
+                "name": "internal_transfer_id",
+                "value": "internal_transfer_xyz23",
+                "type": "path",
+                "description": "The ID of the internal transfer object to be retrieved."
+              }
+            ]
+          },
+          "docs": "Retrieve an Internal Transfer."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

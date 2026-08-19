@@ -1,0 +1,706 @@
+{
+  "item": [
+    {
+      "id": "ff012f84-9401-4034-9a49-378b215812a6",
+      "name": "Subledger Balances",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "638b8077-f9c5-45eb-a3c0-3987f21eec09",
+          "name": "Create a Subledger Balance",
+          "request": {
+            "name": "Create a Subledger Balance",
+            "description": {
+              "content": "Create a Subledger Balance object. The newly created Subledger Balance will have a `status` of `active` and a `status_reason` of `active`, and a unique `id` with prefix `subledger_balance_` will be auto-generated.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v0",
+                "subledger_balances"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"account_id\": \"<string>\",\n  \"client_subledger_balance_name\": \"<string>\",\n  \"currency_code\": \"<string>\",\n  \"type\": \"<string>\",\n  \"details\": {\n    \"expected_finance_charge_amount\": \"<integer>\",\n    \"expected_maturity_date\": \"<date>\",\n    \"max_funding_amount\": \"<integer>\",\n    \"repayment_details\": [\n      {\n        \"expected_payment_frequency\": \"<string>\",\n        \"expected_payment_frequency_interval_days\": \"<integer>\",\n        \"expected_number_of_payments\": \"<integer>\",\n        \"expected_first_payment_date\": \"<date>\",\n        \"expected_first_payment_amount\": \"<integer>\",\n        \"expected_last_payment_date\": \"<date>\",\n        \"expected_last_payment_amount\": \"<integer>\",\n        \"expected_payment_amount\": \"<integer>\"\n      },\n      {\n        \"expected_payment_frequency\": \"<string>\",\n        \"expected_payment_frequency_interval_days\": \"<integer>\",\n        \"expected_number_of_payments\": \"<integer>\",\n        \"expected_first_payment_date\": \"<date>\",\n        \"expected_first_payment_amount\": \"<integer>\",\n        \"expected_last_payment_date\": \"<date>\",\n        \"expected_last_payment_amount\": \"<integer>\",\n        \"expected_payment_amount\": \"<integer>\"\n      }\n    ],\n    \"structure\": \"<string>\",\n    \"term\": {\n      \"value\": \"<integer>\",\n      \"unit\": \"<string>\"\n    },\n    \"balances\": {\n      \"rewards\": {\n        \"unit\": \"<string>\"\n      }\n    },\n    \"autopay_method\": \"<string>\",\n    \"is_interest_based\": \"<boolean>\",\n    \"effective_apr\": \"<string>\",\n    \"effective_interest_rate\": \"<string>\",\n    \"interest_rate\": \"<string>\"\n  },\n  \"client_settlement_bank_account_id\": \"<string>\",\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "bf6b9bc2-8f2c-4347-887e-fcc7b334f799",
+              "name": "Subledger Balance created successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "subledger_balances"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_id\": \"account_v9K4p2M7nL1wQ8xR5zB6tY3jH0gA\",\n  \"client_subledger_balance_name\": \"Personal Loan - Home Improvement\",\n  \"currency_code\": \"USD\",\n  \"type\": \"credit\",\n  \"details\": {\n    \"expected_finance_charge_amount\": 1000,\n    \"expected_maturity_date\": \"2027-09-01\",\n    \"max_funding_amount\": 10000000,\n    \"repayment_details\": [\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      },\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      }\n    ],\n    \"structure\": \"<string>\",\n    \"term\": {\n      \"value\": 24,\n      \"unit\": \"months\"\n    },\n    \"balances\": {\n      \"rewards\": {\n        \"unit\": \"points\"\n      }\n    },\n    \"autopay_method\": \"ach\",\n    \"is_interest_based\": true,\n    \"effective_apr\": \"10.250\",\n    \"effective_interest_rate\": \"9.500000\",\n    \"interest_rate\": \"9.990000\"\n  },\n  \"client_settlement_bank_account_id\": \"12345\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"account_id\": \"account_v9K4p2M7nL1wQ8xR5zB6tY3jH0gA\",\n  \"id\": \"subledger_balance_k8L2n9QpW3xR5vT7mZ4jS1bA6cG\",\n  \"client_subledger_balance_name\": \"Personal Loan - Home Improvement\",\n  \"client_settlement_bank_account_id\": \"12345\",\n  \"currency_code\": \"USD\",\n  \"created_at\": \"2025-09-02T11:01:36Z\",\n  \"updated_at\": \"2025-09-02T11:05:00Z\",\n  \"status\": \"active\",\n  \"status_reason\": \"active\",\n  \"type\": \"credit\",\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  },\n  \"details\": {\n    \"structure\": \"string\",\n    \"balances\": {\n      \"core\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"rewards\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"dispute\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"charge_off\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"past_due\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      }\n    },\n    \"autopay_method\": \"ach\",\n    \"is_interest_based\": true,\n    \"effective_apr\": \"10.250\",\n    \"effective_interest_rate\": \"9.500000\",\n    \"interest_rate\": \"9.990000\",\n    \"expected_maturity_date\": \"2027-09-01\",\n    \"repayment_details\": [\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      },\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      }\n    ],\n    \"max_funding_amount\": 10000000,\n    \"term\": {\n      \"value\": 24,\n      \"unit\": \"months\"\n    },\n    \"expected_finance_charge_amount\": 100000\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "727654a7-627e-46cc-adcb-7410f49bb783",
+              "name": "Your request body did not parse.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "subledger_balances"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_id\": \"account_v9K4p2M7nL1wQ8xR5zB6tY3jH0gA\",\n  \"client_subledger_balance_name\": \"Personal Loan - Home Improvement\",\n  \"currency_code\": \"USD\",\n  \"type\": \"credit\",\n  \"details\": {\n    \"expected_finance_charge_amount\": 1000,\n    \"expected_maturity_date\": \"2027-09-01\",\n    \"max_funding_amount\": 10000000,\n    \"repayment_details\": [\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      },\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      }\n    ],\n    \"structure\": \"<string>\",\n    \"term\": {\n      \"value\": 24,\n      \"unit\": \"months\"\n    },\n    \"balances\": {\n      \"rewards\": {\n        \"unit\": \"points\"\n      }\n    },\n    \"autopay_method\": \"ach\",\n    \"is_interest_based\": true,\n    \"effective_apr\": \"10.250\",\n    \"effective_interest_rate\": \"9.500000\",\n    \"interest_rate\": \"9.990000\"\n  },\n  \"client_settlement_bank_account_id\": \"12345\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "63b3ab50-797e-44c9-817b-03b2bb0c348a",
+              "name": "The token passed in is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "subledger_balances"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_id\": \"account_v9K4p2M7nL1wQ8xR5zB6tY3jH0gA\",\n  \"client_subledger_balance_name\": \"Personal Loan - Home Improvement\",\n  \"currency_code\": \"USD\",\n  \"type\": \"credit\",\n  \"details\": {\n    \"expected_finance_charge_amount\": 1000,\n    \"expected_maturity_date\": \"2027-09-01\",\n    \"max_funding_amount\": 10000000,\n    \"repayment_details\": [\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      },\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      }\n    ],\n    \"structure\": \"<string>\",\n    \"term\": {\n      \"value\": 24,\n      \"unit\": \"months\"\n    },\n    \"balances\": {\n      \"rewards\": {\n        \"unit\": \"points\"\n      }\n    },\n    \"autopay_method\": \"ach\",\n    \"is_interest_based\": true,\n    \"effective_apr\": \"10.250\",\n    \"effective_interest_rate\": \"9.500000\",\n    \"interest_rate\": \"9.990000\"\n  },\n  \"client_settlement_bank_account_id\": \"12345\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2dc6c40a-68ab-4f12-be46-99a4780261ca",
+              "name": "Token has insufficient permissions for this request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "subledger_balances"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_id\": \"account_v9K4p2M7nL1wQ8xR5zB6tY3jH0gA\",\n  \"client_subledger_balance_name\": \"Personal Loan - Home Improvement\",\n  \"currency_code\": \"USD\",\n  \"type\": \"credit\",\n  \"details\": {\n    \"expected_finance_charge_amount\": 1000,\n    \"expected_maturity_date\": \"2027-09-01\",\n    \"max_funding_amount\": 10000000,\n    \"repayment_details\": [\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      },\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      }\n    ],\n    \"structure\": \"<string>\",\n    \"term\": {\n      \"value\": 24,\n      \"unit\": \"months\"\n    },\n    \"balances\": {\n      \"rewards\": {\n        \"unit\": \"points\"\n      }\n    },\n    \"autopay_method\": \"ach\",\n    \"is_interest_based\": true,\n    \"effective_apr\": \"10.250\",\n    \"effective_interest_rate\": \"9.500000\",\n    \"interest_rate\": \"9.990000\"\n  },\n  \"client_settlement_bank_account_id\": \"12345\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2925cb6f-869e-4ede-9a74-7b5bf0450a90",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "subledger_balances"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_id\": \"account_v9K4p2M7nL1wQ8xR5zB6tY3jH0gA\",\n  \"client_subledger_balance_name\": \"Personal Loan - Home Improvement\",\n  \"currency_code\": \"USD\",\n  \"type\": \"credit\",\n  \"details\": {\n    \"expected_finance_charge_amount\": 1000,\n    \"expected_maturity_date\": \"2027-09-01\",\n    \"max_funding_amount\": 10000000,\n    \"repayment_details\": [\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      },\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      }\n    ],\n    \"structure\": \"<string>\",\n    \"term\": {\n      \"value\": 24,\n      \"unit\": \"months\"\n    },\n    \"balances\": {\n      \"rewards\": {\n        \"unit\": \"points\"\n      }\n    },\n    \"autopay_method\": \"ach\",\n    \"is_interest_based\": true,\n    \"effective_apr\": \"10.250\",\n    \"effective_interest_rate\": \"9.500000\",\n    \"interest_rate\": \"9.990000\"\n  },\n  \"client_settlement_bank_account_id\": \"12345\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0efd0123-3eba-48ed-99da-6b6f80a577ca",
+              "name": "You've reached the rate limit for this call.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "subledger_balances"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_id\": \"account_v9K4p2M7nL1wQ8xR5zB6tY3jH0gA\",\n  \"client_subledger_balance_name\": \"Personal Loan - Home Improvement\",\n  \"currency_code\": \"USD\",\n  \"type\": \"credit\",\n  \"details\": {\n    \"expected_finance_charge_amount\": 1000,\n    \"expected_maturity_date\": \"2027-09-01\",\n    \"max_funding_amount\": 10000000,\n    \"repayment_details\": [\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      },\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      }\n    ],\n    \"structure\": \"<string>\",\n    \"term\": {\n      \"value\": 24,\n      \"unit\": \"months\"\n    },\n    \"balances\": {\n      \"rewards\": {\n        \"unit\": \"points\"\n      }\n    },\n    \"autopay_method\": \"ach\",\n    \"is_interest_based\": true,\n    \"effective_apr\": \"10.250\",\n    \"effective_interest_rate\": \"9.500000\",\n    \"interest_rate\": \"9.990000\"\n  },\n  \"client_settlement_bank_account_id\": \"12345\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e12e7ce5-283c-4faf-9398-c50a1e471781",
+              "name": "Server error. Please try your request again.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "subledger_balances"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_id\": \"account_v9K4p2M7nL1wQ8xR5zB6tY3jH0gA\",\n  \"client_subledger_balance_name\": \"Personal Loan - Home Improvement\",\n  \"currency_code\": \"USD\",\n  \"type\": \"credit\",\n  \"details\": {\n    \"expected_finance_charge_amount\": 1000,\n    \"expected_maturity_date\": \"2027-09-01\",\n    \"max_funding_amount\": 10000000,\n    \"repayment_details\": [\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      },\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      }\n    ],\n    \"structure\": \"<string>\",\n    \"term\": {\n      \"value\": 24,\n      \"unit\": \"months\"\n    },\n    \"balances\": {\n      \"rewards\": {\n        \"unit\": \"points\"\n      }\n    },\n    \"autopay_method\": \"ach\",\n    \"is_interest_based\": true,\n    \"effective_apr\": \"10.250\",\n    \"effective_interest_rate\": \"9.500000\",\n    \"interest_rate\": \"9.990000\"\n  },\n  \"client_settlement_bank_account_id\": \"12345\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "95bf521e-c24a-4a4a-8339-f4897be1fb27",
+          "name": "Retrieve a Subledger Balance",
+          "request": {
+            "name": "Retrieve a Subledger Balance",
+            "description": {
+              "content": "Retrieve a Subledger Balance object.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v0",
+                "subledger_balances",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) Return Subledger Balance associated with this `id`."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "5a82e38b-e0b1-442d-b206-b769701e399a",
+              "name": "An individual Subledger Balance object",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "subledger_balances",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Return Subledger Balance associated with this `id`."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"account_id\": \"account_v9K4p2M7nL1wQ8xR5zB6tY3jH0gA\",\n  \"id\": \"subledger_balance_k8L2n9QpW3xR5vT7mZ4jS1bA6cG\",\n  \"client_subledger_balance_name\": \"Personal Loan - Home Improvement\",\n  \"client_settlement_bank_account_id\": \"12345\",\n  \"currency_code\": \"USD\",\n  \"created_at\": \"2025-09-02T11:01:36Z\",\n  \"updated_at\": \"2025-09-02T11:05:00Z\",\n  \"status\": \"active\",\n  \"status_reason\": \"active\",\n  \"type\": \"credit\",\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\",\n    \"key_2\": \"<string>\",\n    \"key_3\": \"<string>\"\n  },\n  \"details\": {\n    \"structure\": \"string\",\n    \"balances\": {\n      \"core\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"rewards\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"dispute\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"charge_off\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"past_due\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      }\n    },\n    \"autopay_method\": \"ach\",\n    \"is_interest_based\": true,\n    \"effective_apr\": \"10.250\",\n    \"effective_interest_rate\": \"9.500000\",\n    \"interest_rate\": \"9.990000\",\n    \"expected_maturity_date\": \"2027-09-01\",\n    \"repayment_details\": [\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      },\n      {\n        \"expected_payment_frequency\": \"monthly\",\n        \"expected_payment_frequency_interval_days\": 60,\n        \"expected_number_of_payments\": 24,\n        \"expected_first_payment_date\": \"2025-10-01\",\n        \"expected_first_payment_amount\": 4167,\n        \"expected_last_payment_date\": \"2027-09-01\",\n        \"expected_last_payment_amount\": 4167,\n        \"expected_payment_amount\": 4167\n      }\n    ],\n    \"max_funding_amount\": 10000000,\n    \"term\": {\n      \"value\": 24,\n      \"unit\": \"months\"\n    },\n    \"expected_finance_charge_amount\": 100000\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "eee580f9-222b-47db-a32c-f320396988da",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "subledger_balances",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Return Subledger Balance associated with this `id`."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "166a27f1-e1a4-4983-ae1c-4b70a8ef1459",
+              "name": "id passed in is not a valid Subledger Balance object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v0",
+                    "subledger_balances",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Return Subledger Balance associated with this `id`."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.sandbox.lead.bank",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "90cfb023-12ed-4395-8047-b248b795c88f",
+    "name": "Lead Bank Account Number Subledger Balances API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Lead Bank's APIs",
+      "type": "text/plain"
+    }
+  }
+}

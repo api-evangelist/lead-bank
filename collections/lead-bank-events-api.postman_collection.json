@@ -1,0 +1,406 @@
+{
+  "item": [
+    {
+      "id": "e740a998-3028-4666-a7f6-b285652da138",
+      "name": "Events",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "40bad972-a9a6-44e4-b5fb-f93c16a75494",
+          "name": "Retrieve an event",
+          "request": {
+            "name": "Retrieve an event",
+            "description": {
+              "content": "Retrieves an event object.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "event",
+                ":event_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "event_id",
+                  "description": "(Required) ID of the Event object you want to retrieve."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "098a50c9-5e1b-4a9c-bc0a-ccfeb40a3dfe",
+              "name": "An Event object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "event",
+                    ":event_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "event_id",
+                      "description": "(Required) ID of the Event object you want to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"event\": \"instant_payment.counterparty_status_updated\",\n  \"created_at\": \"string\",\n  \"object\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "532dd0af-909a-4d68-bebf-b8b6e17e1260",
+          "name": "List all events",
+          "request": {
+            "name": "List all events",
+            "description": {
+              "content": "List all event objects.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "event"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "events",
+                  "value": "<string>",
+                  "description": "ID of the Event object you want to retrieve."
+                },
+                {
+                  "disabled": false,
+                  "key": "events",
+                  "value": "<string>",
+                  "description": "ID of the Event object you want to retrieve."
+                },
+                {
+                  "disabled": false,
+                  "key": "created_at[after]",
+                  "value": "<dateTime>",
+                  "description": "A set of filters on the list using the object’s field `created_at`."
+                },
+                {
+                  "disabled": false,
+                  "key": "created_at[on_or_after]",
+                  "value": "<dateTime>",
+                  "description": "A set of filters on the list using the object’s field `created_at`."
+                },
+                {
+                  "disabled": false,
+                  "key": "created_at[before]",
+                  "value": "<dateTime>",
+                  "description": "A set of filters on the list using the object’s field `created_at`."
+                },
+                {
+                  "disabled": false,
+                  "key": "created_at[on_or_before]",
+                  "value": "<dateTime>",
+                  "description": "A set of filters on the list using the object’s field `created_at`."
+                },
+                {
+                  "disabled": false,
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Maximum number of objects to be returned."
+                },
+                {
+                  "disabled": false,
+                  "key": "starting_after",
+                  "value": "<string>",
+                  "description": "A cursor for use in pagination; this is an Event ID that defines your place in the list."
+                },
+                {
+                  "disabled": false,
+                  "key": "ending_before",
+                  "value": "<string>",
+                  "description": "A cursor for use in pagination; this is an Event ID that defines your place in the list."
+                },
+                {
+                  "disabled": false,
+                  "key": "object_id",
+                  "value": "<string>",
+                  "description": "Filter events by the ID of the associated object (e.g., wire_12345). If the object_id doesn't match the event filter's object type, returns empty results."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "f43bb1d9-6559-4ffb-9173-da1a138fd416",
+              "name": "A list of events",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "event"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "events",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "events",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "created_at[after]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[on_or_after]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[before]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[on_or_before]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "starting_after",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ending_before",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "object_id",
+                      "value": "wire_12345"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"objects\": [\n    {\n      \"id\": \"string\",\n      \"event\": \"<string>\",\n      \"created_at\": \"string\",\n      \"object\": {}\n    },\n    {\n      \"id\": \"string\",\n      \"event\": \"<string>\",\n      \"created_at\": \"string\",\n      \"object\": {}\n    }\n  ],\n  \"has_more\": true\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b93b3b69-b353-4fe4-abb1-e9aa45a1a8de",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "event"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "events",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "events",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "created_at[after]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[on_or_after]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[before]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[on_or_before]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "starting_after",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ending_before",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "object_id",
+                      "value": "wire_12345"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"parameters_invalid\",\n  \"title\": \"Your request parameters did not validate.\",\n  \"detail\": \"The object_id parameter must be a valid object ID (e.g., ach_xyz, wire_xyz, account_number_xyz, internal_transfer_xyz, or disbursement_xyz).\",\n  \"status\": \"422\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.sandbox.lead.bank",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "2c931b55-98de-40ea-a3ed-4765b9bb5c91",
+    "name": "Lead Bank Account Number Events API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Lead Bank's APIs",
+      "type": "text/plain"
+    }
+  }
+}

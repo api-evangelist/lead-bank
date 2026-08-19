@@ -1,0 +1,249 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lead Bank Account Number API",
+    "version": "v1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Account Number",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all Account Numbers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/account_number",
+            "params": [
+              {
+                "name": "account_id",
+                "value": "account_xyz",
+                "type": "query",
+                "description": "The ID of the account."
+              },
+              {
+                "name": "account_number",
+                "value": "123412341234",
+                "type": "query",
+                "description": "The account number."
+              },
+              {
+                "name": "limit",
+                "value": "10",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "account_number_xyz",
+                "type": "query",
+                "description": "The ID of the account number to start the list after."
+              },
+              {
+                "name": "ending_before",
+                "value": "account_number_xyz",
+                "type": "query",
+                "description": "The ID of the account number to end the list before."
+              }
+            ]
+          },
+          "docs": "List all Account Numbers."
+        },
+        {
+          "info": {
+            "name": "Create an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/account_number",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates an Account Number. Optionally also assigns either a ClientCustomerID or EntityID to the Account Number"
+        },
+        {
+          "info": {
+            "name": "Register an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/account_number/register",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Registers an Account Number."
+        },
+        {
+          "info": {
+            "name": "Assign an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/account_number/:account_number_id/assign",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "account_number_id",
+                "value": "account_number_xyz",
+                "type": "path",
+                "description": "The ID of the Account Number to be assigned."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Assigns an Account Number with either a ClientCustomerID or EntityID. Only one of these should be provided"
+        },
+        {
+          "info": {
+            "name": "Retrieve an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/account_number/:account_number_id",
+            "params": [
+              {
+                "name": "account_number_id",
+                "value": "account_number_xyz",
+                "type": "path",
+                "description": "The ID of the Account Number to be retrieved."
+              }
+            ]
+          },
+          "docs": "Retrieve an Account Number."
+        },
+        {
+          "info": {
+            "name": "Update an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.sandbox.lead.bank/v1/account_number/:account_number_id",
+            "params": [
+              {
+                "name": "account_number_id",
+                "value": "account_number_xyz",
+                "type": "path",
+                "description": "The ID of the Account Number to be updated."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update an Account Number's metadata."
+        },
+        {
+          "info": {
+            "name": "Activate an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/account_number/:account_number_id/activate",
+            "params": [
+              {
+                "name": "account_number_id",
+                "value": "account_number_xyz",
+                "type": "path",
+                "description": "The ID of the Account Number to be activated."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Activate an Account Number."
+        },
+        {
+          "info": {
+            "name": "Deactivate an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/account_number/:account_number_id/deactivate",
+            "params": [
+              {
+                "name": "account_number_id",
+                "value": "account_number_xyz",
+                "type": "path",
+                "description": "The ID of the Account Number to be deactivated."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deactivate an Account Number."
+        },
+        {
+          "info": {
+            "name": "Cancel an Account Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/account_number/:account_number_id/cancel",
+            "params": [
+              {
+                "name": "account_number_id",
+                "value": "account_number_xyz",
+                "type": "path",
+                "description": "The ID of the Account Number to be canceled."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Cancel an Account Number."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

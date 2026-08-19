@@ -1,0 +1,256 @@
+# Lead | API Docs
+
+> Documentation on integrating with Lead.
+
+## Docs
+
+- [Welcome to Lead](https://docs.lead.bank/get-started/what-is-lead.md): Programmable financial services built to support any use case, quickly.
+- [Make Your First Payment API Call](https://docs.lead.bank/get-started/quickstart/make-your-first-payment-api-call.md): Authenticate to Lead, create an entity, assign an account number, simulate an incoming ACH credit, and send an outgoing ACH in sandbox.
+- [Originate Your First Loan](https://docs.lead.bank/get-started/quickstart/originate-your-first-loan.md): Create a borrower entity, submit an application, open a credit account, define loan terms on a subledger balance, and originate a funding.
+- [Sandbox Environment Setup and Simulation Endpoints](https://docs.lead.bank/get-started/sandbox.md): Set up Lead's sandbox environment, advance ACH and wire transfers using simulation endpoints, and validate your integration before go-live.
+- [Program Launch](https://docs.lead.bank/get-started/program-launch.md): Follow Lead's five-milestone implementation process from kickoff and funds flow alignment through sandbox testing, production testing, and go-live.
+- [Object Model](https://docs.lead.bank/core-concepts/platform/object-model.md): The objects every Lead program is built from — and how they fit together today.
+- [Programs and Partners](https://docs.lead.bank/core-concepts/platform/programs-and-partners.md): Understand the difference between a Lead partner and a program, why credentials are scoped per program, and who your Lead team contacts are.
+- [Money Movement](https://docs.lead.bank/core-concepts/platform/money-movement.md): Compare Lead's five payment rails — ACH, Wire, Instant Payments, Internal Transfer, and Blockchain Payments — and review the daily processing  windows for each one.
+- [Environments and Testing](https://docs.lead.bank/core-concepts/platform/environments-and-testing.md): Understand Lead's sandbox and production environments.
+- [Executing vs. Reporting](https://docs.lead.bank/core-concepts/platform/executing-vs-reporting.md)
+- [Integration Surfaces by Product](https://docs.lead.bank/core-concepts/platform/integration-surfaces-by-product.md)
+- [Versioning and Backwards Compatibility](https://docs.lead.bank/versioning-and-backwards-compatibility.md)
+- [Platform Evolution](https://docs.lead.bank/core-concepts/platform/platform-evolution.md)
+- [Glossary](https://docs.lead.bank/core-concepts/platform/glossary.md): Definitions for Lead-specific terms — Entity, Account, FBO, RFI, TAM, and more — plus common banking and payments terms used throughout this documentation.
+- [Products ](https://docs.lead.bank/products/overview.md)
+- [Your Banking Infrastructure (Core Surface)](https://docs.lead.bank/products/banking-infrastructure/overview.md)
+- [Account Numbers: Routable Addresses for your Customers](https://docs.lead.bank/products/account-number/overview.md): Create and assign account numbers for your end customers.
+- [The Account Number Object](https://docs.lead.bank/products/account-number/account-number-object.md)
+- [Account Number Statuses](https://docs.lead.bank/products/account-number/statuses.md): Description of statuses and lifecycle for account numbers.
+- [Managing Account Numbers](https://docs.lead.bank/products/account-number/managing.md): Create, assign, and manage the lifecycle of Account Numbers.
+- [Controls](https://docs.lead.bank/products/account-number/controls.md): Block or allow transactions at the account number level.
+- [Funding & Receivables ](https://docs.lead.bank/products/funding-and-receivables/overview.md)
+- [Sales Settlement Amount](https://docs.lead.bank/products/funding-and-receivables/sales-settlement-amount.md): Understand how settlement works.
+- [Network Settlement: How Card Programs Settle ](https://docs.lead.bank/products/network-settlement/overview.md): Understanding network settlement.
+- [Funding](https://docs.lead.bank/products/network-settlement/funding.md): Network settlement funding explained.
+- [Reconciliation](https://docs.lead.bank/products/network-settlement/reconciliation.md): Network settlement reconciliation explained.
+- [ACH at Lead: Transfers Over FedACH](https://docs.lead.bank/products/ach/overview.md): Receive or send ACH transfers through the FedACH network.
+- [The ACH Object](https://docs.lead.bank/products/ach/ach-object.md)
+- [Timing & Availability](https://docs.lead.bank/products/ach/timing.md): Lead's ACH processing windows, cutoff times, and how settlement timing is determined.
+- [ACH Statuses](https://docs.lead.bank/products/ach/statuses.md): Description of ACH statuses and transitions.
+- [Validations & Best Practices  ](https://docs.lead.bank/products/ach/validations.md): Best practices to reduce ACH validation exceptions.
+- [Returns, Reversals, & Exceptions](https://docs.lead.bank/products/ach/exceptions.md): Details about processing or receiving ACH returns.
+- [Sandbox Testing](https://docs.lead.bank/products/ach/sandbox.md): Test ACH transactions.
+- [Receiving ACH](https://docs.lead.bank/products/ach/receiving-ach.md): Handle incoming ACH credits and debits: controls, statuses, webhooks, and returning entries you do not want.
+- [Sending ACH](https://docs.lead.bank/products/ach/sending-ach.md): Send outgoing ACH credits and debits: request requirements, statuses, webhooks, and cancellation.
+- [Originators: Managing ACH Origination Parameters](https://docs.lead.bank/products/ach/originators.md): Create and manage ACH origination parameters.
+- [The Originator Object](https://docs.lead.bank/products/ach/originator-object.md)
+- [Originator Statuses](https://docs.lead.bank/products/ach/originator-statuses.md)
+- [Managing Originators](https://docs.lead.bank/products/ach/managing-originators.md)
+- [Wires at Lead: transfers over Fedwire](https://docs.lead.bank/products/wire/overview.md): Receive or send wire transfers through the Fedwire network.
+- [Wires API V2 Migration Guide](https://docs.lead.bank/products/wire/v2-migration.md): Understand what changed in Wires API V2, how to update your integration, and what you need to complete before the November 16, 2026 Fedwire migration.
+- [The Wire Object](https://docs.lead.bank/products/wire/wire-object.md)
+- [USD International Wires](https://docs.lead.bank/products/wire/international-wires.md): Send and receive USD international wires.
+- [Sending Wires](https://docs.lead.bank/products/wire/sending-wires.md)
+- [Receiving & Returning Wires](https://docs.lead.bank/products/wire/receiving-and-returning-wires.md)
+- [Return Requests](https://docs.lead.bank/products/wire/return-requests.md): Configure your system to receive and send wire return requests.
+- [Statuses](https://docs.lead.bank/products/wire/statuses.md): Description of wire statuses and transitions.
+- [Timing & Availability](https://docs.lead.bank/products/wire/processing-windows.md): Understand when wires can be processed.
+- [Return & Rejection Codes](https://docs.lead.bank/products/wire/rejection-and-return-codes.md): Details about processing or receiving wire returns.
+- [Validations & Best Practices](https://docs.lead.bank/products/wire/validations-and-best-practices.md)
+- [Sandbox Testing](https://docs.lead.bank/products/wire/sandbox-testing.md): Test Wire Transactions
+- [Instant Payments](https://docs.lead.bank/products/instant-payments/overview.md): Receive or send Instant Payments through the FedNow network.
+- [Payment Identifiers](https://docs.lead.bank/products/instant-payments/payment-ids.md): Reference end_to_end_id, transaction_id, and uetr identifiers used to track FedNow and RTP instant payments and returns across the Lead network.
+- [Rejections & Returns](https://docs.lead.bank/products/instant-payments/rejections-and-returns.md): Manage instant payment rejections and returns
+- [Receiving & Returning Instant Payments](https://docs.lead.bank/products/instant-payments/receiving-and-returning.md): Configure your system to receive and return Instant Payments.
+- [Sending Instant Payments](https://docs.lead.bank/products/instant-payments/sending-instant-payments.md): Send outgoing FedNow instant payments with Lead's API: check counterparty availability, cancel pending payments, and submit return requests.
+- [Internal Transfers at Lead](https://docs.lead.bank/products/internal-transfer/overview.md): Move money between your own accounts held at Lead.
+- [The Internal Transfer Object](https://docs.lead.bank/products/internal-transfer/internal-transfer-object.md)
+- [Sending an Internal Transfer](https://docs.lead.bank/products/internal-transfer/sending.md)
+- [Internal Transfer Statuses](https://docs.lead.bank/products/internal-transfer/statuses.md)
+- [Handling Failures](https://docs.lead.bank/products/internal-transfer/exceptions.md)
+- [Timing & Availability](https://docs.lead.bank/products/internal-transfer/timing.md)
+- [Sandbox Testing](https://docs.lead.bank/products/internal-transfer/sandbox.md)
+- [Blockchain Payments at Lead: Stablecoins and Cross-Border Payouts](https://docs.lead.bank/products/blockchain-payments/overview.md): Send and receive stablecoins. Send foreign currency over blockchain rails.
+- [USD Funding Source](https://docs.lead.bank/products/blockchain-payments/usd-funding-source.md): Request to send USD to a foreign currency, or USD to stablecoins.
+- [Stablecoin Funding Source](https://docs.lead.bank/products/blockchain-payments/stablecoin-funding-source.md): Request to send funds from stablecoins to fiat, in USD or a foreign currency.
+- [Supported Blockchains and Fiat Rails](https://docs.lead.bank/products/blockchain-payments/supported-blockchains-and-fiat-rails.md): Details about the rails and currencies Lead supports today.
+- [Statuses & Events](https://docs.lead.bank/products/blockchain-payments/statuses.md): The statuses and webhook events for blockchain payments.
+- [FAQ](https://docs.lead.bank/products/blockchain-payments/faq.md): Common questions about using blockchain payments.
+- [Checks at Lead](https://docs.lead.bank/products/checks/overview.md): Understand check flows utilizing the X9 file standard.
+- [Settlement](https://docs.lead.bank/products/checks/settlement.md): Lead supports three intraday settlement windows aligned with Fed processing schedules for checks.
+- [FAQ](https://docs.lead.bank/products/checks/faq.md): Frequently asked check questions.
+- [Entities: Representing Your Customers](https://docs.lead.bank/products/entity/overview.md): Legal persons or organizations related to Lead products.
+- [Workflow](https://docs.lead.bank/products/entity/workflow.md): How to create or update entities.
+- [Roles](https://docs.lead.bank/products/entity/roles.md): Govern which financial products an entity may use.
+- [Troubleshooting](https://docs.lead.bank/products/entity/troubleshooting.md): The most common errors when calling the Entity API.
+- [Accounts API Overview](https://docs.lead.bank/products/accounts/overview.md): Report deposit and credit account data to Lead using the Accounts API, including creation, status transitions, OAuth scopes, and lifecycle management.
+- [Accounts API Validation Rules and Errors](https://docs.lead.bank/products/accounts/validations.md): Synchronous 422 validation responses for the Lead Accounts API, including required fields, capability rules, and the invalid_parameters error format.
+- [Accounts API Best Practices](https://docs.lead.bank/products/accounts/best-practices.md): Guidance on OAuth scopes, idempotency keys, capability selection, and entity sequencing when integrating with the Lead Accounts API.
+- [Balances & Transactions: Reporting Your Customers' Ledger to Lead ](https://docs.lead.bank/products/balances-and-transactions/overview.md): Overview of balance and transaction files.
+- [Transaction Types](https://docs.lead.bank/products/balances-and-transactions/transaction-types.md)
+- [Balance Statuses](https://docs.lead.bank/products/balances-and-transactions/balance-statuses.md): Understand statuses for balances.
+- [Balance Reconciliation](https://docs.lead.bank/products/balances-and-transactions/balance-reconciliation.md): Understand end-of-day account balances.
+- [Applications API Overview](https://docs.lead.bank/products/applications/overview.md): Submit terminal underwriting decisions to Lead with the Applications API to satisfy Reg B and fair lending obligations for credit and lending products.
+- [Applications API Validation Rules and Errors](https://docs.lead.bank/products/applications/validations.md): Synchronous 422 validation responses for the Lead Applications API, covering required fields, status-specific rules, and the invalid_parameters payload.
+- [Applications API Best Practices](https://docs.lead.bank/products/applications/best-practices.md): Recommended patterns for the Lead Applications API, including OAuth scopes, idempotency keys, terminal status selection, and adverse action notice fields.
+- [Cards: reporting card issuance to Lead ](https://docs.lead.bank/products/cards/overview.md)
+- [Cards API Validation Rules and Errors](https://docs.lead.bank/products/cards/validations.md): Synchronous 422 validation responses for the Lead Cards API across create, retrieve, update, activate, deactivate, and close endpoints, plus enum rules.
+- [Cards API Best Practices](https://docs.lead.bank/products/cards/best-practices.md): Guidance on OAuth scopes, idempotency keys, replacement cards, expiry date handling, and resource sequencing when integrating with the Lead Cards API.
+- [API Overview, OAuth Authentication, and IP Allowlist](https://docs.lead.bank/api-integrations/using-the-api/authentication.md): Authenticate to Lead's REST APIs with OAuth2, choose the right access token scopes, and configure your IP allowlist for production traffic.
+- [Webhooks & Events](https://docs.lead.bank/api-integrations/using-the-api/webhooks.md): Receive Lead webhooks, verify signatures, handle retries and duplicates, and pair event delivery with reconciliation for ACH, wires, and accounts.
+- [Idempotency](https://docs.lead.bank/api-integrations/using-the-api/idempotency.md): Safely retry requests without creating duplicate operations.
+- [Errors](https://docs.lead.bank/api-integrations/using-the-api/errors.md): Understand how Lead handles errors and error messages.
+- [Create an ACH](https://docs.lead.bank/api-reference/endpoint/ach/create-an-ach.md): Creates an outgoing ACH.
+- [List all ACH](https://docs.lead.bank/api-reference/endpoint/ach/list-all-ach.md): List all ACH objects.
+- [Retrieve an ACH](https://docs.lead.bank/api-reference/endpoint/ach/retrieve-an-ach.md): Retrieve an ACH object.
+- [Update an ACH](https://docs.lead.bank/api-reference/endpoint/ach/update-an-ach.md): Update an ACH object.
+- [Cancel an ACH](https://docs.lead.bank/api-reference/endpoint/ach/cancel-an-ach.md): Cancel an outgoing ACH.
+- [Return an ACH](https://docs.lead.bank/api-reference/endpoint/ach/return-an-ach.md): Issue a return against an incoming ACH.
+- [Reverse an ACH](https://docs.lead.bank/api-reference/endpoint/ach/reverse-an-ach.md): Reverse an outgoing ACH.
+- [Activate an Originator](https://docs.lead.bank/api-reference/endpoint/originator/activate-an-originator.md): Activate an Originator.
+- [Cancel an Originator](https://docs.lead.bank/api-reference/endpoint/originator/cancel-an-originator.md): Cancel an Originator.
+- [Create an Originator](https://docs.lead.bank/api-reference/endpoint/originator/create-an-originator.md)
+- [Deactivate an Originator](https://docs.lead.bank/api-reference/endpoint/originator/deactivate-an-originator.md): Deactivate an Originator.
+- [List all Originators](https://docs.lead.bank/api-reference/endpoint/originator/list-all-originators.md): List all Originators.
+- [Retrieve an Originator](https://docs.lead.bank/api-reference/endpoint/originator/retrieve-an-originator.md): Retrieve an Originator.
+- [Update an Originator](https://docs.lead.bank/api-reference/endpoint/originator/update-an-originator.md): Update an Originator's parameters.
+- [Create an Account Number](https://docs.lead.bank/api-reference/endpoint/account-number/create-an-account-number.md): Creates an Account Number. Optionally also assigns either a ClientCustomerID or EntityID to the Account Number
+- [List all Account Numbers](https://docs.lead.bank/api-reference/endpoint/account-number/list-all-account-number.md): List all Account Numbers.
+- [Retrieve an Account Number](https://docs.lead.bank/api-reference/endpoint/account-number/retrieve-an-account-number.md): Retrieve an Account Number.
+- [Update an Account Number](https://docs.lead.bank/api-reference/endpoint/account-number/update-an-account-number.md): Update an Account Number's metadata.
+- [Register an Account Number](https://docs.lead.bank/api-reference/endpoint/account-number/register-an-account-number.md): Registers an Account Number.
+- [Activate an Account Number](https://docs.lead.bank/api-reference/endpoint/account-number/activate-an-account-number.md): Activate an Account Number.
+- [Deactivate an Account Number](https://docs.lead.bank/api-reference/endpoint/account-number/deactivate-an-account-number.md): Deactivate an Account Number.
+- [Assign an Account Number](https://docs.lead.bank/api-reference/endpoint/account-number/assign-an-account-number.md): Assigns an Account Number with either a ClientCustomerID or EntityID. Only one of these should be provided
+- [Cancel an Account Number](https://docs.lead.bank/api-reference/endpoint/account-number/cancel-an-account-number.md): Cancel an Account Number.
+- [Create an Instant Payment](https://docs.lead.bank/api-reference/endpoint/instant-payment/create-an-instant-payment.md): Initiates an outgoing instant payment.
+- [List all Instant Payments](https://docs.lead.bank/api-reference/endpoint/instant-payment/list-all-instant-payments.md): List instant payments with optional filtering.
+- [Retrieve an Instant Payment](https://docs.lead.bank/api-reference/endpoint/instant-payment/retrieve-an-instant-payment.md): Retrieve the details of an instant payment.
+- [Return an Instant Payment](https://docs.lead.bank/api-reference/endpoint/instant-payment/return-an-instant-payment.md): Initiates an outgoing instant payment return. If there is an outstanding return request, invoking this endpoint is also understood as accepting the active return request.
+- [Cancel an Instant Payment](https://docs.lead.bank/api-reference/endpoint/instant-payment/cancel-an-instant-payment.md): Attempt to cancel an outgoing instant payment that is currently in "created" or "under_review" status.
+- [Request Return for Instant Payment](https://docs.lead.bank/api-reference/endpoint/instant-payment/request-return-for-instant-payment.md): Send a return request to the counterparty for a previously posted outgoing instant payment. Returns the updated instant payment object with a new entry in the return_requests array.
+- [Reject Return Request for Instant Payment](https://docs.lead.bank/api-reference/endpoint/instant-payment/reject-return-request-for-instant-payment.md): Reject the active return request associated with an incoming instant payment. Returns the updated instant payment object with the status of the active return request set to "rejected".
+- [Check Instant Payment Availability](https://docs.lead.bank/api-reference/endpoint/instant-payment/check-instant-payment-availability.md): Check if a given routing number is eligible to receive an instant payment.
+- [Create a Wire](https://docs.lead.bank/api-reference/endpoint/wire/create-a-wire-v1.md): Create a new outgoing wire.
+- [List all Wires](https://docs.lead.bank/api-reference/endpoint/wire/list-all-wires-v1.md): List all wire objects.
+- [Retrieve a Wire](https://docs.lead.bank/api-reference/endpoint/wire/retrieve-a-wire-v1.md): Retrieve a wire object.
+- [Update a Wire](https://docs.lead.bank/api-reference/endpoint/wire/update-a-wire-v1.md): Update a wire.
+- [Cancel a Wire](https://docs.lead.bank/api-reference/endpoint/wire/cancel-a-wire-v1.md): Cancel a wire object.
+- [Return a Wire](https://docs.lead.bank/api-reference/endpoint/wire/return-a-wire-v1.md): Initiate a return against an incoming wire.
+- [Request return for a Wire](https://docs.lead.bank/api-reference/endpoint/wire/request-return-for-wire-v1.md): Send a return request (camt.056) to the counterparty financial institution for a previously sent outgoing wire. Returns the updated wire object with a new entry in the `return_requests` array in `pending` status.
+- [Reject a Return Request for a Wire](https://docs.lead.bank/api-reference/endpoint/wire/reject-return-request-for-wire-v1.md): Reject the currently active incoming return request associated with the wire.
+- [Create a Wire](https://docs.lead.bank/api-reference/endpoint/wire/create-a-wire-v2.md): Create a new outgoing wire
+- [List all Wires](https://docs.lead.bank/api-reference/endpoint/wire/list-all-wires-v2.md): List all wire objects.
+- [Retrieve a Wire](https://docs.lead.bank/api-reference/endpoint/wire/retrieve-a-wire-v2.md): Retrieve a wire object.
+- [Update a Wire](https://docs.lead.bank/api-reference/endpoint/wire/update-a-wire-v2.md): Update a wire.
+- [Cancel a Wire](https://docs.lead.bank/api-reference/endpoint/wire/cancel-a-wire-v2.md): Cancel an outgoing wire. If the wire is still cancelable, it moves directly to `canceled`. If it has already progressed to a non-cancelable state, the request is rejected.
+- [Return a Wire](https://docs.lead.bank/api-reference/endpoint/wire/return-a-wire-v2.md): Initiate a return against an incoming wire. In V2 this can also be called on an incoming return wire (pacs.004) to support return-of-a-return.
+- [Request Return for a Wire](https://docs.lead.bank/api-reference/endpoint/wire/request-return-for-wire-v2.md): Create a return request for a previously sent outgoing wire.
+- [Reject a Return Request for a Wire](https://docs.lead.bank/api-reference/endpoint/wire/reject-return-request-for-wire-v2.md): Reject the currently active incoming return request associated with the wire. In V2 this can also be called on return requests of return wires to support return-of-a-return.
+- [Create a Blockchain Payment](https://docs.lead.bank/api-reference/endpoint/blockchain-payment/create-a-blockchain-payment.md): Creates a blockchain payment for fiat or cross-border payments.
+- [List all Blockchain Payments](https://docs.lead.bank/api-reference/endpoint/blockchain-payment/list-all-blockchain-payments.md): List all Blockchain Payments.
+- [Retrieve a Blockchain Payment](https://docs.lead.bank/api-reference/endpoint/blockchain-payment/retrieve-a-blockchain-payment.md): Retrieve a Blockchain Payment.
+- [Create an Entity](https://docs.lead.bank/api-reference/endpoint/entity/create-an-entity.md): Create an Individual, Sole Prop or Business Entity.
+- [Retrieve an Entity by Client Customer ID](https://docs.lead.bank/api-reference/endpoint/entity/retrieve-an-entity-by-client-customer-id.md): Retrieve an entity by the client customer id
+- [Retrieve an Entity by Entity ID](https://docs.lead.bank/api-reference/endpoint/entity/retrieve-an-entity-by-entity-id.md): Retrieve an entity by entity id
+- [Update an Entity](https://docs.lead.bank/api-reference/endpoint/entity/update-an-entity.md): Certain updates on Entity trigger KYC re-screening, requiring an updated kyc_details.result and kyc_details.screened_at.
+- [Create an Application](https://docs.lead.bank/api-reference/endpoint/application/create-an-application.md): Creates a new credit application in terminal status.
+- [Retrieve an Application](https://docs.lead.bank/api-reference/endpoint/application/retrieve-an-application.md): Retrieves a specific application by its ID. Accepts either a server-generated ID (application_*) or client-provided application ID. The server detects the ID type by prefix.
+- [Retrieve an Application by Client Application ID](https://docs.lead.bank/api-reference/endpoint/application/retrieve-an-application-by-client-application-id.md): Retrieves an application by the `client_application_id` you assigned, supplied as a query parameter: `GET /v0/applications?client_application_id=...`. This is the filtered form of the applications collection and is distinct from `GET /v0/applications/{id}`, which takes the server-generated Applicati…
+- [Update an Application](https://docs.lead.bank/api-reference/endpoint/application/update-an-application.md): Updates properties on an existing application.
+- [List Application Entity Relationships](https://docs.lead.bank/api-reference/endpoint/application/list-application-entity-relationships.md): Lists all entity relationships for a specific application.
+- [Create an Account](https://docs.lead.bank/api-reference/endpoint/account/create-an-account.md): Creates a new account.
+- [Retrieve an Account](https://docs.lead.bank/api-reference/endpoint/account/retrieve-an-account.md): Retrieves a specific account by its ID. Accepts a server-generated ID (account_*).
+- [Retrieve an Account by Client Account ID](https://docs.lead.bank/api-reference/endpoint/account/retrieve-an-account-by-client-account-id.md): Retrieves an account by the `client_account_id` you assigned, supplied as a query parameter: `GET /v0/accounts?client_account_id=...`. This is the filtered form of the accounts collection and is distinct from `GET /v0/accounts/{id}`, which takes the server-generated Account ID (`account_*`). The res…
+- [Update an Account](https://docs.lead.bank/api-reference/endpoint/account/update-an-account.md): Updates properties on an existing account.
+- [Activate an Account](https://docs.lead.bank/api-reference/endpoint/account/activate-an-account.md): Transitions an account from `inactive` to `active` status.
+- [Deactivate an Account](https://docs.lead.bank/api-reference/endpoint/account/deactivate-an-account.md): Transitions an account from `active` to `inactive` status.
+- [Close an Account](https://docs.lead.bank/api-reference/endpoint/account/close-an-account.md): Transitions an account to `closed` status (terminal state). This action cannot be undone.
+- [List Account Entity Relationships](https://docs.lead.bank/api-reference/endpoint/account/list-account-entity-relationships.md): Lists all entity relationships for a specific account.
+- [Batch Create Account Entity Relationships](https://docs.lead.bank/api-reference/endpoint/account/batch-create-account-entity-relationships.md): Associates multiple entities with an account under a single relationship type.
+- [Delete Account Entity Relationship](https://docs.lead.bank/api-reference/endpoint/account/delete-account-entity-relationship.md): Deletes a specific entity relationship from an account and returns the updated list of entity relationships. The relationship_type must be specified to identify which relationship to delete.
+- [Create a Card](https://docs.lead.bank/api-reference/endpoint/card/create-a-card.md): > **Beta:** This endpoint is in beta and may change before general availability.
+- [Retrieve a Card](https://docs.lead.bank/api-reference/endpoint/card/retrieve-a-card.md): > **Beta:** This endpoint is in beta and may change before general availability.
+- [Retrieve a Card by Client Card ID](https://docs.lead.bank/api-reference/endpoint/card/retrieve-a-card-by-client-card-id.md): > **Beta:** This endpoint is in beta and may change before general availability.
+- [Update a Card](https://docs.lead.bank/api-reference/endpoint/card/update-a-card.md): > **Beta:** This endpoint is in beta and may change before general availability.
+- [Activate a Card](https://docs.lead.bank/api-reference/endpoint/card/activate-a-card.md): > **Beta:** This endpoint is in beta and may change before general availability.
+- [Deactivate a Card](https://docs.lead.bank/api-reference/endpoint/card/deactivate-a-card.md): > **Beta:** This endpoint is in beta and may change before general availability.
+- [Close a Card](https://docs.lead.bank/api-reference/endpoint/card/close-a-card.md): > **Beta:** This endpoint is in beta and may change before general availability.
+- [Create a Funding](https://docs.lead.bank/api-reference/endpoint/funding/create-a-funding.md): Creates a Funding object to request that Lead move funds from a Lead GL to the partner's funding FBO account.
+- [Retrieve a Funding](https://docs.lead.bank/api-reference/endpoint/funding/retrieve-a-funding.md): Retrieve a Funding object.
+- [Create a Subledger Balance](https://docs.lead.bank/api-reference/endpoint/subledger-balance/create-a-subledger-balance.md): Create a Subledger Balance object. The newly created Subledger Balance will have a `status` of `active` and a `status_reason` of `active`, and a unique `id` with prefix `subledger_balance_` will be auto-generated.
+- [Retrieve a Subledger Balance](https://docs.lead.bank/api-reference/endpoint/subledger-balance/retrieve-a-subledger-balance.md): Retrieve a Subledger Balance object.
+- [Create an Internal Transfer](https://docs.lead.bank/api-reference/endpoint/internal-transfer/create-an-internal-transfer-v1.md): Creates an asynchronous Internal Transfer.
+- [List all Internal Transfers](https://docs.lead.bank/api-reference/endpoint/internal-transfer/list-all-internal-transfers-v1.md): List all Internal Transfers.
+- [Retrieve an Internal Transfer](https://docs.lead.bank/api-reference/endpoint/internal-transfer/retrieve-an-internal-transfer-v1.md): Retrieve an Internal Transfer.
+- [Create a Disbursement](https://docs.lead.bank/api-reference/endpoint/lending/create-a-disbursement.md): Creates a disbursement for a loan
+- [Retrieve a Disbursement](https://docs.lead.bank/api-reference/endpoint/lending/retrieve-a-disbursement.md): Retrieve a disbursement object.
+- [Cancel a Disbursement](https://docs.lead.bank/api-reference/endpoint/lending/cancel-a-disbursement.md): Cancel a disbursement.
+- [List all Events](https://docs.lead.bank/api-reference/endpoint/events/list-all-events.md): List all event objects.
+- [Retrieve an Event](https://docs.lead.bank/api-reference/endpoint/events/retrieve-an-event.md): Retrieves an event object.
+- [Get an Access Token](https://docs.lead.bank/api-reference/endpoint/oauth/get-an-access-token.md): Exchange your client credentials for an access code.
+- [Simulate Incoming ACH](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-ach.md): Simulate an incoming ACH.
+- [Simulate Advance ACH](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-advance-ach.md): Advance an ACH in Sandbox.
+- [Simulate Incoming ACH Return](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-ach-return.md): Simulate an incoming Return.
+- [Simulate Incoming Wire](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-wire.md): Simulate an incoming Wire.
+- [Simulate Advance Wire](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-advance-wire.md): Advance a Wire in Sandbox.
+- [Simulate Incoming Wire Return](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-wire-return.md): Simulate an incoming Wire Return.
+- [Simulate Incoming Wire Return Request](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-wire-return-request.md): Simulate an incoming wire return request.
+- [Simulate Incoming Wire Return Request Rejection](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-wire-return-request-rejection.md): Simulate an incoming wire return request rejection.
+- [Simulate Incoming Wire Return Request Acceptance](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-wire-return-request-acceptance.md): Simulate an incoming wire return request acceptance.
+- [Simulate Incoming Wire V2](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-wire-v2.md): Simulates an incoming wire against a creditor account in sandbox. Automatically advances to posted on creation; no call to advance required.
+- [Simulate Incoming Wire Return V2](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-wire-return-v2.md): Simulates an incoming return wire against an outgoing wire in sandbox. Automatically advances to posted on creation.
+- [Simulate Advance Wire V2](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-advance-wire-v2.md): Advance a Wire in Sandbox.
+- [Simulate Incoming Wire Return Request Acceptance V2](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-wire-return-request-acceptance-v2.md): Simulate an incoming wire return request acceptance.
+- [Simulate Incoming Wire Return Request V2](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-wire-return-request-v2.md): Simulate an incoming wire return request.
+- [Simulate Incoming Wire Return Request Rejection V2](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-wire-return-request-rejection-v2.md): Simulate an incoming wire return request rejection.
+- [Simulate Incoming Instant Payment](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-instant-payment.md): Simulate an incoming instant payment.
+- [Simulate Incoming Instant Payment Return](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-instant-payment-return.md): Simulate an incoming instant payment return.
+- [Simulate Incoming Instant Payment Return Request](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-instant-payment-return-request.md): Simulate an incoming instant payment return request.
+- [Simulate Incoming Instant Payment Return Request Rejection](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-instant-payment-return-request-rejection.md): Simulate an incoming instant payment return request rejection.
+- [Simulate Incoming Instant Payment Return Request Acceptance](https://docs.lead.bank/api-reference/endpoint/simulation/simulate-incoming-instant-payment-return-request-acceptance.md): Simulate an incoming instant payment return request acceptance.
+- [Simulate Advance Funding](https://docs.lead.bank/api-reference/endpoint/funding/advance-a-funding.md): Advances a Funding object from processing to posted status in the Sandbox environment.
+- [Simulate Advance Disbursement](https://docs.lead.bank/api-reference/endpoint/lending-simulation/advance-a-disbursement.md): Advances a disbursement object status in the sandbox environment.
+- [File Reference](https://docs.lead.bank/file-reference/overview.md)
+- [SFTP Setup](https://docs.lead.bank/file-reference/sftp-setup.md): Steps for setting up SFTP with Lead.
+- [Exchanging files with Lead over SFTP](https://docs.lead.bank/file-reference/delivery/overview.md): Understand how to exchange data with Lead via SFTP.
+- [Slack Alerts](https://docs.lead.bank/file-reference/delivery/slack-alerts.md): Monitor your program.
+- [Currencies](https://docs.lead.bank/file-reference/delivery/currencies.md): Understand which currencies are accepted in file validations.
+- [File Submission Validation Errors](https://docs.lead.bank/file-reference/delivery/errors.md): Reference for Lead file validation errors, including field formatting, cross-file reconciliation, error groupings, and troubleshooting guidance.
+- [Document Delivery Over SFTP](https://docs.lead.bank/file-reference/documents/overview.md): Details on SFTP document delivery.
+- [Compliance Documents](https://docs.lead.bank/file-reference/documents/compliance-documents.md): JSON reference for Documents in the applications and accounts files, covering document_id, type, consented_at, displayed_at, and version fields.
+- [Customer files: reporting customers via SFTP](https://docs.lead.bank/file-reference/customer/overview.md): Overview of Customers and Customer Relationships files.
+- [Customer File Schema](https://docs.lead.bank/file-reference/customer/customer-schema.md): Field-level reference for the Customer file, including individual and business customer identification, tax IDs, addresses, and KYC requirements.
+- [Customer Relationship Schema](https://docs.lead.bank/file-reference/customer/customer-relationship-schema.md)
+- [Validations](https://docs.lead.bank/file-reference/customer/validations.md): Validating customer and customer relationship files
+- [Account Files: Reporting Accounts via SFTP](https://docs.lead.bank/file-reference/account/overview.md): Overview of account files.
+- [Account File Schema](https://docs.lead.bank/file-reference/account/schema.md): Field-level reference for the Account file, covering identifiers, account holders, authorized parties, deposit details, credit details, and documents.
+- [Statuses](https://docs.lead.bank/file-reference/account/statuses.md): The statuses for account files.
+- [Validations](https://docs.lead.bank/file-reference/account/validations.md): Validating account files.
+- [Schema](https://docs.lead.bank/file-reference/authorized-users/schema.md)
+- [Validations](https://docs.lead.bank/file-reference/authorized-users/validations.md): Validating authorized users.
+- [Balances Schema](https://docs.lead.bank/file-reference/balances-and-transactions/balances-schema.md): Field-by-field reference for the daily Balances file, including credit and deposit balances, rewards, repayment details, and autopay configuration.
+- [Transactions File Schema](https://docs.lead.bank/file-reference/balances-and-transactions/transactions-schema.md): Field-level reference for the Transactions file used in Lead's financial reconciliation, including IDs, amounts, types, and posting details.
+- [Transactions Update Schema](https://docs.lead.bank/file-reference/balances-and-transactions/transactions-update-schema.md)
+- [Non-Posted Transactions Schema](https://docs.lead.bank/file-reference/balances-and-transactions/non-posted-transactions-schema.md)
+- [Balance & Transaction Validations](https://docs.lead.bank/file-reference/balances-and-transactions/balance-validations.md): Reference for Balance and Transaction file validations, including daily reporting rules, account_id matching, and balance reconciliation checks.
+- [Application Files: Reporting Underwriting Decisions via SFTP](https://docs.lead.bank/file-reference/application/overview.md): Overview of application files.
+- [Schema](https://docs.lead.bank/file-reference/application/schema.md)
+- [Statuses](https://docs.lead.bank/file-reference/application/statuses.md): The statuses for application files.
+- [Validations](https://docs.lead.bank/file-reference/application/validations.md): Validating application files.
+- [Cards Schema](https://docs.lead.bank/file-reference/card/schema.md)
+- [Cards Validations](https://docs.lead.bank/file-reference/card/validations.md): Validating card files.
+- [Collaterals Schema](https://docs.lead.bank/file-reference/collateral/schema.md)
+- [Request Schema](https://docs.lead.bank/file-reference/sales/request-schema.md)
+- [Response Schema](https://docs.lead.bank/file-reference/sales/response-schema.md)
+- [Nacha Files](https://docs.lead.bank/file-reference/nacha-files.md): Overview of ACH file processing using Nacha files.
+- [X9 File Requirements](https://docs.lead.bank/file-reference/x9.md): All check processing between you and Lead uses the X9.37 file standard.
+- [Daily Reporting Files Overview](https://docs.lead.bank/file-reference/reports/overview.md): Overview of Lead's daily SFTP reporting files: Daily Balance, Daily Activity, and ACH Cash Reconciliation, including delivery times and holiday handling.
+- [Daily Balance](https://docs.lead.bank/file-reference/reports/daily-balance.md): Definition of fields provided in the Daily Balance report.
+- [Daily Activity](https://docs.lead.bank/file-reference/reports/daily-activity.md): Definition of fields provided in the Daily Activity report.
+- [Network Settlement Reports](https://docs.lead.bank/file-reference/reports/network-settlement-reports.md): Lead's network settlement reports explained.
+- [ACH Cash Reconciliation](https://docs.lead.bank/file-reference/reports/ach-cash-reconciliation.md): Field reference for Lead's ACH Settlement Cash Reconciliation report, used to reconcile transaction-level ACH detail to aggregated bank statement entries.
+- [Platform Reconciliation](https://docs.lead.bank/file-reference/reports/platform-reconciliation.md): Reconciliation for platform-issued account numbers.
+- [Changelog](https://docs.lead.bank/changelog.md): Source of record for released Lead platform, API, reporting, and operational changes, including new features, fixes, and breaking changes.
+- [Upcoming Changes](https://docs.lead.bank/upcoming-changes.md): Advance notice of planned Lead platform, API, and reporting changes that may require partner awareness, testing, or action before effective dates.
+
+## OpenAPI Specs
+
+- [openapi](https://docs.lead.bank/openapi.json)

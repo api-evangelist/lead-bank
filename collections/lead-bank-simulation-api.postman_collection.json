@@ -1,0 +1,3011 @@
+{
+  "item": [
+    {
+      "id": "643388f1-e461-43ba-b256-76c7841c7cfe",
+      "name": "Simulation",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "bd6e6f3a-e754-434d-ae63-0383ab193d73",
+          "name": "Simulate Incoming ACH",
+          "request": {
+            "name": "Simulate Incoming ACH",
+            "description": {
+              "content": "Simulate an incoming ACH.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "simulate",
+                "ach",
+                "incoming_ach"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"account_number_id\": \"<string>\",\n  \"sec_code\": \"<string>\",\n  \"transaction_type\": \"<string>\",\n  \"amount\": \"<long>\",\n  \"currency_code\": \"<string>\",\n  \"statement_descriptor\": \"<string>\",\n  \"sender_name\": \"<string>\",\n  \"sender_company_id\": \"<string>\",\n  \"sender_routing_number\": \"<integer>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "affbe852-c8d6-459f-a971-12f7260ce0fb",
+              "name": "Incoming ACH object created.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "ach",
+                    "incoming_ach"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_number_id\": \"account_number_xyz123\",\n  \"sec_code\": \"WEB\",\n  \"transaction_type\": \"credit\",\n  \"amount\": 5000,\n  \"currency_code\": \"USD\",\n  \"statement_descriptor\": \"P2P Credit\",\n  \"sender_name\": \"Lorum Inc.\",\n  \"sender_company_id\": \"<string>\",\n  \"sender_routing_number\": 111122222\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0cf98d55-c6f3-4795-8dda-860afb70cf6b",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "ach",
+                    "incoming_ach"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_number_id\": \"account_number_xyz123\",\n  \"sec_code\": \"WEB\",\n  \"transaction_type\": \"credit\",\n  \"amount\": 5000,\n  \"currency_code\": \"USD\",\n  \"statement_descriptor\": \"P2P Credit\",\n  \"sender_name\": \"Lorum Inc.\",\n  \"sender_company_id\": \"<string>\",\n  \"sender_routing_number\": 111122222\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d7e117dc-26ec-4a66-bf01-f4a487a0b1c4",
+              "name": "We couldn't parse your request body, please check that your request body is valid JSON.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "ach",
+                    "incoming_ach"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_number_id\": \"account_number_xyz123\",\n  \"sec_code\": \"WEB\",\n  \"transaction_type\": \"credit\",\n  \"amount\": 5000,\n  \"currency_code\": \"USD\",\n  \"statement_descriptor\": \"P2P Credit\",\n  \"sender_name\": \"Lorum Inc.\",\n  \"sender_company_id\": \"<string>\",\n  \"sender_routing_number\": 111122222\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "e2d5a2fe-62c1-4194-94f9-cb0d7b3e3a7f",
+          "name": "Simulate Incoming Return",
+          "request": {
+            "name": "Simulate Incoming Return",
+            "description": {
+              "content": "Simulate an incoming Return.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "simulate",
+                "ach",
+                ":ach_id",
+                "incoming_return"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "ach_id",
+                  "description": "(Required) ID of the ACH object you want to return."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"return_code\": \"<string>\",\n  \"return_additional_information\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "dc48f020-10bb-4423-a3a4-02bb13ee9fba",
+              "name": "ACH return created.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "ach",
+                    ":ach_id",
+                    "incoming_return"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH object you want to return."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"return_code\": \"R02\",\n  \"return_additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e4eda912-300b-4fd5-b198-b6bcb97d5cd0",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "ach",
+                    ":ach_id",
+                    "incoming_return"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH object you want to return."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"return_code\": \"R02\",\n  \"return_additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "53cb5ffc-c664-43de-99f8-0c8261a6e854",
+              "name": "We couldn't parse your request body, please check that your request body is valid JSON.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "ach",
+                    ":ach_id",
+                    "incoming_return"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH object you want to return."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"return_code\": \"R02\",\n  \"return_additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "e785e76a-6b05-4445-91fc-98efb01232b2",
+          "name": "Advance Sandbox ACH",
+          "request": {
+            "name": "Advance Sandbox ACH",
+            "description": {
+              "content": "Advance an ACH in Sandbox.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "simulate",
+                "ach",
+                ":ach_id",
+                "advance"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "ach_id",
+                  "description": "(Required) ID of the ACH object you want to advance."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "106c0c67-b0e9-47ab-b4db-a77047a10769",
+              "name": "ACH Object advanced.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "ach",
+                    ":ach_id",
+                    "advance"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH object you want to advance."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e31edd96-8003-46b3-985e-03117983c72f",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "ach",
+                    ":ach_id",
+                    "advance"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH object you want to advance."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "76346bef-9766-480c-af01-f1b410b75edb",
+              "name": "We couldn't parse your request body, please check that your request body is valid JSON.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "ach",
+                    ":ach_id",
+                    "advance"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH object you want to advance."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "f80b1709-4e92-4911-ae56-0bc12e4d8b1d",
+          "name": "Advance Sandbox Wire",
+          "request": {
+            "name": "Advance Sandbox Wire",
+            "description": {
+              "content": "Advance a Wire in Sandbox.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "simulate",
+                "wires",
+                ":wire_id",
+                "advance"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "wire_id",
+                  "description": "(Required) ID of the Wire object you want to advance."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "47e92ccb-0021-4e95-b993-e05e8866fdb2",
+              "name": "Wire Object advanced.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "wires",
+                    ":wire_id",
+                    "advance"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "wire_id",
+                      "description": "(Required) ID of the Wire object you want to advance."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "06bc9e0e-5b72-479d-a725-91b106c563a2",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "wires",
+                    ":wire_id",
+                    "advance"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "wire_id",
+                      "description": "(Required) ID of the Wire object you want to advance."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5100b801-4018-40f1-9114-72ac11e7f2d9",
+              "name": "wire_id passed in is not a valid wire object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "wires",
+                    ":wire_id",
+                    "advance"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "wire_id",
+                      "description": "(Required) ID of the Wire object you want to advance."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e78f4179-a711-48e8-9ae3-83ad76caa4e8",
+              "name": "We couldn't parse your request body, please check that your request body is valid JSON.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "wires",
+                    ":wire_id",
+                    "advance"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "wire_id",
+                      "description": "(Required) ID of the Wire object you want to advance."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "703e6f44-467b-4db8-9bb6-cebb066fd058",
+          "name": "Simulate Incoming Wire",
+          "request": {
+            "name": "Simulate Incoming Wire",
+            "description": {
+              "content": "Simulate an incoming Wire.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "simulate",
+                "wires",
+                "incoming"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"<long>\",\n  \"creditor_account_number_id\": \"<string>\",\n  \"debtor\": {\n    \"name\": \"<string>\",\n    \"account_identifier\": {\n      \"type\": \"<string>\",\n      \"value\": \"<string>\"\n    },\n    \"address\": {\n      \"department\": \"<string>\",\n      \"sub_department\": \"<string>\",\n      \"street_name\": \"<string>\",\n      \"building_number\": \"<string>\",\n      \"building_name\": \"<string>\",\n      \"floor\": \"<string>\",\n      \"post_box\": \"<string>\",\n      \"room\": \"<string>\",\n      \"post_code\": \"<string>\",\n      \"town_name\": \"<string>\",\n      \"town_location_name\": \"<string>\",\n      \"district_name\": \"<string>\",\n      \"country_sub_division\": \"<string>\",\n      \"country\": \"<string>\",\n      \"line_one\": \"<string>\",\n      \"line_two\": \"<string>\",\n      \"line_three\": \"<string>\"\n    }\n  },\n  \"debtor_agent\": {\n    \"routing_number\": \"<string>\"\n  },\n  \"remittance_details\": {\n    \"message_to_creditor\": \"<string>\"\n  },\n  \"payment_identifiers\": {\n    \"end_to_end_identification\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "6ac9be79-3ed1-4f7f-a71e-fa99adb7508a",
+              "name": "Incoming Wire object created.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "wires",
+                    "incoming"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": 5000,\n  \"creditor_account_number_id\": \"account_number_xyz123\",\n  \"debtor\": {\n    \"name\": \"Allan Scott\",\n    \"account_identifier\": {\n      \"type\": \"account_number\",\n      \"value\": \"1032345678\"\n    },\n    \"address\": {\n      \"department\": \"Procurement Department\",\n      \"sub_department\": \"IT Procurement\",\n      \"street_name\": \"Main Street\",\n      \"building_number\": \"100\",\n      \"building_name\": \"City Hall\",\n      \"floor\": \"4th Floor\",\n      \"post_box\": \"PO Box 12345\",\n      \"room\": \"600\",\n      \"post_code\": \"12345\",\n      \"town_name\": \"Kansas City\",\n      \"town_location_name\": \"Westside North\",\n      \"district_name\": \"Manhattan\",\n      \"country_sub_division\": \"NY\",\n      \"country\": \"US\",\n      \"line_one\": \"123 Main St\",\n      \"line_two\": \"Suite 100\",\n      \"line_three\": \"Kansas City, MO 64105\"\n    }\n  },\n  \"debtor_agent\": {\n    \"routing_number\": \"021000021\"\n  },\n  \"remittance_details\": {\n    \"message_to_creditor\": \"Payment for invoice 12345\"\n  },\n  \"payment_identifiers\": {\n    \"end_to_end_identification\": \"EndtoEnd12345\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "1d55d549-4511-4cd7-bb0d-7e792757b8fb",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "wires",
+                    "incoming"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": 5000,\n  \"creditor_account_number_id\": \"account_number_xyz123\",\n  \"debtor\": {\n    \"name\": \"Allan Scott\",\n    \"account_identifier\": {\n      \"type\": \"account_number\",\n      \"value\": \"1032345678\"\n    },\n    \"address\": {\n      \"department\": \"Procurement Department\",\n      \"sub_department\": \"IT Procurement\",\n      \"street_name\": \"Main Street\",\n      \"building_number\": \"100\",\n      \"building_name\": \"City Hall\",\n      \"floor\": \"4th Floor\",\n      \"post_box\": \"PO Box 12345\",\n      \"room\": \"600\",\n      \"post_code\": \"12345\",\n      \"town_name\": \"Kansas City\",\n      \"town_location_name\": \"Westside North\",\n      \"district_name\": \"Manhattan\",\n      \"country_sub_division\": \"NY\",\n      \"country\": \"US\",\n      \"line_one\": \"123 Main St\",\n      \"line_two\": \"Suite 100\",\n      \"line_three\": \"Kansas City, MO 64105\"\n    }\n  },\n  \"debtor_agent\": {\n    \"routing_number\": \"021000021\"\n  },\n  \"remittance_details\": {\n    \"message_to_creditor\": \"Payment for invoice 12345\"\n  },\n  \"payment_identifiers\": {\n    \"end_to_end_identification\": \"EndtoEnd12345\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "68cbf209-cf61-44eb-9563-188f824580dd",
+              "name": "We couldn't parse your request body, please check that your request body is valid JSON.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "wires",
+                    "incoming"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": 5000,\n  \"creditor_account_number_id\": \"account_number_xyz123\",\n  \"debtor\": {\n    \"name\": \"Allan Scott\",\n    \"account_identifier\": {\n      \"type\": \"account_number\",\n      \"value\": \"1032345678\"\n    },\n    \"address\": {\n      \"department\": \"Procurement Department\",\n      \"sub_department\": \"IT Procurement\",\n      \"street_name\": \"Main Street\",\n      \"building_number\": \"100\",\n      \"building_name\": \"City Hall\",\n      \"floor\": \"4th Floor\",\n      \"post_box\": \"PO Box 12345\",\n      \"room\": \"600\",\n      \"post_code\": \"12345\",\n      \"town_name\": \"Kansas City\",\n      \"town_location_name\": \"Westside North\",\n      \"district_name\": \"Manhattan\",\n      \"country_sub_division\": \"NY\",\n      \"country\": \"US\",\n      \"line_one\": \"123 Main St\",\n      \"line_two\": \"Suite 100\",\n      \"line_three\": \"Kansas City, MO 64105\"\n    }\n  },\n  \"debtor_agent\": {\n    \"routing_number\": \"021000021\"\n  },\n  \"remittance_details\": {\n    \"message_to_creditor\": \"Payment for invoice 12345\"\n  },\n  \"payment_identifiers\": {\n    \"end_to_end_identification\": \"EndtoEnd12345\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "058dd721-1df6-4979-b714-b95579b087d6",
+          "name": "Simulate Incoming Wire Return",
+          "request": {
+            "name": "Simulate Incoming Wire Return",
+            "description": {
+              "content": "Simulate an incoming Wire Return.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "simulate",
+                "wires",
+                ":wire_id",
+                "incoming_return"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "wire_id",
+                  "description": "(Required) ID of the Wire object you want to return."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"return_code\": \"<string>\",\n  \"amount\": \"<long>\",\n  \"return_additional_information\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "00e450a1-b836-4594-9c09-bf7de2eff4a1",
+              "name": "Wire return object created.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "wires",
+                    ":wire_id",
+                    "incoming_return"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "wire_id",
+                      "description": "(Required) ID of the Wire object you want to return."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"return_code\": \"AC06\",\n  \"amount\": 5000,\n  \"return_additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2db3f957-ff9b-45b4-9ace-02c532bf97e5",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "wires",
+                    ":wire_id",
+                    "incoming_return"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "wire_id",
+                      "description": "(Required) ID of the Wire object you want to return."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"return_code\": \"AC06\",\n  \"amount\": 5000,\n  \"return_additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5f0917d9-5def-407f-a1ff-b999bca931b1",
+              "name": "wire_id passed in is not a valid wire object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "wires",
+                    ":wire_id",
+                    "incoming_return"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "wire_id",
+                      "description": "(Required) ID of the Wire object you want to return."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"return_code\": \"AC06\",\n  \"amount\": 5000,\n  \"return_additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "bd1a3dcd-fc5f-4087-8b13-f8fc29f84594",
+              "name": "We couldn't parse your request body, please check that your request body is valid JSON.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "wires",
+                    ":wire_id",
+                    "incoming_return"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "wire_id",
+                      "description": "(Required) ID of the Wire object you want to return."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"return_code\": \"AC06\",\n  \"amount\": 5000,\n  \"return_additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "028994cb-7f68-4534-b978-94f302b898bf",
+          "name": "Simulate Incoming Instant Payment",
+          "request": {
+            "name": "Simulate Incoming Instant Payment",
+            "description": {
+              "content": "Simulate an incoming instant payment.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "simulate",
+                "instant_payments",
+                "incoming"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"creditor_account_number_id\": \"<string>\",\n  \"amount\": \"<long>\",\n  \"currency_code\": \"<string>\",\n  \"debtor\": {\n    \"name\": \"<string>\",\n    \"account_number\": \"<string>\"\n  },\n  \"debtor_agent\": {\n    \"routing_number\": \"<string>\"\n  },\n  \"description\": \"<string>\",\n  \"payment_identifiers\": {\n    \"end_to_end_id\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "435acae5-b95d-4636-8450-77de2d057c00",
+              "name": "Intentionally empty - incoming instant payment will be created asynchronously.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    "incoming"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"creditor_account_number_id\": \"account_number_xyz123\",\n  \"amount\": 5000,\n  \"currency_code\": \"USD\",\n  \"debtor\": {\n    \"name\": \"Alex Smith\",\n    \"account_number\": \"1234567890\"\n  },\n  \"debtor_agent\": {\n    \"routing_number\": \"111000111\"\n  },\n  \"description\": \"Payment for invoice 12345\",\n  \"payment_identifiers\": {\n    \"end_to_end_id\": \"E2E-20240101-001\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "af680b8a-727d-4471-bd9e-ce2124ff9d65",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    "incoming"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"creditor_account_number_id\": \"account_number_xyz123\",\n  \"amount\": 5000,\n  \"currency_code\": \"USD\",\n  \"debtor\": {\n    \"name\": \"Alex Smith\",\n    \"account_number\": \"1234567890\"\n  },\n  \"debtor_agent\": {\n    \"routing_number\": \"111000111\"\n  },\n  \"description\": \"Payment for invoice 12345\",\n  \"payment_identifiers\": {\n    \"end_to_end_id\": \"E2E-20240101-001\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0de91919-7d32-4ebf-971c-65bc4130f11c",
+              "name": "We couldn't process your request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    "incoming"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"creditor_account_number_id\": \"account_number_xyz123\",\n  \"amount\": 5000,\n  \"currency_code\": \"USD\",\n  \"debtor\": {\n    \"name\": \"Alex Smith\",\n    \"account_number\": \"1234567890\"\n  },\n  \"debtor_agent\": {\n    \"routing_number\": \"111000111\"\n  },\n  \"description\": \"Payment for invoice 12345\",\n  \"payment_identifiers\": {\n    \"end_to_end_id\": \"E2E-20240101-001\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "dcaace7c-6547-4dce-8a0b-ff05dcc33643",
+          "name": "Simulate Incoming Instant Payment Return",
+          "request": {
+            "name": "Simulate Incoming Instant Payment Return",
+            "description": {
+              "content": "Simulate an incoming instant payment return.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "simulate",
+                "instant_payments",
+                ":instant_payment_id",
+                "incoming_return"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "instant_payment_id",
+                  "description": "(Required) ID of the instant payment object you want to return."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"<long>\",\n  \"reason\": \"<string>\",\n  \"additional_information\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "e31ac63b-e457-4832-a017-6fda4f911bc9",
+              "name": "Intentionally empty - incoming instant payment return will be created asynchronously.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object you want to return."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": 5000,\n  \"reason\": \"duplication\",\n  \"additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "c74c4d3b-43af-4931-b1ac-c4168347b937",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object you want to return."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": 5000,\n  \"reason\": \"duplication\",\n  \"additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "337211ea-9695-45c6-b9d9-12fb4693b978",
+              "name": "Instant payment not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object you want to return."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": 5000,\n  \"reason\": \"duplication\",\n  \"additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "470fdc40-111c-4ee2-954c-94d1f81307a2",
+              "name": "We couldn't process your request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object you want to return."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": 5000,\n  \"reason\": \"duplication\",\n  \"additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "eb14b022-409f-44b1-b88f-fca403cb70a3",
+          "name": "Simulate Incoming Instant Payment Return Request",
+          "request": {
+            "name": "Simulate Incoming Instant Payment Return Request",
+            "description": {
+              "content": "Simulate an incoming instant payment return request.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "simulate",
+                "instant_payments",
+                ":instant_payment_id",
+                "incoming_return_request"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "instant_payment_id",
+                  "description": "(Required) ID of the instant payment object you want to request a return for."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"<string>\",\n  \"additional_information\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "b205a8e6-bf0a-44f7-a38c-2fbec3c2a088",
+              "name": "Intentionally empty - instant payment record will be updated with return request details asynchronously.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return_request"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object you want to request a return for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"duplication\",\n  \"additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "3c573442-0803-4453-8256-24c9e3b02a27",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return_request"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object you want to request a return for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"duplication\",\n  \"additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "32fa9bc4-ad14-4c07-9c97-26ae29ce18b2",
+              "name": "Instant payment not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return_request"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object you want to request a return for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"duplication\",\n  \"additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "edb91234-1e1c-41e4-8233-06d6d3976abe",
+              "name": "We couldn't process your request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return_request"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object you want to request a return for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"duplication\",\n  \"additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "03a72df2-ad20-474d-a08a-ef287649908a",
+          "name": "Simulate Incoming Instant Payment Return Request Rejection",
+          "request": {
+            "name": "Simulate Incoming Instant Payment Return Request Rejection",
+            "description": {
+              "content": "Simulate an incoming instant payment return request rejection.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "simulate",
+                "instant_payments",
+                ":instant_payment_id",
+                "incoming_return_request_rejection"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "instant_payment_id",
+                  "description": "(Required) ID of the instant payment object whose return request you want to reject."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"<string>\",\n  \"additional_information\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "75d9b760-446e-4c06-bfa9-940e19db1bfa",
+              "name": "Intentionally empty - return request will be rejected asynchronously.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return_request_rejection"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object whose return request you want to reject."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"customer_no_response\",\n  \"additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "599b54a3-ae32-44c8-bd65-ac3016da99d8",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return_request_rejection"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object whose return request you want to reject."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"customer_no_response\",\n  \"additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "4e07bccf-52b6-431a-b869-2cd1a2ce91ca",
+              "name": "Instant payment not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return_request_rejection"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object whose return request you want to reject."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"customer_no_response\",\n  \"additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "3017eb20-2f6c-49e5-b7f8-193b261fb0d7",
+              "name": "We couldn't process your request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return_request_rejection"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object whose return request you want to reject."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"customer_no_response\",\n  \"additional_information\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "99d7d16a-8619-4a57-a255-4470247cb2ec",
+          "name": "Simulate Incoming Instant Payment Return Request Acceptance",
+          "request": {
+            "name": "Simulate Incoming Instant Payment Return Request Acceptance",
+            "description": {
+              "content": "Simulate an incoming instant payment return request acceptance.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "simulate",
+                "instant_payments",
+                ":instant_payment_id",
+                "incoming_return_request_acceptance"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "instant_payment_id",
+                  "description": "(Required) ID of the instant payment object whose return request you want to accept."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "428cbec8-8db6-4581-9db5-d0244d5b13fc",
+              "name": "Intentionally empty - return request will be accepted asynchronously.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return_request_acceptance"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object whose return request you want to accept."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "52c186ca-a45b-4104-a9d8-6cd1dd13d818",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return_request_acceptance"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object whose return request you want to accept."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "be48daff-d1e9-4e38-bfca-546cf2adeed2",
+              "name": "Instant payment not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return_request_acceptance"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object whose return request you want to accept."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "197767b7-225e-4a6f-a789-b144e848aaed",
+              "name": "We couldn't process your request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "simulate",
+                    "instant_payments",
+                    ":instant_payment_id",
+                    "incoming_return_request_acceptance"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instant_payment_id",
+                      "description": "(Required) ID of the instant payment object whose return request you want to accept."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.sandbox.lead.bank",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "4a282df0-9b66-491f-8d7a-72f5eb6769ae",
+    "name": "Lead Bank Account Number Simulation API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Lead Bank's APIs",
+      "type": "text/plain"
+    }
+  }
+}

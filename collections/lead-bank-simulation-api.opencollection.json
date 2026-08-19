@@ -1,0 +1,265 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lead Bank Account Number Simulation API",
+    "version": "v1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Simulation",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Simulate Incoming ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/ach/incoming_ach",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming ACH."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Return",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/ach/:ach_id/incoming_return",
+            "params": [
+              {
+                "name": "ach_id",
+                "value": "ach_xyz001",
+                "type": "path",
+                "description": "ID of the ACH object you want to return."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming Return."
+        },
+        {
+          "info": {
+            "name": "Advance Sandbox ACH",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/ach/:ach_id/advance",
+            "params": [
+              {
+                "name": "ach_id",
+                "value": "ach_xyz001",
+                "type": "path",
+                "description": "ID of the ACH object you want to advance."
+              }
+            ]
+          },
+          "docs": "Advance an ACH in Sandbox."
+        },
+        {
+          "info": {
+            "name": "Advance Sandbox Wire",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/wires/:wire_id/advance",
+            "params": [
+              {
+                "name": "wire_id",
+                "value": "wire_xyz001",
+                "type": "path",
+                "description": "ID of the Wire object you want to advance."
+              }
+            ]
+          },
+          "docs": "Advance a Wire in Sandbox."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Wire",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/wires/incoming",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming Wire."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Wire Return",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/wires/:wire_id/incoming_return",
+            "params": [
+              {
+                "name": "wire_id",
+                "value": "wire_xyz001",
+                "type": "path",
+                "description": "ID of the Wire object you want to return."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming Wire Return."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Instant Payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/instant_payments/incoming",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming instant payment."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Instant Payment Return",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/instant_payments/:instant_payment_id/incoming_return",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object you want to return."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming instant payment return."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Instant Payment Return Request",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/instant_payments/:instant_payment_id/incoming_return_request",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object you want to request a return for."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming instant payment return request."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Instant Payment Return Request Rejection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/instant_payments/:instant_payment_id/incoming_return_request_rejection",
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object whose return request you want to reject."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Simulate an incoming instant payment return request rejection."
+        },
+        {
+          "info": {
+            "name": "Simulate Incoming Instant Payment Return Request Acceptance",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v1/simulate/instant_payments/:instant_payment_id/incoming_return_request_acceptance",
+            "params": [
+              {
+                "name": "instant_payment_id",
+                "value": "instant_payment_xyz001",
+                "type": "path",
+                "description": "ID of the instant payment object whose return request you want to accept."
+              }
+            ]
+          },
+          "docs": "Simulate an incoming instant payment return request acceptance."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

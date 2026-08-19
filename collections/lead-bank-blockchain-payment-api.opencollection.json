@@ -1,0 +1,101 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lead Bank Account Number Blockchain Payment API",
+    "version": "v1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Blockchain Payment",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all Blockchain Payments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/blockchain_payments",
+            "params": [
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Filter payments by their current status."
+              },
+              {
+                "name": "limit",
+                "value": "10",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "blockchain_payment_xyz123",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              },
+              {
+                "name": "ending_before",
+                "value": "blockchain_payment_xyz456",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+              }
+            ]
+          },
+          "docs": "List all Blockchain Payments."
+        },
+        {
+          "info": {
+            "name": "Create a Blockchain Payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/blockchain_payments",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a blockchain payment for fiat or cross-border payments."
+        },
+        {
+          "info": {
+            "name": "Retrieve a Blockchain Payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/blockchain_payments/:blockchain_payment_id",
+            "params": [
+              {
+                "name": "blockchain_payment_id",
+                "value": "blockchain_payment_xyz123",
+                "type": "path",
+                "description": "The ID of the blockchain payment object to be retrieved."
+              }
+            ]
+          },
+          "docs": "Retrieve a Blockchain Payment."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

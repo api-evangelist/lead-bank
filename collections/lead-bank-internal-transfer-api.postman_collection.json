@@ -1,0 +1,687 @@
+{
+  "item": [
+    {
+      "id": "739f3376-e83a-434c-b1f2-13b6c2b75bb6",
+      "name": "Internal Transfer",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "57ebf748-be35-4bb0-9e57-0d961373f360",
+          "name": "Create an asynchronous Internal Transfer",
+          "request": {
+            "name": "Create an asynchronous Internal Transfer",
+            "description": {
+              "content": "Creates an asynchronous Internal Transfer.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "internal_transfer"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sender_account_number_id\": \"<string>\",\n  \"receiver_account_number_id\": \"<string>\",\n  \"amount\": \"<long>\",\n  \"description\": \"<string>\",\n  \"currency_code\": \"<string>\",\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\",\n    \"key_2\": \"<string>\",\n    \"key_3\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "577c997e-dbb6-4b5d-9e33-24f0bae65f69",
+              "name": "Successful response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "internal_transfer"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sender_account_number_id\": \"account_number_xyz123\",\n  \"receiver_account_number_id\": \"account_number_xyz123\",\n  \"amount\": 5000,\n  \"description\": \"Internal treasury transfer\",\n  \"currency_code\": \"USD\",\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"internal_transfer_xyz123\",\n  \"amount\": 5000,\n  \"currency_code\": \"USD\",\n  \"sender_account_id\": \"account_xyz123\",\n  \"sender_account_number_id\": \"account_number_xyz123\",\n  \"receiver_account_id\": \"account_xyz123\",\n  \"receiver_account_number_id\": \"account_number_xyz123\",\n  \"status\": \"processing\",\n  \"description\": \"string\",\n  \"metadata\": {\n    \"additionalProp\": \"string\"\n  },\n  \"created_at\": \"2022-06-27T11:22:33Z\",\n  \"updated_at\": \"2022-06-27T11:22:33Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "4e1e219e-9159-4550-85b6-6cdad7d48fc4",
+              "name": "We couldn't parse your request body, please check that your request body is valid JSON.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "internal_transfer"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sender_account_number_id\": \"account_number_xyz123\",\n  \"receiver_account_number_id\": \"account_number_xyz123\",\n  \"amount\": 5000,\n  \"description\": \"Internal treasury transfer\",\n  \"currency_code\": \"USD\",\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "7ba1524a-f062-4c40-85fd-c317d68f7e44",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "internal_transfer"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sender_account_number_id\": \"account_number_xyz123\",\n  \"receiver_account_number_id\": \"account_number_xyz123\",\n  \"amount\": 5000,\n  \"description\": \"Internal treasury transfer\",\n  \"currency_code\": \"USD\",\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "2a962685-cf5b-4d27-97ad-803f83d35d29",
+          "name": "List all Internal Transfers",
+          "request": {
+            "name": "List all Internal Transfers",
+            "description": {
+              "content": "List all Internal Transfers.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "internal_transfer"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "sender_account_number_id",
+                  "value": "<string>",
+                  "description": "The sender account number ID."
+                },
+                {
+                  "disabled": false,
+                  "key": "receiver_account_number_id",
+                  "value": "<string>",
+                  "description": "The receiver account number ID."
+                },
+                {
+                  "disabled": false,
+                  "key": "status",
+                  "value": "<string>"
+                },
+                {
+                  "disabled": false,
+                  "key": "created_at[after]",
+                  "value": "<dateTime>",
+                  "description": "A set of filters on the list using the object’s field `created_at`."
+                },
+                {
+                  "disabled": false,
+                  "key": "created_at[on_or_after]",
+                  "value": "<dateTime>",
+                  "description": "A set of filters on the list using the object’s field `created_at`."
+                },
+                {
+                  "disabled": false,
+                  "key": "created_at[before]",
+                  "value": "<dateTime>",
+                  "description": "A set of filters on the list using the object’s field `created_at`."
+                },
+                {
+                  "disabled": false,
+                  "key": "created_at[on_or_before]",
+                  "value": "<dateTime>",
+                  "description": "A set of filters on the list using the object’s field `created_at`."
+                },
+                {
+                  "disabled": false,
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Maximum number of objects to be returned."
+                },
+                {
+                  "disabled": false,
+                  "key": "starting_after",
+                  "value": "<string>",
+                  "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+                },
+                {
+                  "disabled": false,
+                  "key": "ending_before",
+                  "value": "<string>",
+                  "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "5d300619-bb0f-4e87-b566-cd983ebf3876",
+              "name": "List of Internal Transfer objects",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "internal_transfer"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "sender_account_number_id",
+                      "value": "account_number_xyz"
+                    },
+                    {
+                      "key": "receiver_account_number_id",
+                      "value": "account_number_xyz"
+                    },
+                    {
+                      "key": "status",
+                      "value": "posted"
+                    },
+                    {
+                      "key": "created_at[after]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[on_or_after]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[before]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[on_or_before]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "starting_after",
+                      "value": "internal_transfer_xyz123"
+                    },
+                    {
+                      "key": "ending_before",
+                      "value": "internal_transfer_xyz456"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"objects\": [\n    {\n      \"id\": \"internal_transfer_xyz123\",\n      \"amount\": 5000,\n      \"currency_code\": \"USD\",\n      \"sender_account_id\": \"account_xyz123\",\n      \"sender_account_number_id\": \"account_number_xyz123\",\n      \"receiver_account_id\": \"account_xyz123\",\n      \"receiver_account_number_id\": \"account_number_xyz123\",\n      \"status\": \"posted\",\n      \"description\": \"string\",\n      \"metadata\": {\n        \"key_0\": \"<string>\"\n      },\n      \"created_at\": \"2022-06-27T11:22:33Z\",\n      \"updated_at\": \"2022-06-27T11:22:33Z\",\n      \"rejection\": {\n        \"reason\": \"account_number_not_active\",\n        \"details\": \"Account number account_123 is inactive.\"\n      }\n    },\n    {\n      \"id\": \"internal_transfer_xyz123\",\n      \"amount\": 5000,\n      \"currency_code\": \"USD\",\n      \"sender_account_id\": \"account_xyz123\",\n      \"sender_account_number_id\": \"account_number_xyz123\",\n      \"receiver_account_id\": \"account_xyz123\",\n      \"receiver_account_number_id\": \"account_number_xyz123\",\n      \"status\": \"posted\",\n      \"description\": \"string\",\n      \"metadata\": {\n        \"key_0\": \"<string>\",\n        \"key_1\": \"<string>\",\n        \"key_2\": \"<string>\"\n      },\n      \"created_at\": \"2022-06-27T11:22:33Z\",\n      \"updated_at\": \"2022-06-27T11:22:33Z\",\n      \"rejection\": {\n        \"reason\": \"account_number_not_active\",\n        \"details\": \"Account number account_123 is inactive.\"\n      }\n    }\n  ],\n  \"has_more\": false\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "68548c38-1143-4d3f-8fcd-9506af7bf7a7",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "internal_transfer"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "sender_account_number_id",
+                      "value": "account_number_xyz"
+                    },
+                    {
+                      "key": "receiver_account_number_id",
+                      "value": "account_number_xyz"
+                    },
+                    {
+                      "key": "status",
+                      "value": "posted"
+                    },
+                    {
+                      "key": "created_at[after]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[on_or_after]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[before]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[on_or_before]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "starting_after",
+                      "value": "internal_transfer_xyz123"
+                    },
+                    {
+                      "key": "ending_before",
+                      "value": "internal_transfer_xyz456"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "69e7a530-32f4-4e13-abdb-3eb9b4753347",
+          "name": "Retrieve an Internal Transfer",
+          "request": {
+            "name": "Retrieve an Internal Transfer",
+            "description": {
+              "content": "Retrieve an Internal Transfer.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "internal_transfer",
+                ":internal_transfer_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "internal_transfer_id",
+                  "description": "(Required) The ID of the internal transfer object to be retrieved."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "ca76d527-9b77-4bd3-902d-3917d2d22073",
+              "name": "An Internal Transfer object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "internal_transfer",
+                    ":internal_transfer_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "internal_transfer_id",
+                      "description": "(Required) The ID of the internal transfer object to be retrieved."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"internal_transfer_xyz123\",\n  \"amount\": 5000,\n  \"currency_code\": \"USD\",\n  \"sender_account_id\": \"account_xyz123\",\n  \"sender_account_number_id\": \"account_number_xyz123\",\n  \"receiver_account_id\": \"account_xyz123\",\n  \"receiver_account_number_id\": \"account_number_xyz123\",\n  \"status\": \"posted\",\n  \"description\": \"string\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"created_at\": \"2022-06-27T11:22:33Z\",\n  \"updated_at\": \"2022-06-27T11:22:33Z\",\n  \"rejection\": {\n    \"reason\": \"account_number_not_active\",\n    \"details\": \"Account number account_123 is inactive.\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e7b138c9-a7a9-4753-be4f-8163dbd08dcf",
+              "name": "The internal_transfer_id passed in is not a valid InternalTransfer ID.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "internal_transfer",
+                    ":internal_transfer_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "internal_transfer_id",
+                      "description": "(Required) The ID of the internal transfer object to be retrieved."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.sandbox.lead.bank",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "04752b4a-253f-4a4e-ac97-47a2a5d1d59d",
+    "name": "Lead Bank Account Number Internal Transfer API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Lead Bank's APIs",
+      "type": "text/plain"
+    }
+  }
+}

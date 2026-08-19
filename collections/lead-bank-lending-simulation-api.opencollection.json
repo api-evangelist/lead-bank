@@ -1,0 +1,49 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lead Bank Account Number Lending Simulation API",
+    "version": "v1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Lending Simulation",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Advance Sandbox Disbursement",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/simulate/lending/disbursements/:disbursement_id/advance",
+            "params": [
+              {
+                "name": "disbursement_id",
+                "value": "disbursement_xyz001",
+                "type": "path",
+                "description": "ID of the disbursement object you want to advance."
+              },
+              {
+                "name": "event",
+                "value": "lending.disbursement.processing",
+                "type": "query",
+                "description": "Disbursement webhook event that you want to simulate. Possible values can be found in the Events & Webhooks section."
+              }
+            ]
+          },
+          "docs": "Advances a disbursement object status in the sandbox environment."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

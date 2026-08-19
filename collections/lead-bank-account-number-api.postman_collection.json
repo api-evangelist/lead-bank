@@ -1,0 +1,1546 @@
+{
+  "item": [
+    {
+      "id": "b7fd108f-8cdb-4f2a-9dcc-b867eea0fa86",
+      "name": "Account Number",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "5f2f3813-515d-4dd0-a3df-799aedfff715",
+          "name": "Create an Account Number",
+          "request": {
+            "name": "Create an Account Number",
+            "description": {
+              "content": "Creates an Account Number. Optionally also assigns either a ClientCustomerID or EntityID to the Account Number",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "account_number"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"account_id\": \"<string>\",\n  \"client_customer_id\": \"<string>\",\n  \"entity_id\": \"<string>\",\n  \"ach_controls\": {\n    \"originator_id\": \"<string>\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"<string>\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"<string>\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"<string>\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"<string>\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\",\n    \"key_2\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "7102dc8c-7f90-4ef1-bd1a-df4d74e0c929",
+              "name": "Successful response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_id\": \"account_xyz123\",\n  \"client_customer_id\": \"<your_customer_id>\",\n  \"entity_id\": \"entity_xyz123\",\n  \"ach_controls\": {\n    \"originator_id\": \"originator_xyz123\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"account_number_xyz\",\n  \"account_number\": \"string\",\n  \"routing_number\": \"string\",\n  \"account_id\": \"account_xyz123\",\n  \"client_customer_id\": \"<your_customer_id>\",\n  \"entity_id\": \"entity_xyz123\",\n  \"status\": \"active\",\n  \"ach_controls\": {\n    \"originator_id\": \"originator_xyz123\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"created_at\": \"1967-05-12T20:19:42.270Z\",\n  \"updated_at\": \"2024-10-31T06:43:35.670Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c3a85aac-9717-46b7-af28-9d5689cad156",
+              "name": "Bad Request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_id\": \"account_xyz123\",\n  \"client_customer_id\": \"<your_customer_id>\",\n  \"entity_id\": \"entity_xyz123\",\n  \"ach_controls\": {\n    \"originator_id\": \"originator_xyz123\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"operation_not_allowed\",\n  \"title\": \"This operation cannot be done on this object.\",\n  \"detail\": \"The maximum number of unassigned AccountNumbers has been reached. To create a new AccountNumber please pass in a `client_customer_id`, or assign one of your existing AccountNumbers.\",\n  \"status\": \"400\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "b4d09080-fd4c-4006-8477-a56324509d34",
+          "name": "List all Account Numbers",
+          "request": {
+            "name": "List all Account Numbers",
+            "description": {
+              "content": "List all Account Numbers.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "account_number"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "account_id",
+                  "value": "<string>",
+                  "description": "The ID of the account."
+                },
+                {
+                  "disabled": false,
+                  "key": "account_number",
+                  "value": "<string>",
+                  "description": "The account number."
+                },
+                {
+                  "disabled": false,
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Maximum number of objects to be returned."
+                },
+                {
+                  "disabled": false,
+                  "key": "starting_after",
+                  "value": "<string>",
+                  "description": "The ID of the account number to start the list after."
+                },
+                {
+                  "disabled": false,
+                  "key": "ending_before",
+                  "value": "<string>",
+                  "description": "The ID of the account number to end the list before."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "522167b1-b4bd-4156-a1d3-0bf73607a22b",
+              "name": "List of Account Numbers",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "account_id",
+                      "value": "account_xyz"
+                    },
+                    {
+                      "key": "account_number",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "starting_after",
+                      "value": "account_number_xyz"
+                    },
+                    {
+                      "key": "ending_before",
+                      "value": "account_number_xyz"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"objects\": [\n    {\n      \"id\": \"account_number_xyz\",\n      \"account_number\": \"string\",\n      \"routing_number\": \"string\",\n      \"account_id\": \"account_xyz123\",\n      \"client_customer_id\": \"<your_customer_id>\",\n      \"entity_id\": \"entity_xyz123\",\n      \"status\": \"active\",\n      \"ach_controls\": {\n        \"originator_id\": \"originator_xyz123\",\n        \"incoming\": {\n          \"accept_credit\": \"<boolean>\",\n          \"accept_debit\": \"<boolean>\",\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_company_ids_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        \"outgoing\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_account_numbers_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      },\n      \"wire_controls\": {\n        \"incoming\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_account_numbers_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        \"outgoing\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_account_numbers_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        \"outgoing_international\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_international_account_numbers_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      },\n      \"internal_transfer_controls\": {\n        \"incoming\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_account_number_ids_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        \"outgoing\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_account_number_ids_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      },\n      \"instant_payment_controls\": {\n        \"incoming\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_account_numbers_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        \"outgoing\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_account_numbers_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      },\n      \"metadata\": {\n        \"key_0\": \"<string>\"\n      },\n      \"created_at\": \"1947-08-23T19:32:54.908Z\",\n      \"updated_at\": \"1952-07-02T12:04:14.067Z\"\n    },\n    {\n      \"id\": \"account_number_xyz\",\n      \"account_number\": \"string\",\n      \"routing_number\": \"string\",\n      \"account_id\": \"account_xyz123\",\n      \"client_customer_id\": \"<your_customer_id>\",\n      \"entity_id\": \"entity_xyz123\",\n      \"status\": \"active\",\n      \"ach_controls\": {\n        \"originator_id\": \"originator_xyz123\",\n        \"incoming\": {\n          \"accept_credit\": \"<boolean>\",\n          \"accept_debit\": \"<boolean>\",\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_company_ids_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        \"outgoing\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_account_numbers_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      },\n      \"wire_controls\": {\n        \"incoming\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_account_numbers_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        \"outgoing\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_account_numbers_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        \"outgoing_international\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_international_account_numbers_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      },\n      \"internal_transfer_controls\": {\n        \"incoming\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_account_number_ids_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        \"outgoing\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_account_number_ids_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      },\n      \"instant_payment_controls\": {\n        \"incoming\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_account_numbers_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        \"outgoing\": {\n          \"counterparty_filter\": \"accept_all\",\n          \"counterparty_account_numbers_allowlist\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      },\n      \"metadata\": {\n        \"key_0\": \"<string>\",\n        \"key_1\": \"<string>\",\n        \"key_2\": \"<string>\",\n        \"key_3\": \"<string>\",\n        \"key_4\": \"<string>\"\n      },\n      \"created_at\": \"1963-12-07T10:11:49.507Z\",\n      \"updated_at\": \"1955-07-17T21:38:34.830Z\"\n    }\n  ],\n  \"has_more\": true\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "94e1a031-7c87-4447-ba77-0fd5711faec7",
+          "name": "Register an Account Number",
+          "request": {
+            "name": "Register an Account Number",
+            "description": {
+              "content": "Registers an Account Number.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "account_number",
+                "register"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"account_id\": \"<string>\",\n  \"account_number\": \"<string>\",\n  \"client_customer_id\": \"<string>\",\n  \"entity_id\": \"<string>\",\n  \"ach_controls\": {\n    \"originator_id\": \"<string>\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"<string>\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"<string>\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"<string>\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"<string>\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "63249e74-8028-421d-9b36-deae657e5c4a",
+              "name": "Successful response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number",
+                    "register"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_id\": \"account_xyz123\",\n  \"account_number\": \"<string>\",\n  \"client_customer_id\": \"<your_customer_id>\",\n  \"entity_id\": \"entity_xyz123\",\n  \"ach_controls\": {\n    \"originator_id\": \"originator_xyz123\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\",\n    \"key_2\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"account_number_xyz\",\n  \"account_number\": \"string\",\n  \"routing_number\": \"string\",\n  \"account_id\": \"account_xyz123\",\n  \"client_customer_id\": \"<your_customer_id>\",\n  \"entity_id\": \"entity_xyz123\",\n  \"status\": \"active\",\n  \"ach_controls\": {\n    \"originator_id\": \"originator_xyz123\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"created_at\": \"1967-05-12T20:19:42.270Z\",\n  \"updated_at\": \"2024-10-31T06:43:35.670Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2b70cd3d-f6ba-4de8-a43e-717811064bd0",
+              "name": "Bad Request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number",
+                    "register"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_id\": \"account_xyz123\",\n  \"account_number\": \"<string>\",\n  \"client_customer_id\": \"<your_customer_id>\",\n  \"entity_id\": \"entity_xyz123\",\n  \"ach_controls\": {\n    \"originator_id\": \"originator_xyz123\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\",\n    \"key_2\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"operation_not_allowed\",\n  \"title\": \"This operation cannot be done on this object.\",\n  \"detail\": \"The maximum number of unassigned AccountNumbers has been reached. To create a new AccountNumber please pass in a `client_customer_id`, or assign one of your existing AccountNumbers.\",\n  \"status\": \"400\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "2bcdfe99-609f-4230-adf1-1944f3f44204",
+          "name": "Assign an Account Number",
+          "request": {
+            "name": "Assign an Account Number",
+            "description": {
+              "content": "Assigns an Account Number with either a ClientCustomerID or EntityID. Only one of these should be provided",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "account_number",
+                ":account_number_id",
+                "assign"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "account_number_id",
+                  "description": "(Required) The ID of the Account Number to be assigned."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_customer_id\": \"<string>\",\n  \"entity_id\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "ec77c3f6-eab0-42d6-9ff9-b1e0b2a0187c",
+              "name": "Successful response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number",
+                    ":account_number_id",
+                    "assign"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "account_number_id",
+                      "description": "(Required) The ID of the Account Number to be assigned."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"client_customer_id\": \"<your_customer_id>\",\n  \"entity_id\": \"entity_xyz123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"account_number_xyz\",\n  \"account_number\": \"string\",\n  \"routing_number\": \"string\",\n  \"account_id\": \"account_xyz123\",\n  \"client_customer_id\": \"<your_customer_id>\",\n  \"entity_id\": \"entity_xyz123\",\n  \"status\": \"active\",\n  \"ach_controls\": {\n    \"originator_id\": \"originator_xyz123\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"created_at\": \"1967-05-12T20:19:42.270Z\",\n  \"updated_at\": \"2024-10-31T06:43:35.670Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "6f20c5ec-1388-4d52-a00b-816d4bcacb55",
+              "name": "Bad Request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number",
+                    ":account_number_id",
+                    "assign"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "account_number_id",
+                      "description": "(Required) The ID of the Account Number to be assigned."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"client_customer_id\": \"<your_customer_id>\",\n  \"entity_id\": \"entity_xyz123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"operation_not_allowed\",\n  \"title\": \"This operation cannot be done on this object.\",\n  \"detail\": \"You cannot assign an already assigned client_customer_id, current value: <client_customer_id>.\",\n  \"status\": \"400\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "e021089f-9e9d-4f4c-aeee-d49343532e44",
+          "name": "Update an Account Number",
+          "request": {
+            "name": "Update an Account Number",
+            "description": {
+              "content": "Update an Account Number's metadata.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "account_number",
+                ":account_number_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "account_number_id",
+                  "description": "(Required) The ID of the Account Number to be updated."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ach_controls\": {\n    \"originator_id\": \"<string>\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"<string>\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"<string>\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"<string>\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"<string>\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"<string>\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "ff86804a-25f6-45fc-8fdd-dbcd0b5f8099",
+              "name": "Successful response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number",
+                    ":account_number_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "account_number_id",
+                      "description": "(Required) The ID of the Account Number to be updated."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ach_controls\": {\n    \"originator_id\": \"originator_xyz123\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"account_number_xyz\",\n  \"account_number\": \"string\",\n  \"routing_number\": \"string\",\n  \"account_id\": \"account_xyz123\",\n  \"client_customer_id\": \"<your_customer_id>\",\n  \"entity_id\": \"entity_xyz123\",\n  \"status\": \"active\",\n  \"ach_controls\": {\n    \"originator_id\": \"originator_xyz123\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"created_at\": \"1967-05-12T20:19:42.270Z\",\n  \"updated_at\": \"2024-10-31T06:43:35.670Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "dc31e11a-b3af-44c1-b3a9-4ef623cd3b06",
+              "name": "Bad Request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number",
+                    ":account_number_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "account_number_id",
+                      "description": "(Required) The ID of the Account Number to be updated."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ach_controls\": {\n    \"originator_id\": \"originator_xyz123\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"parameters_invalid\",\n  \"title\": \"Your request parameters did not validate.\",\n  \"detail\": \"The field passed in cannot be updated using this API.\",\n  \"instance\": \"{#invalid-field-name}\",\n  \"status\": \"400\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "5fa320f3-145f-4a2e-bf4e-0387ba1d2519",
+          "name": "Retrieve an Account Number",
+          "request": {
+            "name": "Retrieve an Account Number",
+            "description": {
+              "content": "Retrieve an Account Number.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "account_number",
+                ":account_number_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "account_number_id",
+                  "description": "(Required) The ID of the Account Number to be retrieved."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "6379eda4-06f4-4cfe-89e6-d3e26197e885",
+              "name": "Successful response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number",
+                    ":account_number_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "account_number_id",
+                      "description": "(Required) The ID of the Account Number to be retrieved."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"account_number_xyz\",\n  \"account_number\": \"string\",\n  \"routing_number\": \"string\",\n  \"account_id\": \"account_xyz123\",\n  \"client_customer_id\": \"<your_customer_id>\",\n  \"entity_id\": \"entity_xyz123\",\n  \"status\": \"active\",\n  \"ach_controls\": {\n    \"originator_id\": \"originator_xyz123\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"created_at\": \"1967-05-12T20:19:42.270Z\",\n  \"updated_at\": \"2024-10-31T06:43:35.670Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "537a2c04-1d19-40ec-9f61-1dbbf3771ada",
+          "name": "Activate an Account Number",
+          "request": {
+            "name": "Activate an Account Number",
+            "description": {
+              "content": "Activate an Account Number.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "account_number",
+                ":account_number_id",
+                "activate"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "account_number_id",
+                  "description": "(Required) The ID of the Account Number to be activated."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "f94c9763-b9ae-4fc1-aac6-4acffc524bb0",
+              "name": "Successful response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number",
+                    ":account_number_id",
+                    "activate"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "account_number_id",
+                      "description": "(Required) The ID of the Account Number to be activated."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\",\n    \"key_2\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"account_number_xyz\",\n  \"account_number\": \"string\",\n  \"routing_number\": \"string\",\n  \"account_id\": \"account_xyz123\",\n  \"client_customer_id\": \"<your_customer_id>\",\n  \"entity_id\": \"entity_xyz123\",\n  \"status\": \"active\",\n  \"ach_controls\": {\n    \"originator_id\": \"originator_xyz123\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"created_at\": \"1967-05-12T20:19:42.270Z\",\n  \"updated_at\": \"2024-10-31T06:43:35.670Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "82e6a5b9-4df8-4619-b856-a55c0a1cc3ae",
+              "name": "Bad Request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number",
+                    ":account_number_id",
+                    "activate"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "account_number_id",
+                      "description": "(Required) The ID of the Account Number to be activated."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\",\n    \"key_2\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "5fc1697a-63a6-441e-9a9a-0be5e8dc5c54",
+          "name": "Deactivate an Account Number",
+          "request": {
+            "name": "Deactivate an Account Number",
+            "description": {
+              "content": "Deactivate an Account Number.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "account_number",
+                ":account_number_id",
+                "deactivate"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "account_number_id",
+                  "description": "(Required) The ID of the Account Number to be deactivated."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "1b3d61af-d962-4b0e-a781-ce6a2fc6c57a",
+              "name": "Successful response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number",
+                    ":account_number_id",
+                    "deactivate"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "account_number_id",
+                      "description": "(Required) The ID of the Account Number to be deactivated."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"account_number_xyz\",\n  \"account_number\": \"string\",\n  \"routing_number\": \"string\",\n  \"account_id\": \"account_xyz123\",\n  \"client_customer_id\": \"<your_customer_id>\",\n  \"entity_id\": \"entity_xyz123\",\n  \"status\": \"active\",\n  \"ach_controls\": {\n    \"originator_id\": \"originator_xyz123\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"created_at\": \"1967-05-12T20:19:42.270Z\",\n  \"updated_at\": \"2024-10-31T06:43:35.670Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d2e29373-09ed-4ef9-a419-38fb24e53d1b",
+              "name": "Bad Request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number",
+                    ":account_number_id",
+                    "deactivate"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "account_number_id",
+                      "description": "(Required) The ID of the Account Number to be deactivated."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "4dbbff9c-8b9c-46fa-8186-ac1946fb9317",
+          "name": "Cancel an Account Number",
+          "request": {
+            "name": "Cancel an Account Number",
+            "description": {
+              "content": "Cancel an Account Number.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "account_number",
+                ":account_number_id",
+                "cancel"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "account_number_id",
+                  "description": "(Required) The ID of the Account Number to be canceled."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "c3388f3f-7955-421e-ad90-185f6cc34039",
+              "name": "Successful response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number",
+                    ":account_number_id",
+                    "cancel"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "account_number_id",
+                      "description": "(Required) The ID of the Account Number to be canceled."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\",\n    \"key_2\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"account_number_xyz\",\n  \"account_number\": \"string\",\n  \"routing_number\": \"string\",\n  \"account_id\": \"account_xyz123\",\n  \"client_customer_id\": \"<your_customer_id>\",\n  \"entity_id\": \"entity_xyz123\",\n  \"status\": \"active\",\n  \"ach_controls\": {\n    \"originator_id\": \"originator_xyz123\",\n    \"incoming\": {\n      \"accept_credit\": \"<boolean>\",\n      \"accept_debit\": \"<boolean>\",\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_company_ids_allowlist\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"wire_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing_international\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_international_account_numbers_allowlist\": [\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        },\n        {\n          \"business_identifier_code\": \"CHASUS33\",\n          \"account_identifier\": {\n            \"type\": \"<string>\",\n            \"value\": \"GB29NWBK60161331926819\"\n          }\n        }\n      ]\n    }\n  },\n  \"internal_transfer_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_number_ids_allowlist\": [\n        \"account_number_xyz123\",\n        \"account_number_xyz123\"\n      ]\n    }\n  },\n  \"instant_payment_controls\": {\n    \"incoming\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    },\n    \"outgoing\": {\n      \"counterparty_filter\": \"accept_all\",\n      \"counterparty_account_numbers_allowlist\": [\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        },\n        {\n          \"account_number\": \"<string>\",\n          \"routing_number\": \"<string>\"\n        }\n      ]\n    }\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"created_at\": \"1967-05-12T20:19:42.270Z\",\n  \"updated_at\": \"2024-10-31T06:43:35.670Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "84414db7-3fa9-4e05-b0ee-d5fdaf237695",
+              "name": "Bad Request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "account_number",
+                    ":account_number_id",
+                    "cancel"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "account_number_id",
+                      "description": "(Required) The ID of the Account Number to be canceled."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\",\n    \"key_2\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.sandbox.lead.bank",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "c2b65b38-699c-4ef3-af15-a8d799c64d88",
+    "name": "Lead Bank Account Number API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Lead Bank's APIs",
+      "type": "text/plain"
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lead Bank Account Number Subledger Balances API",
+    "version": "v1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Subledger Balances",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a Subledger Balance",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/subledger_balances",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a Subledger Balance object. The newly created Subledger Balance will have a `status` of `active` and a `status_reason` of `active`, and a unique `id` with prefix `subledger_balance_` will be auto-generated."
+        },
+        {
+          "info": {
+            "name": "Retrieve a Subledger Balance",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/subledger_balances/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Return Subledger Balance associated with this `id`."
+              }
+            ]
+          },
+          "docs": "Retrieve a Subledger Balance object."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

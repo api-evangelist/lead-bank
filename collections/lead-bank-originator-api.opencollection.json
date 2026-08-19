@@ -1,0 +1,223 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lead Bank Account Number Originator API",
+    "version": "v1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Originator",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all Originators",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/originators",
+            "params": [
+              {
+                "name": "account_id",
+                "value": "account_xyz123",
+                "type": "query",
+                "description": "The account ID to retrieve the originators for."
+              },
+              {
+                "name": "limit",
+                "value": "10",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "originator_xyz123",
+                "type": "query",
+                "description": "The ID of the originator to start the list after."
+              },
+              {
+                "name": "ending_before",
+                "value": "originator_xyz123",
+                "type": "query",
+                "description": "The ID of the originator to end the list before."
+              },
+              {
+                "name": "status",
+                "value": "active",
+                "type": "query",
+                "description": "The status of the originator."
+              }
+            ]
+          },
+          "docs": "List all Originators."
+        },
+        {
+          "info": {
+            "name": "Create an Originator",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/originators",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create an Originator"
+        },
+        {
+          "info": {
+            "name": "Retrieve an Originator",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/originators/:originator_id",
+            "params": [
+              {
+                "name": "originator_id",
+                "value": "originator_xyz123",
+                "type": "path",
+                "description": "The ID of the originator to be retrieved."
+              }
+            ]
+          },
+          "docs": "Retrieve an Originator."
+        },
+        {
+          "info": {
+            "name": "Update an Originator",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.sandbox.lead.bank/v0/originators/:originator_id",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "originator_id",
+                "value": "originator_xyz123",
+                "type": "path",
+                "description": "The ID of the originator to be retrieved."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update an Originator's parameters."
+        },
+        {
+          "info": {
+            "name": "Activate an Originator",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/originators/:originator_id/activate",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "originator_id",
+                "value": "originator_xyz123",
+                "type": "path",
+                "description": "The ID of the originator to be activated."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Activate an Originator."
+        },
+        {
+          "info": {
+            "name": "Deactivate an Originator",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/originators/:originator_id/deactivate",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "originator_id",
+                "value": "originator_xyz123",
+                "type": "path",
+                "description": "The ID of the originator to be deactivated."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deactivate an Originator."
+        },
+        {
+          "info": {
+            "name": "Cancel an Originator",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/originators/:originator_id/cancel",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "originator_id",
+                "value": "originator_xyz123",
+                "type": "path",
+                "description": "The ID of the originator to be cancelled."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Cancel an Originator."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

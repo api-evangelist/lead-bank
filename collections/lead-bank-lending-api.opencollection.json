@@ -1,0 +1,89 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lead Bank Account Number Lending API",
+    "version": "v1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Lending",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a Disbursement",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/lending/disbursements",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a disbursement for a loan"
+        },
+        {
+          "info": {
+            "name": "Retrieve a disbursement",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v0/lending/disbursements/:disbursement_id",
+            "params": [
+              {
+                "name": "disbursement_id",
+                "value": "disbursement_xyz001",
+                "type": "path",
+                "description": "ID of the disbursement object you want to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a disbursement object."
+        },
+        {
+          "info": {
+            "name": "Cancel a disbursement",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sandbox.lead.bank/v0/lending/disbursements/:disbursement_id/cancel",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "disbursement_id",
+                "value": "disbursement_xyz001",
+                "type": "path",
+                "description": "ID of the disbursement object you want to cancel."
+              }
+            ]
+          },
+          "docs": "Cancel a disbursement."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

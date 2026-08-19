@@ -1,0 +1,1849 @@
+{
+  "item": [
+    {
+      "id": "584524e7-fd54-4124-a051-3709744281e7",
+      "name": "ACH",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "71b0fa45-25eb-4b9b-ab61-d9326a7f54ca",
+          "name": "Create an ACH",
+          "request": {
+            "name": "Create an ACH",
+            "description": {
+              "content": "Creates an outgoing ACH.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "ach"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"account_number_id\": \"<string>\",\n  \"counterparty\": {\n    \"account_number\": \"<string>\",\n    \"routing_number\": \"<string>\",\n    \"account_type\": \"<string>\",\n    \"name\": \"<string>\"\n  },\n  \"delivery_type\": \"<string>\",\n  \"sec_code\": \"<string>\",\n  \"transaction_type\": \"<string>\",\n  \"amount\": \"<long>\",\n  \"currency_code\": \"<string>\",\n  \"statement_descriptor\": \"<string>\",\n  \"individual_id\": \"<string>\",\n  \"descriptive_date\": \"<string>\",\n  \"additional_information\": \"<string>\",\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "f21d9158-bf46-4380-8f2f-f04018f821b0",
+              "name": "ACH object created.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_number_id\": \"account_number_xyz123\",\n  \"counterparty\": {\n    \"account_number\": \"1032345678\",\n    \"routing_number\": \"021000021\",\n    \"account_type\": \"checking\",\n    \"name\": \"Lara Smikle\"\n  },\n  \"delivery_type\": \"same_business_day\",\n  \"sec_code\": \"WEB\",\n  \"transaction_type\": \"credit\",\n  \"amount\": 5000,\n  \"currency_code\": \"USD\",\n  \"statement_descriptor\": \"P2P Credit\",\n  \"individual_id\": \"<string>\",\n  \"descriptive_date\": \"220627\",\n  \"additional_information\": \"<string>\",\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"ach_xyz001\",\n  \"created_at\": \"2022-06-27T11:22:33Z\",\n  \"updated_at\": \"2022-06-27T11:22:33Z\",\n  \"status\": \"submitted\",\n  \"amount\": 5000,\n  \"account_id\": \"account_xyz123\",\n  \"account_number_id\": \"account_number_xyz123\",\n  \"direction\": \"outgoing\",\n  \"delivery_type\": \"same_business_day\",\n  \"transaction_type\": \"credit\",\n  \"sec_code\": \"WEB\",\n  \"currency_code\": \"USD\",\n  \"statement_descriptor\": \"P2P Credit\",\n  \"record_details\": {\n    \"transaction_code\": \"checking_credit\",\n    \"company_name\": \"Acme Inc.\",\n    \"company_id\": \"1234\",\n    \"company_discretionary_data\": \"Acme Inc.\",\n    \"effective_date\": \"2022-06-27\",\n    \"settlement_date\": \"2022-06-27\",\n    \"individual_id\": \"<string>\",\n    \"receiver_name\": \"./2f-nc\",\n    \"descriptive_date\": \"220627\",\n    \"additional_information\": \"<string>\",\n    \"trace_number\": \"123456789012345\"\n  },\n  \"counterparty\": {\n    \"account_number\": \"1032345678\",\n    \"routing_number\": \"021000021\",\n    \"account_type\": \"checking\",\n    \"name\": \"Lara Smikle\"\n  },\n  \"returns\": [\n    {\n      \"type\": \"return\",\n      \"status\": \"submitted\",\n      \"return_code\": \"R02\",\n      \"return_reason\": \"string\",\n      \"trace_number\": \"123456789012345\",\n      \"additional_information\": \"string\"\n    },\n    {\n      \"type\": \"return\",\n      \"status\": \"submitted\",\n      \"return_code\": \"R02\",\n      \"return_reason\": \"string\",\n      \"trace_number\": \"123456789012345\",\n      \"additional_information\": \"string\"\n    }\n  ],\n  \"reversal\": {\n    \"reversal_reason\": \"debit_too_early\",\n    \"linked_ach_id\": \"string\"\n  },\n  \"rejection\": {\n    \"reason\": \"account_number_status\",\n    \"details\": \"Account number account_123 is inactive.\"\n  },\n  \"correction\": {\n    \"account_number\": \"1032345678\",\n    \"routing_number\": \"021000021\",\n    \"account_type\": \"savings\"\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"iat_details\": {\n    \"transaction_type_code\": \"business\",\n    \"destination_country\": \"CA\",\n    \"originator_currency_code\": \"USD\",\n    \"destination_currency_code\": \"CAD\",\n    \"foreign_trace_number\": \"FRN-2024-98765-INTL\",\n    \"additional_information\": \"<string>\",\n    \"originator\": {\n      \"name\": \"Acme Inc.\",\n      \"street_address\": \"123 Main Street\",\n      \"city_state_province\": \"New York*NY\\\\\",\n      \"country_postal_code\": \"US*10001\\\\\"\n    },\n    \"originating_financial_institution\": {\n      \"name\": \"First National Bank\",\n      \"identifier_type\": \"iban\",\n      \"identifier_code\": \"FNBUS33XXX\",\n      \"branch_country\": \"US\"\n    },\n    \"receiver\": {\n      \"name\": \"Lara Smikle\",\n      \"reference_number\": \"RCV-2024-001\",\n      \"street_address\": \"456 Maple Avenue\",\n      \"city_state_province\": \"Toronto*ON\\\\\",\n      \"country_postal_code\": \"CA*M5H 2N2\\\\\"\n    },\n    \"receiving_financial_institution\": {\n      \"name\": \"First National Bank\",\n      \"identifier_type\": \"iban\",\n      \"identifier_code\": \"FNBUS33XXX\",\n      \"branch_country\": \"US\"\n    },\n    \"foreign_correspondent_banks\": [\n      {\n        \"name\": \"First National Bank\",\n        \"identifier_type\": \"iban\",\n        \"identifier_code\": \"FNBUS33XXX\",\n        \"branch_country\": \"US\"\n      },\n      {\n        \"name\": \"First National Bank\",\n        \"identifier_type\": \"business_identifier_code\",\n        \"identifier_code\": \"FNBUS33XXX\",\n        \"branch_country\": \"US\"\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "686d1295-72d7-4c01-bdb1-59e7e6aa7ac7",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_number_id\": \"account_number_xyz123\",\n  \"counterparty\": {\n    \"account_number\": \"1032345678\",\n    \"routing_number\": \"021000021\",\n    \"account_type\": \"checking\",\n    \"name\": \"Lara Smikle\"\n  },\n  \"delivery_type\": \"same_business_day\",\n  \"sec_code\": \"WEB\",\n  \"transaction_type\": \"credit\",\n  \"amount\": 5000,\n  \"currency_code\": \"USD\",\n  \"statement_descriptor\": \"P2P Credit\",\n  \"individual_id\": \"<string>\",\n  \"descriptive_date\": \"220627\",\n  \"additional_information\": \"<string>\",\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c7eafb6d-862a-422d-8f69-d7dd285d7b77",
+              "name": "We couldn't parse your request body, please check that your request body is valid JSON.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_number_id\": \"account_number_xyz123\",\n  \"counterparty\": {\n    \"account_number\": \"1032345678\",\n    \"routing_number\": \"021000021\",\n    \"account_type\": \"checking\",\n    \"name\": \"Lara Smikle\"\n  },\n  \"delivery_type\": \"same_business_day\",\n  \"sec_code\": \"WEB\",\n  \"transaction_type\": \"credit\",\n  \"amount\": 5000,\n  \"currency_code\": \"USD\",\n  \"statement_descriptor\": \"P2P Credit\",\n  \"individual_id\": \"<string>\",\n  \"descriptive_date\": \"220627\",\n  \"additional_information\": \"<string>\",\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "e9faa6f7-a792-4a6e-a478-43010ed65b89",
+          "name": "List all ACHes",
+          "request": {
+            "name": "List all ACHes",
+            "description": {
+              "content": "List all ACH objects.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "ach"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "account_id",
+                  "value": "<string>",
+                  "description": "Return ACHes associated with this `account_id`."
+                },
+                {
+                  "disabled": false,
+                  "key": "account_number",
+                  "value": "<string>",
+                  "description": "Return ACHes associated with this `account_number`."
+                },
+                {
+                  "disabled": false,
+                  "key": "account_number_id",
+                  "value": "<string>",
+                  "description": "Return ACHes associated with this `account_number_id`."
+                },
+                {
+                  "disabled": false,
+                  "key": "counterparty_account_number",
+                  "value": "<string>",
+                  "description": "Return ACHes associated with this counterparty's account_number."
+                },
+                {
+                  "disabled": false,
+                  "key": "direction",
+                  "value": "<string>",
+                  "description": "Return ACHes with this `direction`."
+                },
+                {
+                  "disabled": false,
+                  "key": "status",
+                  "value": "<string>",
+                  "description": "Return ACHes with this `status`."
+                },
+                {
+                  "disabled": false,
+                  "key": "transaction_type",
+                  "value": "<string>",
+                  "description": "Return ACHes with this `transaction_type`."
+                },
+                {
+                  "disabled": false,
+                  "key": "created_at[after]",
+                  "value": "<dateTime>",
+                  "description": "A set of filters on the list using the object’s field `created_at`."
+                },
+                {
+                  "disabled": false,
+                  "key": "created_at[on_or_after]",
+                  "value": "<dateTime>",
+                  "description": "A set of filters on the list using the object’s field `created_at`."
+                },
+                {
+                  "disabled": false,
+                  "key": "created_at[before]",
+                  "value": "<dateTime>",
+                  "description": "A set of filters on the list using the object’s field `created_at`."
+                },
+                {
+                  "disabled": false,
+                  "key": "created_at[on_or_before]",
+                  "value": "<dateTime>",
+                  "description": "A set of filters on the list using the object’s field `created_at`."
+                },
+                {
+                  "disabled": false,
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Maximum number of objects to be returned."
+                },
+                {
+                  "disabled": false,
+                  "key": "starting_after",
+                  "value": "<string>",
+                  "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+                },
+                {
+                  "disabled": false,
+                  "key": "ending_before",
+                  "value": "<string>",
+                  "description": "A cursor for use in pagination; this is an ID that defines your place in the list."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "ab4d81f6-8a26-4300-8241-2c64c27ccbcd",
+              "name": "A list of ACHes",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "account_id",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "account_number",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "account_number_id",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "counterparty_account_number",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "direction",
+                      "value": "outgoing"
+                    },
+                    {
+                      "key": "status",
+                      "value": "submitted"
+                    },
+                    {
+                      "key": "transaction_type",
+                      "value": "credit"
+                    },
+                    {
+                      "key": "created_at[after]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[on_or_after]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[before]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[on_or_before]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "starting_after",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ending_before",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"objects\": [\n    {\n      \"id\": \"ach_xyz001\",\n      \"created_at\": \"2022-06-27T11:22:33Z\",\n      \"updated_at\": \"2022-06-27T11:22:33Z\",\n      \"status\": \"submitted\",\n      \"amount\": 5000,\n      \"account_id\": \"account_xyz123\",\n      \"account_number_id\": \"account_number_xyz123\",\n      \"direction\": \"outgoing\",\n      \"delivery_type\": \"same_business_day\",\n      \"transaction_type\": \"credit\",\n      \"sec_code\": \"WEB\",\n      \"currency_code\": \"USD\",\n      \"statement_descriptor\": \"P2P Credit\",\n      \"record_details\": {\n        \"transaction_code\": \"checking_credit\",\n        \"company_name\": \"Acme Inc.\",\n        \"company_id\": \"1234\",\n        \"company_discretionary_data\": \"Acme Inc.\",\n        \"effective_date\": \"2022-06-27\",\n        \"settlement_date\": \"2022-06-27\",\n        \"individual_id\": \"<string>\",\n        \"receiver_name\": \"\\\\82\",\n        \"descriptive_date\": \"220627\",\n        \"additional_information\": \"<string>\",\n        \"trace_number\": \"123456789012345\"\n      },\n      \"counterparty\": {\n        \"account_number\": \"1032345678\",\n        \"routing_number\": \"021000021\",\n        \"account_type\": \"checking\",\n        \"name\": \"Lara Smikle\"\n      },\n      \"returns\": [\n        {\n          \"type\": \"return\",\n          \"status\": \"submitted\",\n          \"return_code\": \"R02\",\n          \"return_reason\": \"string\",\n          \"trace_number\": \"123456789012345\",\n          \"additional_information\": \"string\"\n        },\n        {\n          \"type\": \"return\",\n          \"status\": \"submitted\",\n          \"return_code\": \"R02\",\n          \"return_reason\": \"string\",\n          \"trace_number\": \"123456789012345\",\n          \"additional_information\": \"string\"\n        }\n      ],\n      \"reversal\": {\n        \"reversal_reason\": \"duplicate\",\n        \"linked_ach_id\": \"string\"\n      },\n      \"rejection\": {\n        \"reason\": \"account_number_status\",\n        \"details\": \"Account number account_123 is inactive.\"\n      },\n      \"correction\": {\n        \"account_number\": \"1032345678\",\n        \"routing_number\": \"021000021\",\n        \"account_type\": \"checking\"\n      },\n      \"metadata\": {\n        \"key_0\": \"<string>\"\n      },\n      \"iat_details\": {\n        \"transaction_type_code\": \"business\",\n        \"destination_country\": \"CA\",\n        \"originator_currency_code\": \"USD\",\n        \"destination_currency_code\": \"CAD\",\n        \"foreign_trace_number\": \"FRN-2024-98765-INTL\",\n        \"additional_information\": \"<string>\",\n        \"originator\": {\n          \"name\": \"Acme Inc.\",\n          \"street_address\": \"123 Main Street\",\n          \"city_state_province\": \"New York*NY\\\\\",\n          \"country_postal_code\": \"US*10001\\\\\"\n        },\n        \"originating_financial_institution\": {\n          \"name\": \"First National Bank\",\n          \"identifier_type\": \"business_identifier_code\",\n          \"identifier_code\": \"FNBUS33XXX\",\n          \"branch_country\": \"US\"\n        },\n        \"receiver\": {\n          \"name\": \"Lara Smikle\",\n          \"reference_number\": \"RCV-2024-001\",\n          \"street_address\": \"456 Maple Avenue\",\n          \"city_state_province\": \"Toronto*ON\\\\\",\n          \"country_postal_code\": \"CA*M5H 2N2\\\\\"\n        },\n        \"receiving_financial_institution\": {\n          \"name\": \"First National Bank\",\n          \"identifier_type\": \"iban\",\n          \"identifier_code\": \"FNBUS33XXX\",\n          \"branch_country\": \"US\"\n        },\n        \"foreign_correspondent_banks\": [\n          {\n            \"name\": \"First National Bank\",\n            \"identifier_type\": \"iban\",\n            \"identifier_code\": \"FNBUS33XXX\",\n            \"branch_country\": \"US\"\n          },\n          {\n            \"name\": \"First National Bank\",\n            \"identifier_type\": \"iban\",\n            \"identifier_code\": \"FNBUS33XXX\",\n            \"branch_country\": \"US\"\n          }\n        ]\n      }\n    },\n    {\n      \"id\": \"ach_xyz001\",\n      \"created_at\": \"2022-06-27T11:22:33Z\",\n      \"updated_at\": \"2022-06-27T11:22:33Z\",\n      \"status\": \"submitted\",\n      \"amount\": 5000,\n      \"account_id\": \"account_xyz123\",\n      \"account_number_id\": \"account_number_xyz123\",\n      \"direction\": \"outgoing\",\n      \"delivery_type\": \"same_business_day\",\n      \"transaction_type\": \"credit\",\n      \"sec_code\": \"WEB\",\n      \"currency_code\": \"USD\",\n      \"statement_descriptor\": \"P2P Credit\",\n      \"record_details\": {\n        \"transaction_code\": \"checking_credit\",\n        \"company_name\": \"Acme Inc.\",\n        \"company_id\": \"1234\",\n        \"company_discretionary_data\": \"Acme Inc.\",\n        \"effective_date\": \"2022-06-27\",\n        \"settlement_date\": \"2022-06-27\",\n        \"individual_id\": \"<string>\",\n        \"receiver_name\": \"uBK%cHRs` \",\n        \"descriptive_date\": \"220627\",\n        \"additional_information\": \"<string>\",\n        \"trace_number\": \"123456789012345\"\n      },\n      \"counterparty\": {\n        \"account_number\": \"1032345678\",\n        \"routing_number\": \"021000021\",\n        \"account_type\": \"checking\",\n        \"name\": \"Lara Smikle\"\n      },\n      \"returns\": [\n        {\n          \"type\": \"return\",\n          \"status\": \"submitted\",\n          \"return_code\": \"R02\",\n          \"return_reason\": \"string\",\n          \"trace_number\": \"123456789012345\",\n          \"additional_information\": \"string\"\n        },\n        {\n          \"type\": \"return\",\n          \"status\": \"submitted\",\n          \"return_code\": \"R02\",\n          \"return_reason\": \"string\",\n          \"trace_number\": \"123456789012345\",\n          \"additional_information\": \"string\"\n        }\n      ],\n      \"reversal\": {\n        \"reversal_reason\": \"amount_incorrect\",\n        \"linked_ach_id\": \"string\"\n      },\n      \"rejection\": {\n        \"reason\": \"account_number_status\",\n        \"details\": \"Account number account_123 is inactive.\"\n      },\n      \"correction\": {\n        \"account_number\": \"1032345678\",\n        \"routing_number\": \"021000021\",\n        \"account_type\": \"checking\"\n      },\n      \"metadata\": {\n        \"key_0\": \"<string>\",\n        \"key_1\": \"<string>\"\n      },\n      \"iat_details\": {\n        \"transaction_type_code\": \"business\",\n        \"destination_country\": \"CA\",\n        \"originator_currency_code\": \"USD\",\n        \"destination_currency_code\": \"CAD\",\n        \"foreign_trace_number\": \"FRN-2024-98765-INTL\",\n        \"additional_information\": \"<string>\",\n        \"originator\": {\n          \"name\": \"Acme Inc.\",\n          \"street_address\": \"123 Main Street\",\n          \"city_state_province\": \"New York*NY\\\\\",\n          \"country_postal_code\": \"US*10001\\\\\"\n        },\n        \"originating_financial_institution\": {\n          \"name\": \"First National Bank\",\n          \"identifier_type\": \"national_clearing_system\",\n          \"identifier_code\": \"FNBUS33XXX\",\n          \"branch_country\": \"US\"\n        },\n        \"receiver\": {\n          \"name\": \"Lara Smikle\",\n          \"reference_number\": \"RCV-2024-001\",\n          \"street_address\": \"456 Maple Avenue\",\n          \"city_state_province\": \"Toronto*ON\\\\\",\n          \"country_postal_code\": \"CA*M5H 2N2\\\\\"\n        },\n        \"receiving_financial_institution\": {\n          \"name\": \"First National Bank\",\n          \"identifier_type\": \"business_identifier_code\",\n          \"identifier_code\": \"FNBUS33XXX\",\n          \"branch_country\": \"US\"\n        },\n        \"foreign_correspondent_banks\": [\n          {\n            \"name\": \"First National Bank\",\n            \"identifier_type\": \"iban\",\n            \"identifier_code\": \"FNBUS33XXX\",\n            \"branch_country\": \"US\"\n          },\n          {\n            \"name\": \"First National Bank\",\n            \"identifier_type\": \"national_clearing_system\",\n            \"identifier_code\": \"FNBUS33XXX\",\n            \"branch_country\": \"US\"\n          }\n        ]\n      }\n    }\n  ],\n  \"has_more\": false\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "7903699d-17cc-416d-b528-dfea4e4cabad",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "account_id",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "account_number",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "account_number_id",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "counterparty_account_number",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "direction",
+                      "value": "outgoing"
+                    },
+                    {
+                      "key": "status",
+                      "value": "submitted"
+                    },
+                    {
+                      "key": "transaction_type",
+                      "value": "credit"
+                    },
+                    {
+                      "key": "created_at[after]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[on_or_after]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[before]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[on_or_before]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "starting_after",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ending_before",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "3fa9a1e7-90d2-4b94-bc38-1e885871a957",
+              "name": "ach_id passed in is not a valid external ACH object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "account_id",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "account_number",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "account_number_id",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "counterparty_account_number",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "direction",
+                      "value": "outgoing"
+                    },
+                    {
+                      "key": "status",
+                      "value": "submitted"
+                    },
+                    {
+                      "key": "transaction_type",
+                      "value": "credit"
+                    },
+                    {
+                      "key": "created_at[after]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[on_or_after]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[before]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "created_at[on_or_before]",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "starting_after",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ending_before",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "7602e3de-e1d1-4b12-8380-d956ebc63182",
+          "name": "Retrieve an ACH",
+          "request": {
+            "name": "Retrieve an ACH",
+            "description": {
+              "content": "Retrieve an ACH object.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "ach",
+                ":ach_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "ach_id",
+                  "description": "(Required) ID of the ACH object you want to retrieve."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "bf6bc2fe-e07c-4106-b86f-6125370fd70c",
+              "name": "An ACH object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach",
+                    ":ach_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH object you want to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"ach_xyz001\",\n  \"created_at\": \"2022-06-27T11:22:33Z\",\n  \"updated_at\": \"2022-06-27T11:22:33Z\",\n  \"status\": \"submitted\",\n  \"amount\": 5000,\n  \"account_id\": \"account_xyz123\",\n  \"account_number_id\": \"account_number_xyz123\",\n  \"direction\": \"outgoing\",\n  \"delivery_type\": \"same_business_day\",\n  \"transaction_type\": \"credit\",\n  \"sec_code\": \"WEB\",\n  \"currency_code\": \"USD\",\n  \"statement_descriptor\": \"P2P Credit\",\n  \"record_details\": {\n    \"transaction_code\": \"checking_credit\",\n    \"company_name\": \"Acme Inc.\",\n    \"company_id\": \"1234\",\n    \"company_discretionary_data\": \"Acme Inc.\",\n    \"effective_date\": \"2022-06-27\",\n    \"settlement_date\": \"2022-06-27\",\n    \"individual_id\": \"<string>\",\n    \"receiver_name\": \"_De!#$1Vmh\",\n    \"descriptive_date\": \"220627\",\n    \"additional_information\": \"<string>\",\n    \"trace_number\": \"123456789012345\"\n  },\n  \"counterparty\": {\n    \"account_number\": \"1032345678\",\n    \"routing_number\": \"021000021\",\n    \"account_type\": \"checking\",\n    \"name\": \"Lara Smikle\"\n  },\n  \"returns\": [\n    {\n      \"type\": \"return\",\n      \"status\": \"submitted\",\n      \"return_code\": \"R02\",\n      \"return_reason\": \"string\",\n      \"trace_number\": \"123456789012345\",\n      \"additional_information\": \"string\"\n    },\n    {\n      \"type\": \"return\",\n      \"status\": \"submitted\",\n      \"return_code\": \"R02\",\n      \"return_reason\": \"string\",\n      \"trace_number\": \"123456789012345\",\n      \"additional_information\": \"string\"\n    }\n  ],\n  \"reversal\": {\n    \"reversal_reason\": \"duplicate\",\n    \"linked_ach_id\": \"string\"\n  },\n  \"rejection\": {\n    \"reason\": \"account_number_status\",\n    \"details\": \"Account number account_123 is inactive.\"\n  },\n  \"correction\": {\n    \"account_number\": \"1032345678\",\n    \"routing_number\": \"021000021\",\n    \"account_type\": \"savings\"\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"iat_details\": {\n    \"transaction_type_code\": \"business\",\n    \"destination_country\": \"CA\",\n    \"originator_currency_code\": \"USD\",\n    \"destination_currency_code\": \"CAD\",\n    \"foreign_trace_number\": \"FRN-2024-98765-INTL\",\n    \"additional_information\": \"<string>\",\n    \"originator\": {\n      \"name\": \"Acme Inc.\",\n      \"street_address\": \"123 Main Street\",\n      \"city_state_province\": \"New York*NY\\\\\",\n      \"country_postal_code\": \"US*10001\\\\\"\n    },\n    \"originating_financial_institution\": {\n      \"name\": \"First National Bank\",\n      \"identifier_type\": \"national_clearing_system\",\n      \"identifier_code\": \"FNBUS33XXX\",\n      \"branch_country\": \"US\"\n    },\n    \"receiver\": {\n      \"name\": \"Lara Smikle\",\n      \"reference_number\": \"RCV-2024-001\",\n      \"street_address\": \"456 Maple Avenue\",\n      \"city_state_province\": \"Toronto*ON\\\\\",\n      \"country_postal_code\": \"CA*M5H 2N2\\\\\"\n    },\n    \"receiving_financial_institution\": {\n      \"name\": \"First National Bank\",\n      \"identifier_type\": \"iban\",\n      \"identifier_code\": \"FNBUS33XXX\",\n      \"branch_country\": \"US\"\n    },\n    \"foreign_correspondent_banks\": [\n      {\n        \"name\": \"First National Bank\",\n        \"identifier_type\": \"national_clearing_system\",\n        \"identifier_code\": \"FNBUS33XXX\",\n        \"branch_country\": \"US\"\n      },\n      {\n        \"name\": \"First National Bank\",\n        \"identifier_type\": \"national_clearing_system\",\n        \"identifier_code\": \"FNBUS33XXX\",\n        \"branch_country\": \"US\"\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0282f2cd-1d12-4fdd-92a2-516b536fbb5d",
+              "name": "ach_id passed in is not a valid external ACH object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach",
+                    ":ach_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH object you want to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "cfda3481-8f21-4d4d-9d86-30b8dc840219",
+          "name": "Update an ACH",
+          "request": {
+            "name": "Update an ACH",
+            "description": {
+              "content": "Update an ACH object.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "ach",
+                ":ach_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "ach_id",
+                  "description": "(Required) ID of the ACH object you want to update."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "fd9de607-a638-43dc-9656-ef18778ec606",
+              "name": "The updated ACH object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach",
+                    ":ach_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH object you want to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"ach_xyz001\",\n  \"created_at\": \"2022-06-27T11:22:33Z\",\n  \"updated_at\": \"2022-06-27T11:22:33Z\",\n  \"status\": \"submitted\",\n  \"amount\": 5000,\n  \"account_id\": \"account_xyz123\",\n  \"account_number_id\": \"account_number_xyz123\",\n  \"direction\": \"outgoing\",\n  \"delivery_type\": \"same_business_day\",\n  \"transaction_type\": \"credit\",\n  \"sec_code\": \"WEB\",\n  \"currency_code\": \"USD\",\n  \"statement_descriptor\": \"P2P Credit\",\n  \"record_details\": {\n    \"transaction_code\": \"checking_credit\",\n    \"company_name\": \"Acme Inc.\",\n    \"company_id\": \"1234\",\n    \"company_discretionary_data\": \"Acme Inc.\",\n    \"effective_date\": \"2022-06-27\",\n    \"settlement_date\": \"2022-06-27\",\n    \"individual_id\": \"<string>\",\n    \"receiver_name\": \"_De!#$1Vmh\",\n    \"descriptive_date\": \"220627\",\n    \"additional_information\": \"<string>\",\n    \"trace_number\": \"123456789012345\"\n  },\n  \"counterparty\": {\n    \"account_number\": \"1032345678\",\n    \"routing_number\": \"021000021\",\n    \"account_type\": \"checking\",\n    \"name\": \"Lara Smikle\"\n  },\n  \"returns\": [\n    {\n      \"type\": \"return\",\n      \"status\": \"submitted\",\n      \"return_code\": \"R02\",\n      \"return_reason\": \"string\",\n      \"trace_number\": \"123456789012345\",\n      \"additional_information\": \"string\"\n    },\n    {\n      \"type\": \"return\",\n      \"status\": \"submitted\",\n      \"return_code\": \"R02\",\n      \"return_reason\": \"string\",\n      \"trace_number\": \"123456789012345\",\n      \"additional_information\": \"string\"\n    }\n  ],\n  \"reversal\": {\n    \"reversal_reason\": \"duplicate\",\n    \"linked_ach_id\": \"string\"\n  },\n  \"rejection\": {\n    \"reason\": \"account_number_status\",\n    \"details\": \"Account number account_123 is inactive.\"\n  },\n  \"correction\": {\n    \"account_number\": \"1032345678\",\n    \"routing_number\": \"021000021\",\n    \"account_type\": \"savings\"\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"iat_details\": {\n    \"transaction_type_code\": \"business\",\n    \"destination_country\": \"CA\",\n    \"originator_currency_code\": \"USD\",\n    \"destination_currency_code\": \"CAD\",\n    \"foreign_trace_number\": \"FRN-2024-98765-INTL\",\n    \"additional_information\": \"<string>\",\n    \"originator\": {\n      \"name\": \"Acme Inc.\",\n      \"street_address\": \"123 Main Street\",\n      \"city_state_province\": \"New York*NY\\\\\",\n      \"country_postal_code\": \"US*10001\\\\\"\n    },\n    \"originating_financial_institution\": {\n      \"name\": \"First National Bank\",\n      \"identifier_type\": \"national_clearing_system\",\n      \"identifier_code\": \"FNBUS33XXX\",\n      \"branch_country\": \"US\"\n    },\n    \"receiver\": {\n      \"name\": \"Lara Smikle\",\n      \"reference_number\": \"RCV-2024-001\",\n      \"street_address\": \"456 Maple Avenue\",\n      \"city_state_province\": \"Toronto*ON\\\\\",\n      \"country_postal_code\": \"CA*M5H 2N2\\\\\"\n    },\n    \"receiving_financial_institution\": {\n      \"name\": \"First National Bank\",\n      \"identifier_type\": \"iban\",\n      \"identifier_code\": \"FNBUS33XXX\",\n      \"branch_country\": \"US\"\n    },\n    \"foreign_correspondent_banks\": [\n      {\n        \"name\": \"First National Bank\",\n        \"identifier_type\": \"national_clearing_system\",\n        \"identifier_code\": \"FNBUS33XXX\",\n        \"branch_country\": \"US\"\n      },\n      {\n        \"name\": \"First National Bank\",\n        \"identifier_type\": \"national_clearing_system\",\n        \"identifier_code\": \"FNBUS33XXX\",\n        \"branch_country\": \"US\"\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "3ec36fdd-793b-4b6e-bdde-3fd2b99fb57e",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach",
+                    ":ach_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH object you want to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d58873cc-b083-45f3-a33c-0bdb9d1e5ee7",
+              "name": "ach_id passed in is not a valid external ACH object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach",
+                    ":ach_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH object you want to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "ef1b8cca-fb6e-406f-95bf-fcb8aa7f462f",
+          "name": "Cancel an ACH",
+          "request": {
+            "name": "Cancel an ACH",
+            "description": {
+              "content": "Cancel an outgoing ACH.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "ach",
+                ":ach_id",
+                "cancel"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "ach_id",
+                  "description": "(Required) ID of the ACH to be canceled."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "84bff2cc-afa9-4198-9a60-7236a82034f7",
+              "name": "The canceled ACH object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach",
+                    ":ach_id",
+                    "cancel"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH to be canceled."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\",\n    \"key_2\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"ach_xyz001\",\n  \"created_at\": \"2022-06-27T11:22:33Z\",\n  \"updated_at\": \"2022-06-27T11:22:33Z\",\n  \"status\": \"submitted\",\n  \"amount\": 5000,\n  \"account_id\": \"account_xyz123\",\n  \"account_number_id\": \"account_number_xyz123\",\n  \"direction\": \"outgoing\",\n  \"delivery_type\": \"same_business_day\",\n  \"transaction_type\": \"credit\",\n  \"sec_code\": \"WEB\",\n  \"currency_code\": \"USD\",\n  \"statement_descriptor\": \"P2P Credit\",\n  \"record_details\": {\n    \"transaction_code\": \"checking_credit\",\n    \"company_name\": \"Acme Inc.\",\n    \"company_id\": \"1234\",\n    \"company_discretionary_data\": \"Acme Inc.\",\n    \"effective_date\": \"2022-06-27\",\n    \"settlement_date\": \"2022-06-27\",\n    \"individual_id\": \"<string>\",\n    \"receiver_name\": \"_De!#$1Vmh\",\n    \"descriptive_date\": \"220627\",\n    \"additional_information\": \"<string>\",\n    \"trace_number\": \"123456789012345\"\n  },\n  \"counterparty\": {\n    \"account_number\": \"1032345678\",\n    \"routing_number\": \"021000021\",\n    \"account_type\": \"checking\",\n    \"name\": \"Lara Smikle\"\n  },\n  \"returns\": [\n    {\n      \"type\": \"return\",\n      \"status\": \"submitted\",\n      \"return_code\": \"R02\",\n      \"return_reason\": \"string\",\n      \"trace_number\": \"123456789012345\",\n      \"additional_information\": \"string\"\n    },\n    {\n      \"type\": \"return\",\n      \"status\": \"submitted\",\n      \"return_code\": \"R02\",\n      \"return_reason\": \"string\",\n      \"trace_number\": \"123456789012345\",\n      \"additional_information\": \"string\"\n    }\n  ],\n  \"reversal\": {\n    \"reversal_reason\": \"duplicate\",\n    \"linked_ach_id\": \"string\"\n  },\n  \"rejection\": {\n    \"reason\": \"account_number_status\",\n    \"details\": \"Account number account_123 is inactive.\"\n  },\n  \"correction\": {\n    \"account_number\": \"1032345678\",\n    \"routing_number\": \"021000021\",\n    \"account_type\": \"savings\"\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"iat_details\": {\n    \"transaction_type_code\": \"business\",\n    \"destination_country\": \"CA\",\n    \"originator_currency_code\": \"USD\",\n    \"destination_currency_code\": \"CAD\",\n    \"foreign_trace_number\": \"FRN-2024-98765-INTL\",\n    \"additional_information\": \"<string>\",\n    \"originator\": {\n      \"name\": \"Acme Inc.\",\n      \"street_address\": \"123 Main Street\",\n      \"city_state_province\": \"New York*NY\\\\\",\n      \"country_postal_code\": \"US*10001\\\\\"\n    },\n    \"originating_financial_institution\": {\n      \"name\": \"First National Bank\",\n      \"identifier_type\": \"national_clearing_system\",\n      \"identifier_code\": \"FNBUS33XXX\",\n      \"branch_country\": \"US\"\n    },\n    \"receiver\": {\n      \"name\": \"Lara Smikle\",\n      \"reference_number\": \"RCV-2024-001\",\n      \"street_address\": \"456 Maple Avenue\",\n      \"city_state_province\": \"Toronto*ON\\\\\",\n      \"country_postal_code\": \"CA*M5H 2N2\\\\\"\n    },\n    \"receiving_financial_institution\": {\n      \"name\": \"First National Bank\",\n      \"identifier_type\": \"iban\",\n      \"identifier_code\": \"FNBUS33XXX\",\n      \"branch_country\": \"US\"\n    },\n    \"foreign_correspondent_banks\": [\n      {\n        \"name\": \"First National Bank\",\n        \"identifier_type\": \"national_clearing_system\",\n        \"identifier_code\": \"FNBUS33XXX\",\n        \"branch_country\": \"US\"\n      },\n      {\n        \"name\": \"First National Bank\",\n        \"identifier_type\": \"national_clearing_system\",\n        \"identifier_code\": \"FNBUS33XXX\",\n        \"branch_country\": \"US\"\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "3b46b237-2a38-4f34-97a1-3fe61c2a7fc4",
+              "name": "This operation cannot be done on this object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach",
+                    ":ach_id",
+                    "cancel"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH to be canceled."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\",\n    \"key_2\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "83734c2b-96ff-4bd2-87de-63bcb5b61e21",
+          "name": "Return an ACH",
+          "request": {
+            "name": "Return an ACH",
+            "description": {
+              "content": "Issue a return against an incoming ACH.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "ach",
+                ":ach_id",
+                "return"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "ach_id",
+                  "description": "(Required) ID of the ACH object to be returned."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"return_code\": \"<string>\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "a1ebab95-bfa7-40ea-bd73-89dce86a4c3c",
+              "name": "The now-returned original ACH object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach",
+                    ":ach_id",
+                    "return"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH object to be returned."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"return_code\": \"R02\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"ach_xyz001\",\n  \"created_at\": \"2022-06-27T11:22:33Z\",\n  \"updated_at\": \"2022-06-27T11:22:33Z\",\n  \"status\": \"submitted\",\n  \"amount\": 5000,\n  \"account_id\": \"account_xyz123\",\n  \"account_number_id\": \"account_number_xyz123\",\n  \"direction\": \"outgoing\",\n  \"delivery_type\": \"same_business_day\",\n  \"transaction_type\": \"credit\",\n  \"sec_code\": \"WEB\",\n  \"currency_code\": \"USD\",\n  \"statement_descriptor\": \"P2P Credit\",\n  \"record_details\": {\n    \"transaction_code\": \"checking_credit\",\n    \"company_name\": \"Acme Inc.\",\n    \"company_id\": \"1234\",\n    \"company_discretionary_data\": \"Acme Inc.\",\n    \"effective_date\": \"2022-06-27\",\n    \"settlement_date\": \"2022-06-27\",\n    \"individual_id\": \"<string>\",\n    \"receiver_name\": \"_De!#$1Vmh\",\n    \"descriptive_date\": \"220627\",\n    \"additional_information\": \"<string>\",\n    \"trace_number\": \"123456789012345\"\n  },\n  \"counterparty\": {\n    \"account_number\": \"1032345678\",\n    \"routing_number\": \"021000021\",\n    \"account_type\": \"checking\",\n    \"name\": \"Lara Smikle\"\n  },\n  \"returns\": [\n    {\n      \"type\": \"return\",\n      \"status\": \"submitted\",\n      \"return_code\": \"R02\",\n      \"return_reason\": \"string\",\n      \"trace_number\": \"123456789012345\",\n      \"additional_information\": \"string\"\n    },\n    {\n      \"type\": \"return\",\n      \"status\": \"submitted\",\n      \"return_code\": \"R02\",\n      \"return_reason\": \"string\",\n      \"trace_number\": \"123456789012345\",\n      \"additional_information\": \"string\"\n    }\n  ],\n  \"reversal\": {\n    \"reversal_reason\": \"duplicate\",\n    \"linked_ach_id\": \"string\"\n  },\n  \"rejection\": {\n    \"reason\": \"account_number_status\",\n    \"details\": \"Account number account_123 is inactive.\"\n  },\n  \"correction\": {\n    \"account_number\": \"1032345678\",\n    \"routing_number\": \"021000021\",\n    \"account_type\": \"savings\"\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"iat_details\": {\n    \"transaction_type_code\": \"business\",\n    \"destination_country\": \"CA\",\n    \"originator_currency_code\": \"USD\",\n    \"destination_currency_code\": \"CAD\",\n    \"foreign_trace_number\": \"FRN-2024-98765-INTL\",\n    \"additional_information\": \"<string>\",\n    \"originator\": {\n      \"name\": \"Acme Inc.\",\n      \"street_address\": \"123 Main Street\",\n      \"city_state_province\": \"New York*NY\\\\\",\n      \"country_postal_code\": \"US*10001\\\\\"\n    },\n    \"originating_financial_institution\": {\n      \"name\": \"First National Bank\",\n      \"identifier_type\": \"national_clearing_system\",\n      \"identifier_code\": \"FNBUS33XXX\",\n      \"branch_country\": \"US\"\n    },\n    \"receiver\": {\n      \"name\": \"Lara Smikle\",\n      \"reference_number\": \"RCV-2024-001\",\n      \"street_address\": \"456 Maple Avenue\",\n      \"city_state_province\": \"Toronto*ON\\\\\",\n      \"country_postal_code\": \"CA*M5H 2N2\\\\\"\n    },\n    \"receiving_financial_institution\": {\n      \"name\": \"First National Bank\",\n      \"identifier_type\": \"iban\",\n      \"identifier_code\": \"FNBUS33XXX\",\n      \"branch_country\": \"US\"\n    },\n    \"foreign_correspondent_banks\": [\n      {\n        \"name\": \"First National Bank\",\n        \"identifier_type\": \"national_clearing_system\",\n        \"identifier_code\": \"FNBUS33XXX\",\n        \"branch_country\": \"US\"\n      },\n      {\n        \"name\": \"First National Bank\",\n        \"identifier_type\": \"national_clearing_system\",\n        \"identifier_code\": \"FNBUS33XXX\",\n        \"branch_country\": \"US\"\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a908a31c-9d08-45c3-9842-efffdf07229f",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach",
+                    ":ach_id",
+                    "return"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH object to be returned."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"return_code\": \"R02\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "44ac67d4-dd23-453f-8d92-9a6dc0ac9cb9",
+              "name": "ach_id passed in is not a valid external ACH object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach",
+                    ":ach_id",
+                    "return"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH object to be returned."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"return_code\": \"R02\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "1435148a-f303-48a8-ad8b-564efd567b2c",
+          "name": "Reverse an ACH",
+          "request": {
+            "name": "Reverse an ACH",
+            "description": {
+              "content": "Reverse an outgoing ACH.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "ach",
+                ":ach_id",
+                "reverse"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "ach_id",
+                  "description": "(Required) ID of the ACH you want to return."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Idempotency key",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reversal_reason\": \"<string>\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "aea93dd0-e944-4da3-9a46-a4473b02be17",
+              "name": "The new reversal ACH object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach",
+                    ":ach_id",
+                    "reverse"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH you want to return."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reversal_reason\": \"<string>\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"ach_xyz001\",\n  \"created_at\": \"2022-06-27T11:22:33Z\",\n  \"updated_at\": \"2022-06-27T11:22:33Z\",\n  \"status\": \"submitted\",\n  \"amount\": 5000,\n  \"account_id\": \"account_xyz123\",\n  \"account_number_id\": \"account_number_xyz123\",\n  \"direction\": \"outgoing\",\n  \"delivery_type\": \"same_business_day\",\n  \"transaction_type\": \"credit\",\n  \"sec_code\": \"WEB\",\n  \"currency_code\": \"USD\",\n  \"statement_descriptor\": \"P2P Credit\",\n  \"record_details\": {\n    \"transaction_code\": \"checking_credit\",\n    \"company_name\": \"Acme Inc.\",\n    \"company_id\": \"1234\",\n    \"company_discretionary_data\": \"Acme Inc.\",\n    \"effective_date\": \"2022-06-27\",\n    \"settlement_date\": \"2022-06-27\",\n    \"individual_id\": \"<string>\",\n    \"receiver_name\": \"R[~VhkflYe\",\n    \"descriptive_date\": \"220627\",\n    \"additional_information\": \"<string>\",\n    \"trace_number\": \"123456789012345\"\n  },\n  \"counterparty\": {\n    \"account_number\": \"1032345678\",\n    \"routing_number\": \"021000021\",\n    \"account_type\": \"checking\",\n    \"name\": \"Lara Smikle\"\n  },\n  \"returns\": [\n    {\n      \"type\": \"return\",\n      \"status\": \"submitted\",\n      \"return_code\": \"R02\",\n      \"return_reason\": \"string\",\n      \"trace_number\": \"123456789012345\",\n      \"additional_information\": \"string\"\n    },\n    {\n      \"type\": \"return\",\n      \"status\": \"submitted\",\n      \"return_code\": \"R02\",\n      \"return_reason\": \"string\",\n      \"trace_number\": \"123456789012345\",\n      \"additional_information\": \"string\"\n    }\n  ],\n  \"reversal\": {\n    \"reversal_reason\": \"<string>\",\n    \"linked_ach_id\": \"string\"\n  },\n  \"rejection\": {\n    \"reason\": \"account_number_status\",\n    \"details\": \"Account number account_123 is inactive.\"\n  },\n  \"correction\": {\n    \"account_number\": \"1032345678\",\n    \"routing_number\": \"021000021\",\n    \"account_type\": \"checking\"\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"iat_details\": {\n    \"transaction_type_code\": \"business\",\n    \"destination_country\": \"CA\",\n    \"originator_currency_code\": \"USD\",\n    \"destination_currency_code\": \"CAD\",\n    \"foreign_trace_number\": \"FRN-2024-98765-INTL\",\n    \"additional_information\": \"<string>\",\n    \"originator\": {\n      \"name\": \"Acme Inc.\",\n      \"street_address\": \"123 Main Street\",\n      \"city_state_province\": \"New York*NY\\\\\",\n      \"country_postal_code\": \"US*10001\\\\\"\n    },\n    \"originating_financial_institution\": {\n      \"name\": \"First National Bank\",\n      \"identifier_type\": \"iban\",\n      \"identifier_code\": \"FNBUS33XXX\",\n      \"branch_country\": \"US\"\n    },\n    \"receiver\": {\n      \"name\": \"Lara Smikle\",\n      \"reference_number\": \"RCV-2024-001\",\n      \"street_address\": \"456 Maple Avenue\",\n      \"city_state_province\": \"Toronto*ON\\\\\",\n      \"country_postal_code\": \"CA*M5H 2N2\\\\\"\n    },\n    \"receiving_financial_institution\": {\n      \"name\": \"First National Bank\",\n      \"identifier_type\": \"national_clearing_system\",\n      \"identifier_code\": \"FNBUS33XXX\",\n      \"branch_country\": \"US\"\n    },\n    \"foreign_correspondent_banks\": [\n      {\n        \"name\": \"First National Bank\",\n        \"identifier_type\": \"iban\",\n        \"identifier_code\": \"FNBUS33XXX\",\n        \"branch_country\": \"US\"\n      },\n      {\n        \"name\": \"First National Bank\",\n        \"identifier_type\": \"national_clearing_system\",\n        \"identifier_code\": \"FNBUS33XXX\",\n        \"branch_country\": \"US\"\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d70c197f-9484-4f3a-8da5-24cc8fd37b65",
+              "name": "Your request parameters did not validate.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach",
+                    ":ach_id",
+                    "reverse"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH you want to return."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reversal_reason\": \"<string>\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f95809fc-b929-4025-b6a1-83e96a1d7b23",
+              "name": "ach_id passed in is not a valid external ACH object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "ach",
+                    ":ach_id",
+                    "reverse"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ach_id",
+                      "description": "(Required) ID of the ACH you want to return."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Idempotency key",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reversal_reason\": \"<string>\",\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"title\": \"string\",\n  \"detail\": \"string\",\n  \"status\": \"string\",\n  \"invalid_parameters\": [\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    },\n    {\n      \"parameter\": \"transaction_type\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"instance\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.sandbox.lead.bank",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "da47d090-f236-4e97-8f91-46efa3303498",
+    "name": "Lead Bank Account Number ACH API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Lead Bank's APIs",
+      "type": "text/plain"
+    }
+  }
+}

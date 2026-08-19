@@ -1,0 +1,92 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lead Bank Account Number Events API",
+    "version": "v1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Events",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve an event",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/event/:event_id",
+            "params": [
+              {
+                "name": "event_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the Event object you want to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieves an event object."
+        },
+        {
+          "info": {
+            "name": "List all events",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sandbox.lead.bank/v1/event",
+            "params": [
+              {
+                "name": "events",
+                "value": "",
+                "type": "query",
+                "description": "ID of the Event object you want to retrieve."
+              },
+              {
+                "name": "created_at",
+                "value": "",
+                "type": "query",
+                "description": "A set of filters on the list using the object’s field `created_at`."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of objects to be returned."
+              },
+              {
+                "name": "starting_after",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an Event ID that defines your place in the list."
+              },
+              {
+                "name": "ending_before",
+                "value": "",
+                "type": "query",
+                "description": "A cursor for use in pagination; this is an Event ID that defines your place in the list."
+              },
+              {
+                "name": "object_id",
+                "value": "",
+                "type": "query",
+                "description": "Filter events by the ID of the associated object (e.g., wire_12345). If the object_id doesn't match the event filter's object type, returns empty results."
+              }
+            ]
+          },
+          "docs": "List all event objects."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
