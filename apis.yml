@@ -69,6 +69,13 @@ apis:
   - RTP
   - FedNow
   - Wires
+  - Stablecoins
+  tags_raw:
+  - Payments
+  - ACH
+  - RTP
+  - FedNow
+  - Wires
   - Stablecoin
   properties:
   - type: Documentation
@@ -95,6 +102,11 @@ apis:
   humanURL: https://docs.lead.bank/api-integrations/overview
   baseURL: gated-partner-access
   tags:
+  - Account
+  - Deposits
+  - FDIC
+  - Multi-Currency
+  tags_raw:
   - Accounts
   - Deposits
   - FDIC
@@ -125,6 +137,9 @@ apis:
   humanURL: https://docs.lead.bank
   baseURL: customer-configured
   tags:
+  - Webhook
+  - Event
+  tags_raw:
   - Webhooks
   - Events
   properties:
@@ -186,6 +201,8 @@ apis:
   humanURL: https://docs.lead.bank/api-integrations/overview
   baseURL: gated-partner-access
   tags:
+  - Event
+  tags_raw:
   - Events
   properties:
   - type: OpenAPI
@@ -246,6 +263,8 @@ apis:
   humanURL: https://docs.lead.bank/api-integrations/overview
   baseURL: gated-partner-access
   tags:
+  - Authentication
+  tags_raw:
   - OAuth
   properties:
   - type: OpenAPI
