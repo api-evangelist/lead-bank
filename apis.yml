@@ -321,6 +321,9 @@ apis:
   - type: OpenAPI
     url: openapi/lead-bank-wire-api-openapi.yml
 common:
+  - type: CapabilityMap
+    url: capabilities/lead-bank-capability-edges.yml
+    name: Lead Bank Business Capability Map
   - type: AgenticAccess
     url: agentic-access/lead-bank-agentic-access.yml
   - type: DomainSecurity

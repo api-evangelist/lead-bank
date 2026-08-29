@@ -1,0 +1,89 @@
+slug: lead-bank
+provider: Lead Bank
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Banking & Capital Markets
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 7
+edges:
+- tag: Instant Payments
+  spec_file: lead-bank-instant-payments-api-openapi.yml
+  capability_id: BC-1340.50
+  capability_id_l1: BC-1340
+  capability_name: Real-Time Payment Management
+  confidence: 0.85
+  evidence: '''Create an instant payment'', ''Check instant payment availability''; schemas InstantPaymentStatus,
+    InstantPaymentReturnRequest'
+  reason: Origination, return handling and reachability checking on an instant/real-time payment rail
+    — real-time payment management.
+- tag: Originator
+  spec_file: lead-bank-originator-api-openapi.yml
+  capability_id: BC-1340
+  capability_id_l1: BC-1340
+  capability_name: Payments & Card Management
+  confidence: 0.8
+  evidence: POST /v0/originators "Create an Originator"; schemas AchOriginatorParameters, AchOriginatorLimits,
+    OutgoingSecCode, AchCalendarDayMaximumAmount
+  reason: The operations manage ACH originator entities with SEC codes and daily/rolling ACH origination
+    limits — configuration of the bank's ACH payment origination capability, so Payments & Card Management
+    at L1. Ambiguous between payment initiation setup and processing/clearing sub-capabilities, so no
+    L2 asserted.
+- tag: Lending
+  spec_file: lead-bank-lending-api-openapi.yml
+  capability_id: BC-1320
+  capability_id_l1: BC-1320
+  capability_name: Credit & Lending Management
+  confidence: 0.75
+  evidence: POST /v0/lending/disbursements 'Create a Disbursement'; schemas ClientLoanID, DisbursementStatus,
+    PaymentMethod
+  reason: Disbursement of loan proceeds against a client loan id — credit & lending operations. Evidence
+    does not clearly separate origination funding from loan servicing, so L2 withheld.
+- tag: Wire
+  spec_file: lead-bank-wire-api-openapi.yml
+  capability_id: BC-1340.10
+  capability_id_l1: BC-1340
+  capability_name: Payment Initiation Management
+  confidence: 0.75
+  evidence: POST /v1/wires "Create a wire V1"; POST /v1/wires/{wire_id}/return; schemas WirePaymentIdentifiers,
+    IMAD, WireInstructAgent
+  reason: Operations capture, update, cancel and return wire payment instructions — payment initiation
+    and instruction lifecycle. L1 Payments is unambiguous; initiation is the best-fitting L2 given create/cancel/return
+    of instructions rather than clearing mechanics.
+- tag: ACH
+  spec_file: lead-bank-ach-api-openapi.yml
+  capability_id: BC-1340.30
+  capability_id_l1: BC-1340
+  capability_name: Clearing & Settlement Management
+  confidence: 0.72
+  evidence: POST /v1/ach 'Create an ACH'; 'return-an-ach', 'reverse-an-ach'; schemas OutgoingReturnCode,
+    TransactionCode
+  reason: Operations originate, cancel, return and reverse ACH entries on a US domestic clearing rail;
+    the candidate 'Clearing & Settlement Management' explicitly names ACH. Some ambiguity with payment
+    initiation/processing sub-capabilities.
+- tag: Blockchain Payment
+  spec_file: lead-bank-blockchain-payment-api-openapi.yml
+  capability_id: BC-1340.40
+  capability_id_l1: BC-1340
+  capability_name: Cross-Border Payment Management
+  confidence: 0.7
+  evidence: '''Create a Blockchain Payment''; schemas BlockchainPaymentCreditorSwift, BlockchainPaymentCreditorClabe,
+    BlockchainPaymentCreditorPixBrCode, BlockchainPaymentSettlementCurrencyCode'
+  reason: Stablecoin-funded payments settling out to foreign local rails (SWIFT, CLABE, Pix, BreB, FPS)
+    with settlement currency — international/cross-border payment execution.
+- tag: Entity
+  spec_file: lead-bank-entity-api-openapi.yml
+  capability_id: BC-1300.20
+  capability_id_l1: BC-1300
+  capability_name: KYC & Customer Due Diligence Management
+  confidence: 0.7
+  evidence: schemas KycDetails, OfacDetails, EntityRiskScoreEnum, IdentificationDetailsBusiness, TaxIdentificationTypeEnum;
+    'Create an entity'
+  reason: Entity records for individuals and businesses carrying KYC details, OFAC screening results and
+    risk scoring — customer due diligence / identity data capture for banking customers.
