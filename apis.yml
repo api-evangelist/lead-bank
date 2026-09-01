@@ -80,7 +80,7 @@ apis:
   - RTP
   - FedNow
   - Wires
-  - Stablecoin
+  - Stablecoins
   tags_raw:
   - Payments
   - ACH
