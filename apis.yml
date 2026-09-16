@@ -63,6 +63,11 @@ apis:
   tags:
   - Lending
   - Credit
+  - Buy Now Pay Later
+  - Origination
+  tags_raw:
+  - Lending
+  - Credit
   - BNPL
   - Origination
   properties:
