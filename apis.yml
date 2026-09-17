@@ -274,18 +274,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/lead-bank-lending-simulation-api-openapi.yml
-- aid: lead-bank:lead-bank-oauth-api
-  name: Lead Bank OAuth API
-  description: The OAuth API from Lead Bank — 1 operation(s) for oauth.
-  humanURL: https://docs.lead.bank/api-integrations/overview
-  baseURL: gated-partner-access
-  tags:
-  - Authentication
-  tags_raw:
-  - OAuth
-  properties:
-  - type: OpenAPI
-    url: openapi/lead-bank-oauth-api-openapi.yml
 - aid: lead-bank:lead-bank-originator-api
   name: Lead Bank Originator API
   description: The Originator API from Lead Bank — 5 operation(s) for originator.
@@ -326,6 +314,16 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/lead-bank-wire-api-openapi.yml
+- aid: lead-bank:lead-bank-oauth-api
+  name: Lead Bank O Auth API
+  description: The OAuth API from Lead Bank — 1 operation(s) for oauth.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - OAuth
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-oauth-api-openapi.yml
 common:
   - type: CapabilityMap
     url: capabilities/lead-bank-capability-edges.yml
