@@ -320,6 +320,8 @@ apis:
   humanURL: https://docs.lead.bank/api-integrations/overview
   baseURL: gated-partner-access
   tags:
+  - Authentication
+  tags_raw:
   - OAuth
   properties:
   - type: OpenAPI
