@@ -1,6 +1,6 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: Lead Bank Account Number Events API
+  title: Lead Bank Events API
   description: Lead Bank's APIs
   version: v1.0
 servers:
@@ -133,6 +133,43 @@ paths:
                 status: '422'
 components:
   schemas:
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the Event object.
+        event:
+          $ref: '#/components/schemas/EventType'
+        created_at:
+          type: string
+          description: Timestamp at which the Event object was created.
+        object:
+          type: object
+          description: The object associated with this event.
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
     EventType:
       type: string
       description: The type of event.
@@ -176,29 +213,6 @@ components:
       - instant_payment.return_request_status_updated
       - funding.posted
       - funding.rejected
-    APIError:
-      type: object
-      properties:
-        code:
-          type: string
-          description: The error code.
-        title:
-          type: string
-          description: The error title.
-        detail:
-          type: string
-          description: A detailed error description.
-        status:
-          type: string
-          description: The HTTP status code.
-        invalid_parameters:
-          type: array
-          description: Invalid request parameters with reasons, if applicable.
-          items:
-            $ref: '#/components/schemas/InvalidParameterDetail'
-        instance:
-          type: string
-          description: The object causing this specific occurrence of the error, if applicable.
     InvalidParameterDetail:
       type: object
       properties:
@@ -209,20 +223,6 @@ components:
         reason:
           type: string
           description: Why the parameter is invalid.
-    Event:
-      type: object
-      properties:
-        id:
-          type: string
-          description: ID of the Event object.
-        event:
-          $ref: '#/components/schemas/EventType'
-        created_at:
-          type: string
-          description: Timestamp at which the Event object was created.
-        object:
-          type: object
-          description: The object associated with this event.
   securitySchemes:
     bearerAuth:
       type: http

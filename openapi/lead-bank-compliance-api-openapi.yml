@@ -1,6 +1,6 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: Lead Bank Account Number Compliance API
+  title: Lead Bank Compliance API
   description: Lead Bank's APIs
   version: v1.0
 servers:
@@ -43,9 +43,7 @@ paths:
 
         The Idempotency-Key header is required. Reusing a key with a different request
 
-        body will return a 422 error.
-
-        '
+        body will return a 422 error.'
       parameters:
       - name: Idempotency-Key
         in: header
@@ -293,9 +291,7 @@ paths:
 
         Accepts either a server-generated ID (application_*) or client-provided application ID.
 
-        The server detects the ID type by prefix.
-
-        '
+        The server detects the ID type by prefix.'
       parameters:
       - name: id
         in: path
@@ -378,9 +374,7 @@ paths:
 
         ## Idempotency
 
-        The Idempotency-Key header is required.
-
-        '
+        The Idempotency-Key header is required.'
       parameters:
       - name: id
         in: path
@@ -581,9 +575,7 @@ paths:
 
         The Idempotency-Key header is required. Reusing a key with a different request
 
-        body will return a 422 error.
-
-        '
+        body will return a 422 error.'
       parameters:
       - name: Idempotency-Key
         in: header
@@ -754,9 +746,7 @@ paths:
 
         Note: Entity relationships are not included in the response.
 
-        Use GET /v0/accounts/{id}/entity_relationships to retrieve them.
-
-        '
+        Use GET /v0/accounts/{id}/entity_relationships to retrieve them.'
       parameters:
       - name: id
         in: path
@@ -835,9 +825,7 @@ paths:
 
         ## Idempotency
 
-        The Idempotency-Key header is required.
-
-        '
+        The Idempotency-Key header is required.'
       parameters:
       - name: id
         in: path
@@ -932,9 +920,7 @@ paths:
 
         ## Idempotency
 
-        The Idempotency-Key header is required.
-
-        '
+        The Idempotency-Key header is required.'
       parameters:
       - name: id
         in: path
@@ -1015,9 +1001,7 @@ paths:
 
         ## Idempotency
 
-        The Idempotency-Key header is required.
-
-        '
+        The Idempotency-Key header is required.'
       parameters:
       - name: id
         in: path
@@ -1111,9 +1095,7 @@ paths:
 
         ## Idempotency
 
-        The Idempotency-Key header is required.
-
-        '
+        The Idempotency-Key header is required.'
       parameters:
       - name: id
         in: path
@@ -1282,9 +1264,7 @@ paths:
       summary: Delete account entity relationship
       description: 'Deletes a specific entity relationship from an account and returns the updated list of entity relationships.
 
-        The relationship_type must be specified to identify which relationship to delete.
-
-        '
+        The relationship_type must be specified to identify which relationship to delete.'
       parameters:
       - name: id
         in: path
@@ -1381,9 +1361,7 @@ paths:
       - Compliance
       operationId: batch-create-account-entity-relationships
       summary: Batch create account entity relationships
-      description: 'Associates multiple entities with an account under a single relationship type.
-
-        '
+      description: Associates multiple entities with an account under a single relationship type.
       parameters:
       - name: id
         in: path
@@ -1499,6 +1477,297 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
+    Scra:
+      type: object
+      description: SCRA (Servicemembers Civil Relief Act) details
+      properties:
+        start_date:
+          type: string
+          format: date
+          description: Start date for SCRA protections
+        end_date:
+          type: string
+          format: date
+          description: End date for SCRA protections
+      required:
+      - start_date
+    AccountID:
+      type: string
+      description: The ID of the Account object.
+      example: account_xyz123
+      pattern: ^account_\w+$
+    AccountDetails:
+      type: object
+      description: Core details of the account
+      readOnly: true
+      properties:
+        product_name:
+          type: string
+          description: Partner's name for their product
+        closed_at:
+          type: string
+          format: date-time
+          description: Timestamp when the account was closed. Updated by /close endpoint.
+          readOnly: true
+        credit:
+          $ref: '#/components/schemas/AccountCredit'
+        adverse_action_notice:
+          $ref: '#/components/schemas/AdverseActionNotice'
+    EntityID:
+      type: string
+      description: The ID of your entity.
+      example: entity_xyz123
+      pattern: ^entity_[^\s]{1,33}$
+    PatchAccountDetails:
+      type: object
+      description: Details for updating an account
+      properties:
+        product_name:
+          type: string
+          description: Partner's name for their product
+        credit:
+          $ref: '#/components/schemas/PatchAccountCredit'
+        adverse_action_notice:
+          $ref: '#/components/schemas/AdverseActionNotice'
+    ApplicationEntities:
+      type: object
+      readOnly: true
+      description: Entity relationships associated with the application (response only)
+      properties:
+        account_holder_type:
+          type: string
+          description: Denotes whether the application is for a consumer or commercial account. `consumer` if all account holders are individuals; `commercial` if all account holders are businesses or sole proprietors.
+          enum:
+          - consumer
+          - commercial
+          example: commercial
+        account_holders:
+          type: array
+          description: List of entity IDs that are account holders
+          items:
+            $ref: '#/components/schemas/EntityID'
+        authorized_signers:
+          type: array
+          description: List of entity IDs that are authorized signers
+          items:
+            $ref: '#/components/schemas/EntityID'
+    AccountCloseStatusReason:
+      type: string
+      description: Valid reasons for closing an account
+      enum:
+      - entity_closed
+      - client_closed
+      - paid_off
+      - charged_off
+      - canceled
+    CreateApplicationRequest:
+      type: object
+      description: Request body for creating a new application in terminal status
+      properties:
+        status:
+          $ref: '#/components/schemas/ApplicationStatus'
+        entities:
+          $ref: '#/components/schemas/CreateApplicationEntities'
+        details:
+          $ref: '#/components/schemas/CreateApplicationDetails'
+        decision:
+          $ref: '#/components/schemas/Decision'
+        documents:
+          type: array
+          description: Documents associated with the application
+          items:
+            $ref: '#/components/schemas/CreateComplianceDocument'
+        metadata:
+          type: object
+          description: Arbitrary metadata associated with the application
+          additionalProperties:
+            type: string
+      required:
+      - status
+      - entities
+      - details
+      - decision
+      - documents
+    Application:
+      type: object
+      description: An application object representing a credit application
+      readOnly: true
+      properties:
+        id:
+          $ref: '#/components/schemas/ApplicationID'
+        created_at:
+          type: string
+          format: date-time
+          description: Lead server-generated ISO 8601 timestamp when the application was created.
+        updated_at:
+          type: string
+          format: date-time
+          description: Lead server-generated ISO 8601 timestamp when the application was last updated.
+        status:
+          $ref: '#/components/schemas/ApplicationStatus'
+        entities:
+          $ref: '#/components/schemas/ApplicationEntities'
+        details:
+          $ref: '#/components/schemas/ApplicationDetails'
+        decision:
+          $ref: '#/components/schemas/ApplicationDecision'
+        documents:
+          type: array
+          description: Documents associated with the application
+          items:
+            $ref: '#/components/schemas/ApplicationComplianceDocument'
+        metadata:
+          type: object
+          description: Arbitrary metadata associated with the application
+          additionalProperties:
+            type: string
+    BatchCreateEntityRelationshipsRequest:
+      type: object
+      description: Request body for batch creating entity relationships on an account.
+      properties:
+        entity_ids:
+          type: array
+          description: List of entity IDs to associate with the account under the specified relationship type.
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/EntityID'
+        relationship_type:
+          $ref: '#/components/schemas/EntityRelationshipType'
+      required:
+      - entity_ids
+      - relationship_type
+    AccountCapability:
+      type: string
+      description: Capability that informs Lead how the Account will be used
+      enum:
+      - deposit
+      - credit_with_underwriting
+      - credit_without_underwriting
+    ApplicationDecision:
+      type: object
+      readOnly: true
+      description: Decision-related information (response, all properties optional)
+      properties:
+        decided_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the underwriting decision was made.
+        reason:
+          type: string
+          description: The reason for the decision.
+        exception_approval_reason:
+          type: string
+          description: This should only be provided if the decision was made as an exception to underwriting criteria. Reason for exception approval, if this decision was made as an exception to the traditional underwriting process.
+    CreateAccountRequest:
+      type: object
+      description: Request body for creating a new account
+      properties:
+        application_id:
+          $ref: '#/components/schemas/ApplicationID'
+        capabilities:
+          type: array
+          description: List of items that inform Lead how the Account will be used
+          items:
+            $ref: '#/components/schemas/AccountCapability'
+          minItems: 1
+        entities:
+          $ref: '#/components/schemas/CreateAccountEntities'
+        details:
+          $ref: '#/components/schemas/CreateAccountDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        documents:
+          type: array
+          description: Array of associated legal or informational documents
+          items:
+            $ref: '#/components/schemas/CreateComplianceDocument'
+      required:
+      - capabilities
+      - entities
+      - details
+      - documents
+    ApplicationCreditReport:
+      type: object
+      readOnly: true
+      description: Credit report information (response, all properties optional)
+      properties:
+        score:
+          type: integer
+          description: Credit score returned by the bureau. Supported range is 300-850.
+          minimum: 300
+          maximum: 850
+        pulled_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the credit report was pulled.
+        source:
+          type: string
+          description: 'Credit bureau that issued the report. Possible values: `equifax`, `experian`, `transunion`.'
+          enum:
+          - equifax
+          - transunion
+          - experian
+    AccountStatus:
+      type: string
+      description: Current state of the account
+      enum:
+      - active
+      - inactive
+      - closed
+    ComplianceDocument:
+      type: object
+      description: Document reference associated with an application (response schema - all fields optional)
+      readOnly: true
+      properties:
+        document_id:
+          type: string
+          description: Unique identifier for the document being referenced. Please use the file name of the file delivered to Lead's `/documents` SFTP directory.
+          example: document_2N5Hk8xYmQpL9rBvC3jD
+        type:
+          $ref: '#/components/schemas/ComplianceDocumentType'
+        displayed_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the document was displayed to the applicant. Present on disclosure documents.
+        consented_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the applicant consented to the document. Present on consent documents.
+        version:
+          type: string
+          description: It is recommended to use this for static documents uploaded once and uploaded for many users. Uploads with a new version should have a different document_id as well.
+          example: v1
+    CreateApplicationEntities:
+      type: object
+      description: 'Entity relationships for the application.
+
+        Maximum 20 entities per relationship type.
+
+        Authorized signers required for commercial account holders.
+
+        '
+      properties:
+        account_holders:
+          type: array
+          description: List of entity IDs that are account holders
+          items:
+            $ref: '#/components/schemas/EntityID'
+          minItems: 1
+          maxItems: 20
+        authorized_signers:
+          type: array
+          description: List of entity IDs that are authorized signers (required for commercial)
+          items:
+            $ref: '#/components/schemas/EntityID'
+          maxItems: 20
+        authorized_users:
+          type: array
+          description: List of entity IDs that are authorized users
+          items:
+            $ref: '#/components/schemas/EntityID'
+          maxItems: 20
+      required:
+      - account_holders
     AccountDeactivateRequest:
       type: object
       description: Request body for deactivating an account
@@ -1507,6 +1776,78 @@ components:
           $ref: '#/components/schemas/AccountDeactivateStatusReason'
       required:
       - status_reason
+    EntityRelationshipType:
+      type: string
+      description: Indicates the type of Entity
+      enum:
+      - account_holder
+      - authorized_signer
+      - authorized_user
+    Decision:
+      type: object
+      description: Decision-related information for the application
+      properties:
+        decided_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the underwriting decision was made.
+        reason:
+          type: string
+          description: The reason for the decision.
+        exception_approval_reason:
+          type: string
+          description: This should only be provided if the decision was made as an exception to underwriting criteria. Reason for exception approval, if this decision was made as an exception to the traditional underwriting process.
+      required:
+      - decided_at
+      - reason
+    EntityRelationship:
+      type: object
+      description: Common fields for entity relationships
+      properties:
+        entity_id:
+          $ref: '#/components/schemas/EntityID'
+        relationship_type:
+          $ref: '#/components/schemas/EntityRelationshipType'
+      required:
+      - entity_id
+      - relationship_type
+    ApplicationStatus:
+      type: string
+      description: 'Terminal state of the application. Possible values: `approved`, `declined`, `canceled`.'
+      enum:
+      - approved
+      - declined
+      - canceled
+    PatchAccountCredit:
+      type: object
+      description: Details specific to credit-based accounts (for PATCH - all fields optional)
+      properties:
+        is_secured:
+          type: boolean
+          description: Indicates if this is a secured credit/deposit product
+        is_mla:
+          type: boolean
+          description: Indicates if this account is considered a Military Lending Act account
+        underwriting_grade:
+          type: string
+          description: Grade given to the customer based on underwriting
+        currency:
+          type: string
+          description: The currency for the account (3-letter ISO code)
+          example: USD
+        available_credit:
+          type: integer
+          description: Available credit for the customer to draw (in minor units)
+        limit:
+          type: integer
+          description: Current credit limit (in minor units)
+        max_limit:
+          type: integer
+          description: Maximum credit limit approved in underwriting (in minor units)
+        scra:
+          $ref: '#/components/schemas/Scra'
+        report:
+          $ref: '#/components/schemas/CreditReport'
     ComplianceCurrencyCode:
       type: string
       description: A three-letter currency code as defined in ISO 4217
@@ -1674,31 +2015,9 @@ components:
       - ZAR
       - ZMW
       - ZWG
-    AccountDetails:
+    CreateAccountCredit:
       type: object
-      description: Core details of the account
-      readOnly: true
-      properties:
-        product_name:
-          type: string
-          description: Partner's name for their product
-        closed_at:
-          type: string
-          format: date-time
-          description: Timestamp when the account was closed. Updated by /close endpoint.
-          readOnly: true
-        credit:
-          $ref: '#/components/schemas/AccountCredit'
-        adverse_action_notice:
-          $ref: '#/components/schemas/AdverseActionNotice'
-    EntityID:
-      type: string
-      description: The ID of your entity.
-      example: entity_xyz123
-      pattern: ^entity_[^\s]{1,33}$
-    AccountCredit:
-      type: object
-      description: Details specific to credit-based accounts
+      description: Details specific to credit-based accounts (for POST - all fields required)
       additionalProperties: false
       properties:
         is_secured:
@@ -1727,6 +2046,53 @@ components:
           $ref: '#/components/schemas/Scra'
         report:
           $ref: '#/components/schemas/CreditReport'
+      required:
+      - is_secured
+      - is_mla
+      - underwriting_grade
+      - currency
+      - available_credit
+      - limit
+      - max_limit
+    PatchAccountRequest:
+      type: object
+      description: Request body for updating an existing account
+      properties:
+        application_id:
+          $ref: '#/components/schemas/ApplicationID'
+        capabilities:
+          type: array
+          description: List of items that inform Lead how the Account will be used
+          items:
+            $ref: '#/components/schemas/AccountCapability'
+        details:
+          $ref: '#/components/schemas/PatchAccountDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        documents:
+          type: array
+          description: Array of associated legal or informational documents
+          items:
+            $ref: '#/components/schemas/CreateComplianceDocument'
+    ApplicationAdverseActionNotice:
+      type: object
+      readOnly: true
+      description: Adverse action notice information (response, all properties optional)
+      properties:
+        delivered_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the adverse action notice was sent to the applicant.
+        reason:
+          type: string
+          description: The reason stated in the adverse action notice.
+        delivery_method:
+          type: string
+          description: 'How the notice was delivered to the applicant. Possible values: `email`, `text`, `other`.'
+          enum:
+          - email
+          - text
+          - other
     AccountCloseRequest:
       type: object
       description: Request body for closing an account
@@ -1735,28 +2101,105 @@ components:
           $ref: '#/components/schemas/AccountCloseStatusReason'
       required:
       - status_reason
-    Decision:
+    AccountDeactivateStatusReason:
+      type: string
+      description: Valid reasons for deactivating an account
+      enum:
+      - dormant
+      - frozen
+      - other
+    PatchApplicationCredit:
       type: object
-      description: Decision-related information for the application
+      description: Credit details for updating an application (all fields optional)
       properties:
-        decided_at:
+        is_secured:
+          type: boolean
+          description: Indicates if this is a secured credit/deposit product. `true` if the product is secured (collateral attached); `false` otherwise.
+        is_mla:
+          type: boolean
+          description: '`true` if the applicant is subject to the Military Lending Act; `false` otherwise.'
+        currency:
+          $ref: '#/components/schemas/ComplianceCurrencyCode'
+        underwriting_grade:
+          type: string
+          description: Your internal underwriting grade for the applicant. Accepts any string mapped to your specific scoring framework.
+          example: '99'
+        limit:
+          type: integer
+          description: The credit limit assigned to the applicant, in minor units (e.g., cents).
+          minimum: 0
+          example: 5000000
+        max_limit:
+          type: integer
+          description: The maximum credit limit the applicant was approved for based on original underwriting, in minor units (e.g., cents).
+          minimum: 0
+          example: 10000000
+        report:
+          $ref: '#/components/schemas/CreditReport'
+    ApplicationDetails:
+      type: object
+      readOnly: true
+      description: Application details (response, all properties optional)
+      properties:
+        product_name:
+          type: string
+          description: Your internal product name. This tells Lead's Due Diligence team which product this application, if approved, would open an account for.
+          example: Growth Business Credit Line
+        credit:
+          $ref: '#/components/schemas/ApplicationCredit'
+        adverse_action_notice:
+          $ref: '#/components/schemas/ApplicationAdverseActionNotice'
+    AdverseActionNotice:
+      type: object
+      description: Adverse action notice information
+      properties:
+        delivered_at:
           type: string
           format: date-time
-          description: ISO 8601 timestamp when the underwriting decision was made.
+          description: ISO 8601 timestamp when the adverse action notice was sent to the applicant.
         reason:
           type: string
-          description: The reason for the decision.
-        exception_approval_reason:
+          description: The reason stated in the adverse action notice.
+        delivery_method:
           type: string
-          description: This should only be provided if the decision was made as an exception to underwriting criteria. Reason for exception approval, if this decision was made as an exception to the traditional underwriting process.
+          description: 'How the notice was delivered to the applicant. Possible values: `email`, `text`, `other`.'
+          enum:
+          - email
+          - text
+          - other
       required:
-      - decided_at
+      - delivered_at
       - reason
-    Metadata:
+      - delivery_method
+    ApplicationCredit:
       type: object
-      additionalProperties:
-        type: string
-      description: A set of key-value pairs that can be used to store additional information related to this object.
+      readOnly: true
+      description: Credit details for an application (response, all properties optional)
+      properties:
+        is_secured:
+          type: boolean
+          description: Indicates if this is a secured credit/deposit product. `true` if the product is secured (collateral attached); `false` otherwise.
+        is_mla:
+          type: boolean
+          description: '`true` if the applicant is subject to the Military Lending Act; `false` otherwise.'
+        currency:
+          $ref: '#/components/schemas/ComplianceCurrencyCode'
+        underwriting_grade:
+          type: string
+          description: Your internal underwriting grade for the applicant. Accepts any string mapped to your specific scoring framework.
+          example: '99'
+        limit:
+          type: integer
+          description: The credit limit assigned to the applicant, in minor units (e.g., cents).
+          minimum: 0
+          example: 5000000
+        max_limit:
+          type: integer
+          description: The maximum credit limit the applicant was approved for based on original underwriting, in minor units (e.g., cents).
+          minimum: 0
+          example: 10000000
+        report:
+          $ref: '#/components/schemas/ApplicationCreditReport'
     CreateComplianceDocument:
       type: object
       description: "Document reference for creating applications and accounts.\n\nOne of `displayed_at` or `consented_at` is required depending on document type:\n- `displayed_at`: Required for aan, loan_agreement, loc_agreement, truth_in_lending_document,\n  ach_authorization, notice_of_incompleteness, credit_score_notice, offer_summary, personal_guarantee,\n  consumer_credit_auth, partner_privacy_policy, lead_privacy_policy, terms_of_use, fcra_notice,\n  tcpa_consent, patriot_act_notice, mla_notice, pre_approval_terms, eft_authorization,\n  prohibited_industry_certification, decision_maker_document, bo_certification, missed_payments_policy,\n  lead_funds_transfer_agreement\n- `consented_at`: Required for esign_agreement, credit_pull_consent, consent_to_link_account,\n  consent_to_link_hsa, negative_option_consent\n"
@@ -1828,48 +2271,6 @@ components:
             - negative_option_consent
         required:
         - consented_at
-    CreateApplicationEntities:
-      type: object
-      description: 'Entity relationships for the application.
-
-        Maximum 20 entities per relationship type.
-
-        Authorized signers required for commercial account holders.
-
-        '
-      properties:
-        account_holders:
-          type: array
-          description: List of entity IDs that are account holders
-          items:
-            $ref: '#/components/schemas/EntityID'
-          minItems: 1
-          maxItems: 20
-        authorized_signers:
-          type: array
-          description: List of entity IDs that are authorized signers (required for commercial)
-          items:
-            $ref: '#/components/schemas/EntityID'
-          maxItems: 20
-        authorized_users:
-          type: array
-          description: List of entity IDs that are authorized users
-          items:
-            $ref: '#/components/schemas/EntityID'
-          maxItems: 20
-      required:
-      - account_holders
-    PatchAccountDetails:
-      type: object
-      description: Details for updating an account
-      properties:
-        product_name:
-          type: string
-          description: Partner's name for their product
-        credit:
-          $ref: '#/components/schemas/PatchAccountCredit'
-        adverse_action_notice:
-          $ref: '#/components/schemas/AdverseActionNotice'
     CreditReport:
       type: object
       description: Credit report information (Application only)
@@ -1894,146 +2295,16 @@ components:
           - equifax
           - transunion
           - experian
-    APIError:
+    InvalidParameterDetail:
       type: object
       properties:
-        code:
+        parameter:
           type: string
-          description: The error code.
-        title:
-          type: string
-          description: The error title.
-        detail:
-          type: string
-          description: A detailed error description.
-        status:
-          type: string
-          description: The HTTP status code.
-        invalid_parameters:
-          type: array
-          description: Invalid request parameters with reasons, if applicable.
-          items:
-            $ref: '#/components/schemas/InvalidParameterDetail'
-        instance:
-          type: string
-          description: The object causing this specific occurrence of the error, if applicable.
-    PatchApplicationCredit:
-      type: object
-      description: Credit details for updating an application (all fields optional)
-      properties:
-        is_secured:
-          type: boolean
-          description: Indicates if this is a secured credit/deposit product. `true` if the product is secured (collateral attached); `false` otherwise.
-        is_mla:
-          type: boolean
-          description: '`true` if the applicant is subject to the Military Lending Act; `false` otherwise.'
-        currency:
-          $ref: '#/components/schemas/ComplianceCurrencyCode'
-        underwriting_grade:
-          type: string
-          description: Your internal underwriting grade for the applicant. Accepts any string mapped to your specific scoring framework.
-          example: '99'
-        limit:
-          type: integer
-          description: The credit limit assigned to the applicant, in minor units (e.g., cents).
-          minimum: 0
-          example: 5000000
-        max_limit:
-          type: integer
-          description: The maximum credit limit the applicant was approved for based on original underwriting, in minor units (e.g., cents).
-          minimum: 0
-          example: 10000000
-        report:
-          $ref: '#/components/schemas/CreditReport'
-    EntityRelationshipType:
-      type: string
-      description: Indicates the type of Entity
-      enum:
-      - account_holder
-      - authorized_signer
-      - authorized_user
-    ApplicationComplianceDocument:
-      type: object
-      readOnly: true
-      description: Document reference associated with an application (response, all properties optional)
-      properties:
-        document_id:
-          type: string
-          description: Unique identifier for the document being referenced. Please use the file name of the file delivered to Lead's `/documents` SFTP directory.
-          example: document_2N5Hk8xYmQpL9rBvC3jD
-        type:
-          $ref: '#/components/schemas/ComplianceDocumentType'
-        displayed_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the document was displayed to the applicant. Present on disclosure documents.
-        consented_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the applicant consented to the document. Present on consent documents.
-        version:
-          type: string
-          description: It is recommended to use this for static documents uploaded once and uploaded for many users. Uploads with a new version should have a different document_id as well.
-          example: v1
-    CreateAccountRequest:
-      type: object
-      description: Request body for creating a new account
-      properties:
-        application_id:
-          $ref: '#/components/schemas/ApplicationID'
-        capabilities:
-          type: array
-          description: List of items that inform Lead how the Account will be used
-          items:
-            $ref: '#/components/schemas/AccountCapability'
-          minItems: 1
-        entities:
-          $ref: '#/components/schemas/CreateAccountEntities'
-        details:
-          $ref: '#/components/schemas/CreateAccountDetails'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-        documents:
-          type: array
-          description: Array of associated legal or informational documents
-          items:
-            $ref: '#/components/schemas/CreateComplianceDocument'
-      required:
-      - capabilities
-      - entities
-      - details
-      - documents
-    AccountCapability:
-      type: string
-      description: Capability that informs Lead how the Account will be used
-      enum:
-      - deposit
-      - credit_with_underwriting
-      - credit_without_underwriting
-    ApplicationAdverseActionNotice:
-      type: object
-      readOnly: true
-      description: Adverse action notice information (response, all properties optional)
-      properties:
-        delivered_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the adverse action notice was sent to the applicant.
+          description: Which parameter is invalid.
+          example: transaction_type
         reason:
           type: string
-          description: The reason stated in the adverse action notice.
-        delivery_method:
-          type: string
-          description: 'How the notice was delivered to the applicant. Possible values: `email`, `text`, `other`.'
-          enum:
-          - email
-          - text
-          - other
-    ApplicationID:
-      type: string
-      description: Unique identifier for the application. Prefixed with `application_`.
-      example: application_xyz123
-      pattern: ^application_\w+$
+          description: Why the parameter is invalid.
     CreateApplicationDetails:
       type: object
       description: Details for creating an application
@@ -2049,117 +2320,6 @@ components:
       required:
       - product_name
       - credit
-    CreateAccountDetails:
-      type: object
-      description: Details for creating an account
-      properties:
-        product_name:
-          type: string
-          description: Partner's name for their product
-        credit:
-          $ref: '#/components/schemas/CreateAccountCredit'
-        adverse_action_notice:
-          $ref: '#/components/schemas/AdverseActionNotice'
-      required:
-      - product_name
-    ComplianceDocumentType:
-      type: string
-      description: Type of document associated with an application
-      enum:
-      - aan
-      - loan_agreement
-      - loc_agreement
-      - truth_in_lending_document
-      - ach_authorization
-      - notice_of_incompleteness
-      - credit_score_notice
-      - offer_summary
-      - personal_guarantee
-      - consumer_credit_auth
-      - partner_privacy_policy
-      - lead_privacy_policy
-      - terms_of_use
-      - esign_agreement
-      - credit_pull_consent
-      - fcra_notice
-      - tcpa_consent
-      - patriot_act_notice
-      - mla_notice
-      - pre_approval_terms
-      - eft_authorization
-      - prohibited_industry_certification
-      - decision_maker_document
-      - bo_certification
-      - missed_payments_policy
-      - consent_to_link_account
-      - consent_to_link_hsa
-      - negative_option_consent
-      - lead_funds_transfer_agreement
-    ApplicationEntities:
-      type: object
-      readOnly: true
-      description: Entity relationships associated with the application (response only)
-      properties:
-        account_holder_type:
-          type: string
-          description: Denotes whether the application is for a consumer or commercial account. `consumer` if all account holders are individuals; `commercial` if all account holders are businesses or sole proprietors.
-          enum:
-          - consumer
-          - commercial
-          example: commercial
-        account_holders:
-          type: array
-          description: List of entity IDs that are account holders
-          items:
-            $ref: '#/components/schemas/EntityID'
-        authorized_signers:
-          type: array
-          description: List of entity IDs that are authorized signers
-          items:
-            $ref: '#/components/schemas/EntityID'
-    PatchAccountCredit:
-      type: object
-      description: Details specific to credit-based accounts (for PATCH - all fields optional)
-      properties:
-        is_secured:
-          type: boolean
-          description: Indicates if this is a secured credit/deposit product
-        is_mla:
-          type: boolean
-          description: Indicates if this account is considered a Military Lending Act account
-        underwriting_grade:
-          type: string
-          description: Grade given to the customer based on underwriting
-        currency:
-          type: string
-          description: The currency for the account (3-letter ISO code)
-          example: USD
-        available_credit:
-          type: integer
-          description: Available credit for the customer to draw (in minor units)
-        limit:
-          type: integer
-          description: Current credit limit (in minor units)
-        max_limit:
-          type: integer
-          description: Maximum credit limit approved in underwriting (in minor units)
-        scra:
-          $ref: '#/components/schemas/Scra'
-        report:
-          $ref: '#/components/schemas/CreditReport'
-    ApplicationDetails:
-      type: object
-      readOnly: true
-      description: Application details (response, all properties optional)
-      properties:
-        product_name:
-          type: string
-          description: Your internal product name. This tells Lead's Due Diligence team which product this application, if approved, would open an account for.
-          example: Growth Business Credit Line
-        credit:
-          $ref: '#/components/schemas/ApplicationCredit'
-        adverse_action_notice:
-          $ref: '#/components/schemas/ApplicationAdverseActionNotice'
     CreateAccountEntities:
       type: object
       description: 'Entity relationships for the account (POST request only).
@@ -2193,328 +2353,6 @@ components:
           maxItems: 20
       required:
       - account_holders
-    CreateApplicationRequest:
-      type: object
-      description: Request body for creating a new application in terminal status
-      properties:
-        status:
-          $ref: '#/components/schemas/ApplicationStatus'
-        entities:
-          $ref: '#/components/schemas/CreateApplicationEntities'
-        details:
-          $ref: '#/components/schemas/CreateApplicationDetails'
-        decision:
-          $ref: '#/components/schemas/Decision'
-        documents:
-          type: array
-          description: Documents associated with the application
-          items:
-            $ref: '#/components/schemas/CreateComplianceDocument'
-        metadata:
-          type: object
-          description: Arbitrary metadata associated with the application
-          additionalProperties:
-            type: string
-      required:
-      - status
-      - entities
-      - details
-      - decision
-      - documents
-    ApplicationCreditReport:
-      type: object
-      readOnly: true
-      description: Credit report information (response, all properties optional)
-      properties:
-        score:
-          type: integer
-          description: Credit score returned by the bureau. Supported range is 300-850.
-          minimum: 300
-          maximum: 850
-        pulled_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the credit report was pulled.
-        source:
-          type: string
-          description: 'Credit bureau that issued the report. Possible values: `equifax`, `experian`, `transunion`.'
-          enum:
-          - equifax
-          - transunion
-          - experian
-    PatchApplicationDetails:
-      type: object
-      description: Details for updating an application (all fields optional)
-      properties:
-        product_name:
-          type: string
-          description: Your internal product name. This tells Lead's Due Diligence team which product this application, if approved, would open an account for.
-          example: Growth Business Credit Line
-        credit:
-          $ref: '#/components/schemas/PatchApplicationCredit'
-        adverse_action_notice:
-          $ref: '#/components/schemas/AdverseActionNotice'
-    AccountStatus:
-      type: string
-      description: Current state of the account
-      enum:
-      - active
-      - inactive
-      - closed
-    ApplicationDecision:
-      type: object
-      readOnly: true
-      description: Decision-related information (response, all properties optional)
-      properties:
-        decided_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the underwriting decision was made.
-        reason:
-          type: string
-          description: The reason for the decision.
-        exception_approval_reason:
-          type: string
-          description: This should only be provided if the decision was made as an exception to underwriting criteria. Reason for exception approval, if this decision was made as an exception to the traditional underwriting process.
-    Application:
-      type: object
-      description: An application object representing a credit application
-      readOnly: true
-      properties:
-        id:
-          $ref: '#/components/schemas/ApplicationID'
-        created_at:
-          type: string
-          format: date-time
-          description: Lead server-generated ISO 8601 timestamp when the application was created.
-        updated_at:
-          type: string
-          format: date-time
-          description: Lead server-generated ISO 8601 timestamp when the application was last updated.
-        status:
-          $ref: '#/components/schemas/ApplicationStatus'
-        entities:
-          $ref: '#/components/schemas/ApplicationEntities'
-        details:
-          $ref: '#/components/schemas/ApplicationDetails'
-        decision:
-          $ref: '#/components/schemas/ApplicationDecision'
-        documents:
-          type: array
-          description: Documents associated with the application
-          items:
-            $ref: '#/components/schemas/ApplicationComplianceDocument'
-        metadata:
-          type: object
-          description: Arbitrary metadata associated with the application
-          additionalProperties:
-            type: string
-    PatchAccountRequest:
-      type: object
-      description: Request body for updating an existing account
-      properties:
-        application_id:
-          $ref: '#/components/schemas/ApplicationID'
-        capabilities:
-          type: array
-          description: List of items that inform Lead how the Account will be used
-          items:
-            $ref: '#/components/schemas/AccountCapability'
-        details:
-          $ref: '#/components/schemas/PatchAccountDetails'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-        documents:
-          type: array
-          description: Array of associated legal or informational documents
-          items:
-            $ref: '#/components/schemas/CreateComplianceDocument'
-    Scra:
-      type: object
-      description: SCRA (Servicemembers Civil Relief Act) details
-      properties:
-        start_date:
-          type: string
-          format: date
-          description: Start date for SCRA protections
-        end_date:
-          type: string
-          format: date
-          description: End date for SCRA protections
-      required:
-      - start_date
-    AccountID:
-      type: string
-      description: The ID of the Account object.
-      example: account_xyz123
-      pattern: ^account_\w+$
-    BatchCreateEntityRelationshipsRequest:
-      type: object
-      description: Request body for batch creating entity relationships on an account.
-      properties:
-        entity_ids:
-          type: array
-          description: List of entity IDs to associate with the account under the specified relationship type.
-          maxItems: 20
-          items:
-            $ref: '#/components/schemas/EntityID'
-        relationship_type:
-          $ref: '#/components/schemas/EntityRelationshipType'
-      required:
-      - entity_ids
-      - relationship_type
-    AdverseActionNotice:
-      type: object
-      description: Adverse action notice information
-      properties:
-        delivered_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the adverse action notice was sent to the applicant.
-        reason:
-          type: string
-          description: The reason stated in the adverse action notice.
-        delivery_method:
-          type: string
-          description: 'How the notice was delivered to the applicant. Possible values: `email`, `text`, `other`.'
-          enum:
-          - email
-          - text
-          - other
-      required:
-      - delivered_at
-      - reason
-      - delivery_method
-    ComplianceDocument:
-      type: object
-      description: Document reference associated with an application (response schema - all fields optional)
-      readOnly: true
-      properties:
-        document_id:
-          type: string
-          description: Unique identifier for the document being referenced. Please use the file name of the file delivered to Lead's `/documents` SFTP directory.
-          example: document_2N5Hk8xYmQpL9rBvC3jD
-        type:
-          $ref: '#/components/schemas/ComplianceDocumentType'
-        displayed_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the document was displayed to the applicant. Present on disclosure documents.
-        consented_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the applicant consented to the document. Present on consent documents.
-        version:
-          type: string
-          description: It is recommended to use this for static documents uploaded once and uploaded for many users. Uploads with a new version should have a different document_id as well.
-          example: v1
-    AccountCloseStatusReason:
-      type: string
-      description: Valid reasons for closing an account
-      enum:
-      - entity_closed
-      - client_closed
-      - paid_off
-      - charged_off
-      - canceled
-    AccountDeactivateStatusReason:
-      type: string
-      description: Valid reasons for deactivating an account
-      enum:
-      - dormant
-      - frozen
-      - other
-    CreateAccountCredit:
-      type: object
-      description: Details specific to credit-based accounts (for POST - all fields required)
-      additionalProperties: false
-      properties:
-        is_secured:
-          type: boolean
-          description: Indicates if this is a secured credit/deposit product
-        is_mla:
-          type: boolean
-          description: Indicates if this account is considered a Military Lending Act account
-        underwriting_grade:
-          type: string
-          description: Grade given to the customer based on underwriting
-        currency:
-          type: string
-          description: The currency for the account (3-letter ISO code)
-          example: USD
-        available_credit:
-          type: integer
-          description: Available credit for the customer to draw (in minor units)
-        limit:
-          type: integer
-          description: Current credit limit (in minor units)
-        max_limit:
-          type: integer
-          description: Maximum credit limit approved in underwriting (in minor units)
-        scra:
-          $ref: '#/components/schemas/Scra'
-        report:
-          $ref: '#/components/schemas/CreditReport'
-      required:
-      - is_secured
-      - is_mla
-      - underwriting_grade
-      - currency
-      - available_credit
-      - limit
-      - max_limit
-    InvalidParameterDetail:
-      type: object
-      properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
-          type: string
-          description: Why the parameter is invalid.
-    AccountStatusReason:
-      type: string
-      description: Machine-readable reason for the current status
-      enum:
-      - client_closed
-      - entity_closed
-      - frozen
-      - dormant
-      - active
-      - paid_off
-      - charged_off
-      - canceled
-      - other
-    ApplicationCredit:
-      type: object
-      readOnly: true
-      description: Credit details for an application (response, all properties optional)
-      properties:
-        is_secured:
-          type: boolean
-          description: Indicates if this is a secured credit/deposit product. `true` if the product is secured (collateral attached); `false` otherwise.
-        is_mla:
-          type: boolean
-          description: '`true` if the applicant is subject to the Military Lending Act; `false` otherwise.'
-        currency:
-          $ref: '#/components/schemas/ComplianceCurrencyCode'
-        underwriting_grade:
-          type: string
-          description: Your internal underwriting grade for the applicant. Accepts any string mapped to your specific scoring framework.
-          example: '99'
-        limit:
-          type: integer
-          description: The credit limit assigned to the applicant, in minor units (e.g., cents).
-          minimum: 0
-          example: 5000000
-        max_limit:
-          type: integer
-          description: The maximum credit limit the applicant was approved for based on original underwriting, in minor units (e.g., cents).
-          minimum: 0
-          example: 10000000
-        report:
-          $ref: '#/components/schemas/ApplicationCreditReport'
     CreateApplicationCredit:
       type: object
       description: Credit details for creating an application
@@ -2547,13 +2385,6 @@ components:
       - is_secured
       - is_mla
       - currency
-    ApplicationStatus:
-      type: string
-      description: 'Terminal state of the application. Possible values: `approved`, `declined`, `canceled`.'
-      enum:
-      - approved
-      - declined
-      - canceled
     AccountEntities:
       type: object
       readOnly: true
@@ -2565,17 +2396,171 @@ components:
           enum:
           - consumer
           - commercial
-    EntityRelationship:
+    PatchApplicationRequest:
       type: object
-      description: Common fields for entity relationships
+      description: Request body for updating an existing application
       properties:
-        entity_id:
-          $ref: '#/components/schemas/EntityID'
-        relationship_type:
-          $ref: '#/components/schemas/EntityRelationshipType'
-      required:
-      - entity_id
-      - relationship_type
+        status:
+          $ref: '#/components/schemas/ApplicationStatus'
+        details:
+          $ref: '#/components/schemas/PatchApplicationDetails'
+        decision:
+          $ref: '#/components/schemas/Decision'
+        documents:
+          type: array
+          description: Documents associated with the application
+          items:
+            $ref: '#/components/schemas/CreateComplianceDocument'
+        metadata:
+          type: object
+          description: Arbitrary metadata associated with the application
+          additionalProperties:
+            type: string
+    PatchApplicationDetails:
+      type: object
+      description: Details for updating an application (all fields optional)
+      properties:
+        product_name:
+          type: string
+          description: Your internal product name. This tells Lead's Due Diligence team which product this application, if approved, would open an account for.
+          example: Growth Business Credit Line
+        credit:
+          $ref: '#/components/schemas/PatchApplicationCredit'
+        adverse_action_notice:
+          $ref: '#/components/schemas/AdverseActionNotice'
+    ApplicationID:
+      type: string
+      description: Unique identifier for the application. Prefixed with `application_`.
+      example: application_xyz123
+      pattern: ^application_\w+$
+    AccountCredit:
+      type: object
+      description: Details specific to credit-based accounts
+      additionalProperties: false
+      properties:
+        is_secured:
+          type: boolean
+          description: Indicates if this is a secured credit/deposit product
+        is_mla:
+          type: boolean
+          description: Indicates if this account is considered a Military Lending Act account
+        underwriting_grade:
+          type: string
+          description: Grade given to the customer based on underwriting
+        currency:
+          type: string
+          description: The currency for the account (3-letter ISO code)
+          example: USD
+        available_credit:
+          type: integer
+          description: Available credit for the customer to draw (in minor units)
+        limit:
+          type: integer
+          description: Current credit limit (in minor units)
+        max_limit:
+          type: integer
+          description: Maximum credit limit approved in underwriting (in minor units)
+        scra:
+          $ref: '#/components/schemas/Scra'
+        report:
+          $ref: '#/components/schemas/CreditReport'
+    ComplianceDocumentType:
+      type: string
+      description: Type of document associated with an application
+      enum:
+      - aan
+      - loan_agreement
+      - loc_agreement
+      - truth_in_lending_document
+      - ach_authorization
+      - notice_of_incompleteness
+      - credit_score_notice
+      - offer_summary
+      - personal_guarantee
+      - consumer_credit_auth
+      - partner_privacy_policy
+      - lead_privacy_policy
+      - terms_of_use
+      - esign_agreement
+      - credit_pull_consent
+      - fcra_notice
+      - tcpa_consent
+      - patriot_act_notice
+      - mla_notice
+      - pre_approval_terms
+      - eft_authorization
+      - prohibited_industry_certification
+      - decision_maker_document
+      - bo_certification
+      - missed_payments_policy
+      - consent_to_link_account
+      - consent_to_link_hsa
+      - negative_option_consent
+      - lead_funds_transfer_agreement
+    AccountStatusReason:
+      type: string
+      description: Machine-readable reason for the current status
+      enum:
+      - client_closed
+      - entity_closed
+      - frozen
+      - dormant
+      - active
+      - paid_off
+      - charged_off
+      - canceled
+      - other
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+    ApplicationComplianceDocument:
+      type: object
+      readOnly: true
+      description: Document reference associated with an application (response, all properties optional)
+      properties:
+        document_id:
+          type: string
+          description: Unique identifier for the document being referenced. Please use the file name of the file delivered to Lead's `/documents` SFTP directory.
+          example: document_2N5Hk8xYmQpL9rBvC3jD
+        type:
+          $ref: '#/components/schemas/ComplianceDocumentType'
+        displayed_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the document was displayed to the applicant. Present on disclosure documents.
+        consented_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the applicant consented to the document. Present on consent documents.
+        version:
+          type: string
+          description: It is recommended to use this for static documents uploaded once and uploaded for many users. Uploads with a new version should have a different document_id as well.
+          example: v1
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
     Account:
       type: object
       description: An account object
@@ -2622,26 +2607,19 @@ components:
             Only populated in GET /v0/accounts/{id} response.
 
             '
-    PatchApplicationRequest:
+    CreateAccountDetails:
       type: object
-      description: Request body for updating an existing application
+      description: Details for creating an account
       properties:
-        status:
-          $ref: '#/components/schemas/ApplicationStatus'
-        details:
-          $ref: '#/components/schemas/PatchApplicationDetails'
-        decision:
-          $ref: '#/components/schemas/Decision'
-        documents:
-          type: array
-          description: Documents associated with the application
-          items:
-            $ref: '#/components/schemas/CreateComplianceDocument'
-        metadata:
-          type: object
-          description: Arbitrary metadata associated with the application
-          additionalProperties:
-            type: string
+        product_name:
+          type: string
+          description: Partner's name for their product
+        credit:
+          $ref: '#/components/schemas/CreateAccountCredit'
+        adverse_action_notice:
+          $ref: '#/components/schemas/AdverseActionNotice'
+      required:
+      - product_name
   securitySchemes:
     bearerAuth:
       type: http

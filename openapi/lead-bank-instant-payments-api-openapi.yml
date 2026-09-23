@@ -1,6 +1,6 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: Lead Bank Account Number Instant Payments API
+  title: Lead Bank Instant Payments API
   description: Lead Bank's APIs
   version: v1.0
 servers:
@@ -584,14 +584,52 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
+    AccountID:
+      type: string
+      description: The ID of the Account object.
+      example: account_xyz123
+      pattern: ^account_\w+$
+    InstantPaymentStatus:
+      description: 'The current status of the instant payment object.
+
+        If outgoing: created, under_review, canceled, rejected, posted.
+
+        If incoming: under_review, rejected, posted.'
+      type: string
+      example: posted
+      enum:
+      - created
+      - under_review
+      - canceled
+      - rejected
+      - posted
     AccountNumberID:
       type: string
       description: The ID of the Lead Bank Account Number object.
       example: account_number_xyz123
       pattern: ^account_number_\w+$
-    IncomingInstantPaymentReturnRequestReason:
+    InstantPaymentParty:
+      type: object
+      description: Details of a party in an instant payment.
+      required:
+      - name
+      - account_number
+      properties:
+        name:
+          type: string
+          description: The party's name.
+          minLength: 3
+          maxLength: 35
+          example: Alex Smith
+        account_number:
+          type: string
+          description: The party's account number.
+          minLength: 1
+          maxLength: 17
+          example: '1234567890'
+    OutgoingInstantPaymentReturnRequestReason:
       type: string
-      description: 'The reason for the return request.
+      description: 'The reason for initiating a return request.
 
         * `creditor_account_number_invalid` - Invalid creditor account number
 
@@ -609,12 +647,8 @@ components:
 
         * `technical_problem` - Technical problem
 
-        * `undue_payment` - Unduly paid
-
-        * `per_agent_request` - Requested by agent
-
-        * `other` - Other'
-      example: duplicate
+        * `undue_payment` - Unduly paid'
+      example: duplication
       enum:
       - creditor_account_number_invalid
       - wrong_amount
@@ -625,8 +659,62 @@ components:
       - service_not_rendered
       - technical_problem
       - undue_payment
-      - per_agent_request
-      - other
+    InstantPaymentCounterpartyStatus:
+      description: 'The current status of the instant payment from the counterparty''s perspective.
+
+        If outgoing: posted, under_review, or rejected.
+
+        If incoming: posted or null.'
+      type:
+      - string
+      - 'null'
+      example: posted
+      enum:
+      - posted
+      - under_review
+      - rejected
+    InstantPaymentReturnDetails:
+      type: object
+      description: If this instant payment is a return, this object contains details on the return.
+      required:
+      - reason
+      properties:
+        reason:
+          $ref: '#/components/schemas/IncomingInstantPaymentReturnReason'
+        details:
+          type: string
+          description: Details of the reason for the return including the 4-character ISO code when possible.
+    InstantPaymentReturnRequest:
+      type: object
+      description: A return request associated with an instant payment.
+      required:
+      - created_at
+      - status
+      - reason
+      properties:
+        status:
+          $ref: '#/components/schemas/InstantPaymentReturnRequestStatus'
+        reason:
+          $ref: '#/components/schemas/IncomingInstantPaymentReturnRequestReason'
+        details:
+          type: string
+          description: Details of the reason for the return request including the 4-character ISO code when possible.
+        deadline:
+          type: string
+          format: date-time
+          description: 'The deadline by which a final response to the return request is expected.
+
+            For incoming return requests, you must respond by 11:30PM ET on the 10th business day. If you do not respond, we will respond on your behalf with a rejection at midnight.
+
+            For outgoing return requests, the network deadline for the counterparty is 12:00AM ET on the 10th business day.'
+          example: '2022-07-11T23:30:00-04:00'
+        resolution:
+          $ref: '#/components/schemas/InstantPaymentReturnRequestResolution'
+        created_at:
+          type: string
+          format: date-time
+          description: The ISO 8601 format timestamp that represents when the return request object was created.
+          example: '2022-06-27T11:22:33Z'
     InstantPaymentReturnRequestResolution:
       type: object
       description: The resolution details of the return request.
@@ -680,42 +768,87 @@ components:
       - customer_no_response
       - returned_previously
       - narrative
-    InstantPaymentReturnRequestStatus:
-      type: string
-      description: 'The current status of the return request object.
-
-        For incoming return requests: response_needed, accepted, rejected.
-
-        For outgoing return requests: pending, accepted, rejected.'
-      example: pending
-      enum:
-      - pending
-      - response_needed
-      - accepted
-      - rejected
-    APIError:
+    InstantPaymentAvailability:
       type: object
+      description: Result of an instant payment availability check.
+      required:
+      - available
+      - routing_number
       properties:
-        code:
+        available:
+          type: boolean
+          description: Whether the financial institution is available to receive instant payments.
+          example: true
+        routing_number:
           type: string
-          description: The error code.
-        title:
+          description: The routing number that was checked.
+          minLength: 9
+          maxLength: 9
+          example: '111000111'
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    InstantPaymentRejection:
+      type: object
+      description: If this instant payment was rejected, this object contains details on the rejection.
+      required:
+      - rejected_by
+      - reason
+      properties:
+        rejected_by:
           type: string
-          description: The error title.
-        detail:
+          description: The party that rejected the instant payment.
+          enum:
+          - lead
+          - network
+          - counterparty
+          example: lead
+        reason:
+          $ref: '#/components/schemas/InstantPaymentRejectionReason'
+        details:
           type: string
-          description: A detailed error description.
-        status:
-          type: string
-          description: The HTTP status code.
-        invalid_parameters:
-          type: array
-          description: Invalid request parameters with reasons, if applicable.
-          items:
-            $ref: '#/components/schemas/InvalidParameterDetail'
-        instance:
-          type: string
-          description: The object causing this specific occurrence of the error, if applicable.
+          description: Details of the reason for the rejection including the 4-character ISO code when possible.
+    IncomingInstantPaymentReturnReason:
+      type: string
+      description: 'The reason for a return.
+
+        * `honor_return_request` - Honoring a return request
+
+        * `wrong_amount` - Wrong amount
+
+        * `duplication` - Duplicate payment
+
+        * `initiating_party_unrecognized` - Unknown sender
+
+        * `fraud_suspected` - Fraud suspected
+
+        * `undue_payment` - Unduly paid
+
+        * `narrative` - Narrative reason, additional_information required
+
+        * `customer_requested` - Requested by customer
+
+        * `regulatory_reason` - Regulatory reason
+
+        * `amount_too_low` - Amount too low
+
+        * `other` - Other'
+      example: duplication
+      enum:
+      - honor_return_request
+      - wrong_amount
+      - duplication
+      - initiating_party_unrecognized
+      - fraud_suspected
+      - undue_payment
+      - narrative
+      - customer_requested
+      - regulatory_reason
+      - amount_too_low
+      - other
     InstantPaymentRejectionReason:
       type: string
       description: 'The reason for the rejection.
@@ -775,6 +908,73 @@ components:
       - participant_signed_off
       - restricted_by_account_number_controls
       - other
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    IncomingInstantPaymentReturnRequestReason:
+      type: string
+      description: 'The reason for the return request.
+
+        * `creditor_account_number_invalid` - Invalid creditor account number
+
+        * `wrong_amount` - Wrong amount
+
+        * `customer_requested` - Requested by customer
+
+        * `duplication` - Duplicate payment
+
+        * `fraud_suspected` - Fraud suspected
+
+        * `narrative` - Narrative reason, additional_information required
+
+        * `service_not_rendered` - Service not rendered
+
+        * `technical_problem` - Technical problem
+
+        * `undue_payment` - Unduly paid
+
+        * `per_agent_request` - Requested by agent
+
+        * `other` - Other'
+      example: duplicate
+      enum:
+      - creditor_account_number_invalid
+      - wrong_amount
+      - customer_requested
+      - duplication
+      - fraud_suspected
+      - narrative
+      - service_not_rendered
+      - technical_problem
+      - undue_payment
+      - per_agent_request
+      - other
+    InstantPaymentIdentifiers:
+      type: object
+      description: The instant payment's identifiers.
+      properties:
+        end_to_end_id:
+          type: string
+          description: The identifier assigned by the party initiating the instant payment to be delivered to the customer unchanged.
+          maxLength: 35
+          example: E2E-20240101-001
+        uetr:
+          type: string
+          description: Unique End-to-End Transaction Reference (UETR). Must be an IETF RFC 4122 UUID.
+          format: uuid
+          example: 8dc981d2-e8c2-4a7b-8df0-0781b46328d9
+        transaction_id:
+          type: string
+          description: The identifier assigned by the initiating party or debtor to uniquely identify the transaction.
+          maxLength: 35
+          example: TXN-20240101-001
     InstantPayment:
       type: object
       required:
@@ -853,93 +1053,6 @@ components:
           format: date-time
           description: The ISO 8601 format timestamp that represents when the instant payment object was last updated.
           example: '2022-06-27T11:22:40Z'
-    InstantPaymentParty:
-      type: object
-      description: Details of a party in an instant payment.
-      required:
-      - name
-      - account_number
-      properties:
-        name:
-          type: string
-          description: The party's name.
-          minLength: 3
-          maxLength: 35
-          example: Alex Smith
-        account_number:
-          type: string
-          description: The party's account number.
-          minLength: 1
-          maxLength: 17
-          example: '1234567890'
-    IncomingInstantPaymentReturnRequestRejectionReason:
-      type: string
-      description: 'The reason for a rejected return request.
-
-        * `account_closed` - Account closed
-
-        * `non_sufficient_funds` - Insufficient funds
-
-        * `customer_requested` - Customer decision
-
-        * `legal_decision` - Legal decision
-
-        * `customer_no_response` - No answer from customer
-
-        * `returned_previously` - Already returned
-
-        * `narrative` - Narrative reason, additional_information required
-
-        * `per_agent_request` - Agent decision
-
-        * `other` - Other'
-      example: customer_no_response
-      enum:
-      - account_closed
-      - non_sufficient_funds
-      - customer_requested
-      - legal_decision
-      - customer_no_response
-      - returned_previously
-      - narrative
-      - per_agent_request
-      - other
-    InstantPaymentRelatedObjects:
-      type: object
-      description: This instant payment's related instant payments or other objects.
-      properties:
-        original_payment_id:
-          type: string
-          description: If this instant payment is a return, the ID of the original payment this return is in reference to.
-          pattern: ^instant_payment_\w+$
-          example: instant_payment_xyz123
-        return_payment_ids:
-          type: array
-          description: If this instant payment was subsequently returned, the IDs of the payment returns.
-          items:
-            type: string
-            pattern: ^instant_payment_\w+$
-            example: instant_payment_xyz456
-    InstantPaymentRejection:
-      type: object
-      description: If this instant payment was rejected, this object contains details on the rejection.
-      required:
-      - rejected_by
-      - reason
-      properties:
-        rejected_by:
-          type: string
-          description: The party that rejected the instant payment.
-          enum:
-          - lead
-          - network
-          - counterparty
-          example: lead
-        reason:
-          $ref: '#/components/schemas/InstantPaymentRejectionReason'
-        details:
-          type: string
-          description: Details of the reason for the rejection including the 4-character ISO code when possible.
     OutgoingInstantPaymentReturnReason:
       type: string
       description: 'The reason for initiating an return.
@@ -975,182 +1088,19 @@ components:
       format: int64
       example: 5000
       minimum: 0
-    CurrencyCode:
-      description: A three-letter currency code as defined in ISO 4217.
+    InstantPaymentReturnRequestStatus:
       type: string
-      example: USD
+      description: 'The current status of the return request object.
+
+        For incoming return requests: response_needed, accepted, rejected.
+
+        For outgoing return requests: pending, accepted, rejected.'
+      example: pending
       enum:
-      - USD
-    Direction:
-      type: string
-      description: 'Who is initiating the transaction.
-
-
-        outgoing: You are sending a transaction to a counterparty.
-
-        incoming: You are receiving a transaction from a counterparty.'
-      example: outgoing
-      enum:
-      - outgoing
-      - incoming
-    InstantPaymentReturnDetails:
-      type: object
-      description: If this instant payment is a return, this object contains details on the return.
-      required:
-      - reason
-      properties:
-        reason:
-          $ref: '#/components/schemas/IncomingInstantPaymentReturnReason'
-        details:
-          type: string
-          description: Details of the reason for the return including the 4-character ISO code when possible.
-    InstantPaymentIdentifiers:
-      type: object
-      description: The instant payment's identifiers.
-      properties:
-        end_to_end_id:
-          type: string
-          description: The identifier assigned by the party initiating the instant payment to be delivered to the customer unchanged.
-          maxLength: 35
-          example: E2E-20240101-001
-        uetr:
-          type: string
-          description: Unique End-to-End Transaction Reference (UETR). Must be an IETF RFC 4122 UUID.
-          format: uuid
-          example: 8dc981d2-e8c2-4a7b-8df0-0781b46328d9
-        transaction_id:
-          type: string
-          description: The identifier assigned by the initiating party or debtor to uniquely identify the transaction.
-          maxLength: 35
-          example: TXN-20240101-001
-    AccountID:
-      type: string
-      description: The ID of the Account object.
-      example: account_xyz123
-      pattern: ^account_\w+$
-    InstantPaymentReturnRequest:
-      type: object
-      description: A return request associated with an instant payment.
-      required:
-      - created_at
-      - status
-      - reason
-      properties:
-        status:
-          $ref: '#/components/schemas/InstantPaymentReturnRequestStatus'
-        reason:
-          $ref: '#/components/schemas/IncomingInstantPaymentReturnRequestReason'
-        details:
-          type: string
-          description: Details of the reason for the return request including the 4-character ISO code when possible.
-        deadline:
-          type: string
-          format: date-time
-          description: 'The deadline by which a final response to the return request is expected.
-
-            For incoming return requests, you must respond by 11:30PM ET on the 10th business day. If you do not respond, we will respond on your behalf with a rejection at midnight.
-
-            For outgoing return requests, the network deadline for the counterparty is 12:00AM ET on the 10th business day.'
-          example: '2022-07-11T23:30:00-04:00'
-        resolution:
-          $ref: '#/components/schemas/InstantPaymentReturnRequestResolution'
-        created_at:
-          type: string
-          format: date-time
-          description: The ISO 8601 format timestamp that represents when the return request object was created.
-          example: '2022-06-27T11:22:33Z'
-    IncomingInstantPaymentReturnReason:
-      type: string
-      description: 'The reason for a return.
-
-        * `honor_return_request` - Honoring a return request
-
-        * `wrong_amount` - Wrong amount
-
-        * `duplication` - Duplicate payment
-
-        * `initiating_party_unrecognized` - Unknown sender
-
-        * `fraud_suspected` - Fraud suspected
-
-        * `undue_payment` - Unduly paid
-
-        * `narrative` - Narrative reason, additional_information required
-
-        * `customer_requested` - Requested by customer
-
-        * `regulatory_reason` - Regulatory reason
-
-        * `amount_too_low` - Amount too low
-
-        * `other` - Other'
-      example: duplication
-      enum:
-      - honor_return_request
-      - wrong_amount
-      - duplication
-      - initiating_party_unrecognized
-      - fraud_suspected
-      - undue_payment
-      - narrative
-      - customer_requested
-      - regulatory_reason
-      - amount_too_low
-      - other
-    InvalidParameterDetail:
-      type: object
-      properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
-          type: string
-          description: Why the parameter is invalid.
-    InstantPaymentCounterpartyStatus:
-      description: 'The current status of the instant payment from the counterparty''s perspective.
-
-        If outgoing: posted, under_review, or rejected.
-
-        If incoming: posted or null.'
-      type: string
-      example: posted
-      nullable: true
-      enum:
-      - posted
-      - under_review
+      - pending
+      - response_needed
+      - accepted
       - rejected
-    InstantPaymentAvailability:
-      type: object
-      description: Result of an instant payment availability check.
-      required:
-      - available
-      - routing_number
-      properties:
-        available:
-          type: boolean
-          description: Whether the financial institution is available to receive instant payments.
-          example: true
-        routing_number:
-          type: string
-          description: The routing number that was checked.
-          minLength: 9
-          maxLength: 9
-          example: '111000111'
-    InstantPaymentStatus:
-      description: 'The current status of the instant payment object.
-
-        If outgoing: created, under_review, canceled, rejected, posted.
-
-        If incoming: under_review, rejected, posted.'
-      type: string
-      example: posted
-      enum:
-      - created
-      - under_review
-      - canceled
-      - rejected
-      - posted
     InstantPaymentAgent:
       type: object
       description: Details of a financial institution in an instant payment.
@@ -1164,38 +1114,89 @@ components:
           maxLength: 9
           pattern: ^[0-9]+$
           example: '111000111'
-    OutgoingInstantPaymentReturnRequestReason:
+    IncomingInstantPaymentReturnRequestRejectionReason:
       type: string
-      description: 'The reason for initiating a return request.
+      description: 'The reason for a rejected return request.
 
-        * `creditor_account_number_invalid` - Invalid creditor account number
+        * `account_closed` - Account closed
 
-        * `wrong_amount` - Wrong amount
+        * `non_sufficient_funds` - Insufficient funds
 
-        * `customer_requested` - Requested by customer
+        * `customer_requested` - Customer decision
 
-        * `duplication` - Duplicate payment
+        * `legal_decision` - Legal decision
 
-        * `fraud_suspected` - Fraud suspected
+        * `customer_no_response` - No answer from customer
+
+        * `returned_previously` - Already returned
 
         * `narrative` - Narrative reason, additional_information required
 
-        * `service_not_rendered` - Service not rendered
+        * `per_agent_request` - Agent decision
 
-        * `technical_problem` - Technical problem
-
-        * `undue_payment` - Unduly paid'
-      example: duplication
+        * `other` - Other'
+      example: customer_no_response
       enum:
-      - creditor_account_number_invalid
-      - wrong_amount
+      - account_closed
+      - non_sufficient_funds
       - customer_requested
-      - duplication
-      - fraud_suspected
+      - legal_decision
+      - customer_no_response
+      - returned_previously
       - narrative
-      - service_not_rendered
-      - technical_problem
-      - undue_payment
+      - per_agent_request
+      - other
+    Direction:
+      type: string
+      description: 'Who is initiating the transaction.
+
+
+        outgoing: You are sending a transaction to a counterparty.
+
+        incoming: You are receiving a transaction from a counterparty.'
+      example: outgoing
+      enum:
+      - outgoing
+      - incoming
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+    InstantPaymentRelatedObjects:
+      type: object
+      description: This instant payment's related instant payments or other objects.
+      properties:
+        original_payment_id:
+          type: string
+          description: If this instant payment is a return, the ID of the original payment this return is in reference to.
+          pattern: ^instant_payment_\w+$
+          example: instant_payment_xyz123
+        return_payment_ids:
+          type: array
+          description: If this instant payment was subsequently returned, the IDs of the payment returns.
+          items:
+            type: string
+            pattern: ^instant_payment_\w+$
+            example: instant_payment_xyz456
   securitySchemes:
     bearerAuth:
       type: http

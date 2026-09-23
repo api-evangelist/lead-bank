@@ -1,6 +1,6 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: Lead Bank Account Number Subledger Balances API
+  title: Lead Bank Subledger Balances API
   description: Lead Bank's APIs
   version: v1.0
 servers:
@@ -112,6 +112,49 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
+    SubledgerBalanceResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Unique identifier for the account that the Subledger Balance belongs to.
+          example: account_v9K4p2M7nL1wQ8xR5zB6tY3jH0gA
+        id:
+          type: string
+          description: Lead-generated unique identifier for the Subledger Balance. This ID should subsequently be used when reporting on this object in the Balance file.
+          example: subledger_balance_k8L2n9QpW3xR5vT7mZ4jS1bA6cG
+        client_subledger_balance_name:
+          type: string
+          description: A name for the product or Subledger Balance being offered to the end-user (e.g., Rainy Day Fund, BNPL loan).
+          example: Personal Loan - Home Improvement
+        client_settlement_bank_account_id:
+          type: string
+          description: ID of the underlying settlement bank account where funds for the Subledger Balance are held. Only applicable for certain use cases.
+          example: '12345'
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        created_at:
+          type: string
+          format: date-time
+          description: An ISO-8601 timestamp at which the Subledger Balance was created in Lead's system.
+          example: '2025-09-02T11:01:36Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: An ISO-8601 timestamp at which the Subledger Balance was last updated in Lead's system.
+          example: '2025-09-02T11:05:00Z'
+        status:
+          $ref: '#/components/schemas/SubledgerBalanceStatus'
+        status_reason:
+          type: string
+          description: Reason associated with the status of the Subledger Balance.
+          example: active
+        type:
+          $ref: '#/components/schemas/SubledgerBalanceType'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        details:
+          $ref: '#/components/schemas/SubledgerBalanceCreditDetailsResponse'
     NonRevolvingCreditDetailsRequest:
       title: Non-Revolving
       allOf:
@@ -143,202 +186,6 @@ components:
             type: integer
             description: The expected finance charge amount expressed as an integer in minor units.
             example: 1000
-    RewardsBalanceResponse:
-      type: object
-      properties:
-        amount:
-          type: integer
-          description: The rewards balance amount as an integer in minor units.
-          example: 10
-        unit:
-          type: string
-          description: The unit of measurement for the rewards balance amount.
-          example: points
-          enum:
-          - usd
-          - points
-    Metadata:
-      type: object
-      additionalProperties:
-        type: string
-      description: A set of key-value pairs that can be used to store additional information related to this object.
-    NonRevolvingCreditDetailsResponse:
-      title: Non-Revolving
-      allOf:
-      - $ref: '#/components/schemas/CreditDetailsResponseBaseOptional'
-      - type: object
-        required:
-        - structure
-        properties:
-          expected_maturity_date:
-            type: string
-            format: date
-            description: The expected maturity date of the loan.
-            example: '2027-09-01'
-          repayment_details:
-            type: array
-            items:
-              $ref: '#/components/schemas/RepaymentDetailsResponse'
-          max_funding_amount:
-            type: integer
-            description: The maximum funding amount expressed as an integer in minor units. For a term loan, this would be equivalent to the total loan amount.
-            example: 10000000
-          term:
-            $ref: '#/components/schemas/TermResponse'
-          expected_finance_charge_amount:
-            type: integer
-            description: The expected finance charge amount expressed as an integer in minor units.
-            example: 100000
-    TermResponse:
-      type: object
-      properties:
-        value:
-          type: integer
-          description: The number of units in the contractual term length.
-          example: 24
-        unit:
-          type: string
-          description: The unit of the contractual term length. E.g., for a term loan, this represents the contractual loan term from the date of origination to the expected maturity date.
-          example: months
-          enum:
-          - days
-          - weeks
-          - months
-          - years
-    APIError:
-      type: object
-      properties:
-        code:
-          type: string
-          description: The error code.
-        title:
-          type: string
-          description: The error title.
-        detail:
-          type: string
-          description: A detailed error description.
-        status:
-          type: string
-          description: The HTTP status code.
-        invalid_parameters:
-          type: array
-          description: Invalid request parameters with reasons, if applicable.
-          items:
-            $ref: '#/components/schemas/InvalidParameterDetail'
-        instance:
-          type: string
-          description: The object causing this specific occurrence of the error, if applicable.
-    RevolvingCreditDetailsResponse:
-      title: Revolving
-      allOf:
-      - $ref: '#/components/schemas/CreditDetailsResponseBaseOptional'
-      - type: object
-        required:
-        - structure
-        properties:
-          repayment_details:
-            type: array
-            items:
-              $ref: '#/components/schemas/RevolvingRepaymentDetailsResponse'
-    CreditDetailsBase:
-      type: object
-      required:
-      - structure
-      properties:
-        structure:
-          type: string
-        balances:
-          type: object
-          properties:
-            rewards:
-              type: object
-              required:
-              - unit
-              properties:
-                unit:
-                  type: string
-                  enum:
-                  - usd
-                  - points
-                  example: points
-        autopay_method:
-          type: string
-          description: The autopay method. Required if `type` is `credit`.
-          example: ach
-          enum:
-          - ach
-          - debit_card
-          - wire
-          - virtual_wallet
-          - credit_card
-          - none
-        is_interest_based:
-          type: boolean
-          nullable: true
-          description: Indicates whether the Subledger Balance is interest-based. Required if `type` is `credit`.
-          example: true
-        effective_apr:
-          type: string
-          description: The APR as disclosed to the borrower. Required if `type` is `credit`. Must have exactly 3 decimal places (e.g., `10.250`).
-          example: '10.250'
-        effective_interest_rate:
-          type: string
-          description: The true annualized cost of borrowing, taking into account the interest rate and impact of compounding. Required if `type` is `credit`. Must have exactly 6 decimal places (e.g., `9.500000`).
-          example: '9.500000'
-        interest_rate:
-          type: string
-          description: For deposit products, the annualized interest rate offered to customers on this Subledger Balance. For credit products, the contractual annual rate of interest charged on the loan’s outstanding principal, without taking into account compounding frequency or additional fees. Also known as the stated interest rate or nominal interest rate. Required when `is_interest_based` is `true`. Must have exactly 6 decimal places (e.g., `9.990000`).
-          example: '9.990000'
-    CreditDetailsRequest:
-      type: object
-      required:
-      - structure
-      properties:
-        structure:
-          type: string
-          description: The structure of the credit product.
-          enum:
-          - non_revolving
-          - revolving
-      discriminator:
-        propertyName: structure
-        mapping:
-          non_revolving: '#/components/schemas/NonRevolvingCreditDetailsRequest'
-          revolving: '#/components/schemas/RevolvingCreditDetailsRequest'
-      oneOf:
-      - $ref: '#/components/schemas/NonRevolvingCreditDetailsRequest'
-      - $ref: '#/components/schemas/RevolvingCreditDetailsRequest'
-    SubledgerBalanceCreditDetailsResponse:
-      type: object
-      discriminator:
-        propertyName: structure
-        mapping:
-          non_revolving: '#/components/schemas/NonRevolvingCreditDetailsResponse'
-          revolving: '#/components/schemas/RevolvingCreditDetailsResponse'
-      oneOf:
-      - $ref: '#/components/schemas/NonRevolvingCreditDetailsResponse'
-      - $ref: '#/components/schemas/RevolvingCreditDetailsResponse'
-    BalanceAmountsResponse:
-      type: object
-      properties:
-        core:
-          $ref: '#/components/schemas/CoreBalanceResponse'
-        rewards:
-          $ref: '#/components/schemas/RewardsBalanceResponse'
-        dispute:
-          $ref: '#/components/schemas/DisputeBalanceResponse'
-        charge_off:
-          $ref: '#/components/schemas/ChargeOffBalanceResponse'
-        past_due:
-          $ref: '#/components/schemas/PastDueBalanceResponse'
-    SubledgerBalanceStatus:
-      type: string
-      description: Status of the Subledger Balance.
-      example: active
-      enum:
-      - active
-      - inactive
-      - closed
     RepaymentDetailsResponse:
       type: object
       properties:
@@ -428,24 +275,48 @@ components:
           type: integer
           description: The expected payment amount in each repayment expressed as an integer in minor units.
           example: 4167
-    RevolvingCreditDetailsRequest:
-      title: Revolving
-      allOf:
-      - $ref: '#/components/schemas/CreditDetailsBase'
-      - type: object
-        required:
-        - repayment_details
-        properties:
-          repayment_details:
-            type: array
-            items:
-              $ref: '#/components/schemas/RevolvingRepaymentDetails'
-    CurrencyCode:
-      description: A three-letter currency code as defined in ISO 4217.
-      type: string
-      example: USD
-      enum:
-      - USD
+    CreditDetailsRequest:
+      type: object
+      required:
+      - structure
+      properties:
+        structure:
+          type: string
+          description: The structure of the credit product.
+          enum:
+          - non_revolving
+          - revolving
+      discriminator:
+        propertyName: structure
+        mapping:
+          non_revolving: '#/components/schemas/NonRevolvingCreditDetailsRequest'
+          revolving: '#/components/schemas/RevolvingCreditDetailsRequest'
+      oneOf:
+      - $ref: '#/components/schemas/NonRevolvingCreditDetailsRequest'
+      - $ref: '#/components/schemas/RevolvingCreditDetailsRequest'
+    PastDueBalanceResponse:
+      type: object
+      properties:
+        amount:
+          type: integer
+          description: The total past due amount as an integer in minor units.
+          example: 15
+        past_due_days:
+          type: integer
+          description: The number of days that the balance is past due.
+          example: 15
+        principal:
+          type: integer
+          description: The past due principal amount as an integer in minor units.
+          example: 15
+        interest:
+          type: number
+          description: The past due interest amount as an integer in minor units.
+          example: 15
+        fees:
+          type: integer
+          description: The past due fees amount as an integer in minor units.
+          example: 15
     CoreBalanceResponse:
       type: object
       properties:
@@ -469,49 +340,18 @@ components:
           type: number
           description: The outstanding fees amount as an integer in minor units.
           example: 1422
-    SubledgerBalanceResponse:
-      type: object
-      properties:
-        account_id:
-          type: string
-          description: Unique identifier for the account that the Subledger Balance belongs to.
-          example: account_v9K4p2M7nL1wQ8xR5zB6tY3jH0gA
-        id:
-          type: string
-          description: Lead-generated unique identifier for the Subledger Balance. This ID should subsequently be used when reporting on this object in the Balance file.
-          example: subledger_balance_k8L2n9QpW3xR5vT7mZ4jS1bA6cG
-        client_subledger_balance_name:
-          type: string
-          description: A name for the product or Subledger Balance being offered to the end-user (e.g., Rainy Day Fund, BNPL loan).
-          example: Personal Loan - Home Improvement
-        client_settlement_bank_account_id:
-          type: string
-          description: ID of the underlying settlement bank account where funds for the Subledger Balance are held. Only applicable for certain use cases.
-          example: '12345'
-        currency_code:
-          $ref: '#/components/schemas/CurrencyCode'
-        created_at:
-          type: string
-          format: date-time
-          description: An ISO-8601 timestamp at which the Subledger Balance was created in Lead's system.
-          example: '2025-09-02T11:01:36Z'
-        updated_at:
-          type: string
-          format: date-time
-          description: An ISO-8601 timestamp at which the Subledger Balance was last updated in Lead's system.
-          example: '2025-09-02T11:05:00Z'
-        status:
-          $ref: '#/components/schemas/SubledgerBalanceStatus'
-        status_reason:
-          type: string
-          description: Reason associated with the status of the Subledger Balance.
-          example: active
-        type:
-          $ref: '#/components/schemas/SubledgerBalanceType'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-        details:
-          $ref: '#/components/schemas/SubledgerBalanceCreditDetailsResponse'
+    RevolvingCreditDetailsRequest:
+      title: Revolving
+      allOf:
+      - $ref: '#/components/schemas/CreditDetailsBase'
+      - type: object
+        required:
+        - repayment_details
+        properties:
+          repayment_details:
+            type: array
+            items:
+              $ref: '#/components/schemas/RevolvingRepaymentDetails'
     DisputeBalanceResponse:
       type: object
       properties:
@@ -550,8 +390,9 @@ components:
           - credit_card
           - none
         is_interest_based:
-          type: boolean
-          nullable: true
+          type:
+          - boolean
+          - 'null'
           description: Indicates whether the Subledger Balance is interest-based. Required if `type` is `credit`.
           example: true
         effective_apr:
@@ -566,6 +407,118 @@ components:
           type: string
           description: For deposit products, the annualized interest rate offered to customers on this Subledger Balance. For credit products, the contractual annual rate of interest charged on the loan’s outstanding principal, without taking into account compounding frequency or additional fees. Also known as the stated interest rate or nominal interest rate.
           example: '9.990000'
+    RevolvingRepaymentDetails:
+      type: object
+      required:
+      - expected_payment_frequency
+      properties:
+        expected_payment_frequency:
+          type: string
+          description: 'The expected frequency with which customer payments will occur.
+
+
+            **Calendar-based frequencies:**
+
+            - `weekly` — Once per week.
+
+            - `biweekly` — Once every two weeks (26 payments/year).
+
+            - `semi_monthly` — Twice per month on fixed calendar days (24 payments/year).
+
+            - `monthly` — Once per calendar month.
+
+            - `quarterly` — Once every calendar quarter (4 payments/year).
+
+            - `semi_annually` — Once every 6 months (2 payments/year).
+
+            - `annually` — Once per calendar year.
+
+            - `business_daily` — Once per business day.
+
+
+            **Fixed-interval frequencies:**
+
+            - `fixed_interval` — Payments occur after a fixed number of elapsed days rather than on calendar-based dates. When using this value, `expected_payment_frequency_interval_days` is required.
+
+
+            **Non-time-based frequencies:**
+
+            - `maturity` — A single payment at loan maturity.
+
+            - `variable` — Repayment does not follow a predictable time-based cadence; instead, payments are event-driven (e.g., repayment occurs the next time funds enter the borrower''s account).
+
+            '
+          example: monthly
+          enum:
+          - business_daily
+          - weekly
+          - biweekly
+          - semi_monthly
+          - monthly
+          - quarterly
+          - semi_annually
+          - annually
+          - fixed_interval
+          - maturity
+          - variable
+        expected_payment_frequency_interval_days:
+          type: integer
+          minimum: 1
+          maximum: 730
+          description: 'The number of days between expected customer payments when the repayment schedule follows a fixed interval.
+
+
+            **Required** when `expected_payment_frequency` is `fixed_interval`. **Must not be present** when `expected_payment_frequency` is any other value.
+
+            '
+          example: 60
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    RewardsBalanceResponse:
+      type: object
+      properties:
+        amount:
+          type: integer
+          description: The rewards balance amount as an integer in minor units.
+          example: 10
+        unit:
+          type: string
+          description: The unit of measurement for the rewards balance amount.
+          example: points
+          enum:
+          - usd
+          - points
+    NonRevolvingCreditDetailsResponse:
+      title: Non-Revolving
+      allOf:
+      - $ref: '#/components/schemas/CreditDetailsResponseBaseOptional'
+      - type: object
+        required:
+        - structure
+        properties:
+          expected_maturity_date:
+            type: string
+            format: date
+            description: The expected maturity date of the loan.
+            example: '2027-09-01'
+          repayment_details:
+            type: array
+            items:
+              $ref: '#/components/schemas/RepaymentDetailsResponse'
+          max_funding_amount:
+            type: integer
+            description: The maximum funding amount expressed as an integer in minor units. For a term loan, this would be equivalent to the total loan amount.
+            example: 10000000
+          term:
+            $ref: '#/components/schemas/TermResponse'
+          expected_finance_charge_amount:
+            type: integer
+            description: The expected finance charge amount expressed as an integer in minor units.
+            example: 100000
     RepaymentDetails:
       type: object
       required:
@@ -657,16 +610,6 @@ components:
           type: integer
           description: The expected payment amount in each repayment expressed as an integer in minor units.
           example: 4167
-    InvalidParameterDetail:
-      type: object
-      properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
-          type: string
-          description: Why the parameter is invalid.
     ChargeOffBalanceResponse:
       type: object
       properties:
@@ -686,6 +629,57 @@ components:
           type: integer
           description: The charged-off fees amount as an integer in minor units.
           example: 0
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    Term:
+      type: object
+      required:
+      - value
+      - unit
+      properties:
+        value:
+          type: integer
+          description: The number of units in the contractual term length.
+          example: 24
+        unit:
+          type: string
+          description: The unit of the contractual term length. E.g., for a term loan, this represents the contractual loan term from the date of origination to the expected maturity date.
+          example: months
+          enum:
+          - days
+          - weeks
+          - months
+          - years
+    RevolvingCreditDetailsResponse:
+      title: Revolving
+      allOf:
+      - $ref: '#/components/schemas/CreditDetailsResponseBaseOptional'
+      - type: object
+        required:
+        - structure
+        properties:
+          repayment_details:
+            type: array
+            items:
+              $ref: '#/components/schemas/RevolvingRepaymentDetailsResponse'
+    SubledgerBalanceCreditDetailsResponse:
+      type: object
+      discriminator:
+        propertyName: structure
+        mapping:
+          non_revolving: '#/components/schemas/NonRevolvingCreditDetailsResponse'
+          revolving: '#/components/schemas/RevolvingCreditDetailsResponse'
+      oneOf:
+      - $ref: '#/components/schemas/NonRevolvingCreditDetailsResponse'
+      - $ref: '#/components/schemas/RevolvingCreditDetailsResponse'
     RevolvingRepaymentDetailsResponse:
       type: object
       properties:
@@ -749,29 +743,80 @@ components:
 
             '
           example: 60
-    PastDueBalanceResponse:
+    SubledgerBalanceStatus:
+      type: string
+      description: Status of the Subledger Balance.
+      example: active
+      enum:
+      - active
+      - inactive
+      - closed
+    TermResponse:
       type: object
       properties:
-        amount:
+        value:
           type: integer
-          description: The total past due amount as an integer in minor units.
-          example: 15
-        past_due_days:
-          type: integer
-          description: The number of days that the balance is past due.
-          example: 15
-        principal:
-          type: integer
-          description: The past due principal amount as an integer in minor units.
-          example: 15
-        interest:
-          type: number
-          description: The past due interest amount as an integer in minor units.
-          example: 15
-        fees:
-          type: integer
-          description: The past due fees amount as an integer in minor units.
-          example: 15
+          description: The number of units in the contractual term length.
+          example: 24
+        unit:
+          type: string
+          description: The unit of the contractual term length. E.g., for a term loan, this represents the contractual loan term from the date of origination to the expected maturity date.
+          example: months
+          enum:
+          - days
+          - weeks
+          - months
+          - years
+    CreditDetailsBase:
+      type: object
+      required:
+      - structure
+      properties:
+        structure:
+          type: string
+        balances:
+          type: object
+          properties:
+            rewards:
+              type: object
+              required:
+              - unit
+              properties:
+                unit:
+                  type: string
+                  enum:
+                  - usd
+                  - points
+                  example: points
+        autopay_method:
+          type: string
+          description: The autopay method. Required if `type` is `credit`.
+          example: ach
+          enum:
+          - ach
+          - debit_card
+          - wire
+          - virtual_wallet
+          - credit_card
+          - none
+        is_interest_based:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the Subledger Balance is interest-based. Required if `type` is `credit`.
+          example: true
+        effective_apr:
+          type: string
+          description: The APR as disclosed to the borrower. Required if `type` is `credit`. Must have exactly 3 decimal places (e.g., `10.250`).
+          example: '10.250'
+        effective_interest_rate:
+          type: string
+          description: The true annualized cost of borrowing, taking into account the interest rate and impact of compounding. Required if `type` is `credit`. Must have exactly 6 decimal places (e.g., `9.500000`).
+          example: '9.500000'
+        interest_rate:
+          type: string
+          description: For deposit products, the annualized interest rate offered to customers on this Subledger Balance. For credit products, the contractual annual rate of interest charged on the loan’s outstanding principal, without taking into account compounding frequency or additional fees. Also known as the stated interest rate or nominal interest rate. Required when `is_interest_based` is `true`. Must have exactly 6 decimal places (e.g., `9.990000`).
+          example: '9.990000'
     SubledgerBalanceType:
       type: string
       description: The type of Subledger Balance.
@@ -779,6 +824,34 @@ components:
       enum:
       - credit
       - deposit
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
     CreateSubledgerBalanceRequest:
       type: object
       required:
@@ -814,90 +887,19 @@ components:
           $ref: '#/components/schemas/Metadata'
         details:
           $ref: '#/components/schemas/CreditDetailsRequest'
-    Term:
+    BalanceAmountsResponse:
       type: object
-      required:
-      - value
-      - unit
       properties:
-        value:
-          type: integer
-          description: The number of units in the contractual term length.
-          example: 24
-        unit:
-          type: string
-          description: The unit of the contractual term length. E.g., for a term loan, this represents the contractual loan term from the date of origination to the expected maturity date.
-          example: months
-          enum:
-          - days
-          - weeks
-          - months
-          - years
-    RevolvingRepaymentDetails:
-      type: object
-      required:
-      - expected_payment_frequency
-      properties:
-        expected_payment_frequency:
-          type: string
-          description: 'The expected frequency with which customer payments will occur.
-
-
-            **Calendar-based frequencies:**
-
-            - `weekly` — Once per week.
-
-            - `biweekly` — Once every two weeks (26 payments/year).
-
-            - `semi_monthly` — Twice per month on fixed calendar days (24 payments/year).
-
-            - `monthly` — Once per calendar month.
-
-            - `quarterly` — Once every calendar quarter (4 payments/year).
-
-            - `semi_annually` — Once every 6 months (2 payments/year).
-
-            - `annually` — Once per calendar year.
-
-            - `business_daily` — Once per business day.
-
-
-            **Fixed-interval frequencies:**
-
-            - `fixed_interval` — Payments occur after a fixed number of elapsed days rather than on calendar-based dates. When using this value, `expected_payment_frequency_interval_days` is required.
-
-
-            **Non-time-based frequencies:**
-
-            - `maturity` — A single payment at loan maturity.
-
-            - `variable` — Repayment does not follow a predictable time-based cadence; instead, payments are event-driven (e.g., repayment occurs the next time funds enter the borrower''s account).
-
-            '
-          example: monthly
-          enum:
-          - business_daily
-          - weekly
-          - biweekly
-          - semi_monthly
-          - monthly
-          - quarterly
-          - semi_annually
-          - annually
-          - fixed_interval
-          - maturity
-          - variable
-        expected_payment_frequency_interval_days:
-          type: integer
-          minimum: 1
-          maximum: 730
-          description: 'The number of days between expected customer payments when the repayment schedule follows a fixed interval.
-
-
-            **Required** when `expected_payment_frequency` is `fixed_interval`. **Must not be present** when `expected_payment_frequency` is any other value.
-
-            '
-          example: 60
+        core:
+          $ref: '#/components/schemas/CoreBalanceResponse'
+        rewards:
+          $ref: '#/components/schemas/RewardsBalanceResponse'
+        dispute:
+          $ref: '#/components/schemas/DisputeBalanceResponse'
+        charge_off:
+          $ref: '#/components/schemas/ChargeOffBalanceResponse'
+        past_due:
+          $ref: '#/components/schemas/PastDueBalanceResponse'
   securitySchemes:
     bearerAuth:
       type: http

@@ -1,6 +1,6 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: Lead Bank Account Number Funding API
+  title: Lead Bank Funding API
   description: Lead Bank's APIs
   version: v1.0
 servers:
@@ -264,20 +264,6 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
-    FundingStatus:
-      type: string
-      description: The current status of the Funding object.
-      enum:
-      - processing
-      - posted
-      - rejected
-      example: processing
-    CurrencyCode:
-      description: A three-letter currency code as defined in ISO 4217.
-      type: string
-      example: USD
-      enum:
-      - USD
     FundingV0:
       type: object
       properties:
@@ -340,38 +326,26 @@ components:
           format: date-time
           description: The ISO-8601 timestamp at which the Funding object was last updated.
           example: '2025-09-02T11:05:00Z'
-    InvalidParameterDetail:
-      type: object
-      properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
-          type: string
-          description: Why the parameter is invalid.
-    FundingRejection:
-      type: object
-      description: Object containing information relevant for cases where the Funding object is in a rejected status. When the object is not in a rejected status, fields will still be present with empty strings.
-      properties:
-        reason:
-          $ref: '#/components/schemas/FundingRejectionReason'
-        details:
-          type: string
-          description: Additional info about the rejection. Reserved for future use.
-          example: Funding object rejected due to an internal error.
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
     FundingCurrencyCode:
       type: string
       description: A three-letter currency code as defined in ISO 4217. Must match the `currency_code` on the associated Subledger Balance object.
       example: USD
       enum:
       - USD
-    FundingRejectionReason:
+    FundingStatus:
       type: string
-      description: The rejection code that indicates the type of rejection. Note that Lead may introduce additional enums in the future; partner integrations should be ready to handle them as non-breaking changes.
+      description: The current status of the Funding object.
       enum:
-      - internal_error
-      example: internal_error
+      - processing
+      - posted
+      - rejected
+      example: processing
     APIError:
       type: object
       properties:
@@ -395,6 +369,32 @@ components:
         instance:
           type: string
           description: The object causing this specific occurrence of the error, if applicable.
+    FundingRejectionReason:
+      type: string
+      description: The rejection code that indicates the type of rejection. Note that Lead may introduce additional enums in the future; partner integrations should be ready to handle them as non-breaking changes.
+      enum:
+      - internal_error
+      example: internal_error
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    FundingRejection:
+      type: object
+      description: Object containing information relevant for cases where the Funding object is in a rejected status. When the object is not in a rejected status, fields will still be present with empty strings.
+      properties:
+        reason:
+          $ref: '#/components/schemas/FundingRejectionReason'
+        details:
+          type: string
+          description: Additional info about the rejection. Reserved for future use.
+          example: Funding object rejected due to an internal error.
   securitySchemes:
     bearerAuth:
       type: http

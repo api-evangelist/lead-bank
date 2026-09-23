@@ -1,6 +1,6 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: Lead Bank Account Number Internal Transfer API
+  title: Lead Bank Internal Transfer API
   description: Lead Bank's APIs
   version: v1.0
 servers:
@@ -219,6 +219,19 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    InternalTransferAmount:
+      description: The amount of the internal transfer transaction in cents.
+      type: integer
+      format: int64
+      example: 5000
+      minimum: 1
+      maximum: 9900000000
     AccountID:
       type: string
       description: The ID of the Account object.
@@ -229,37 +242,23 @@ components:
       description: The ID of the Lead Bank Account Number object.
       example: account_number_xyz123
       pattern: ^account_number_\w+$
-    InternalTransferStatusV1:
-      description: The current status of the InternalTransfer object.
-      type: string
-      example: posted
-      enum:
-      - processing
-      - posted
-      - rejected
-    CurrencyCode:
-      description: A three-letter currency code as defined in ISO 4217.
-      type: string
-      example: USD
-      enum:
-      - USD
-    InvalidParameterDetail:
+    InternalTransferRejectionReason:
       type: object
       properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
         reason:
           type: string
-          description: Why the parameter is invalid.
-    InternalTransferAmount:
-      description: The amount of the internal transfer transaction in cents.
-      type: integer
-      format: int64
-      example: 5000
-      minimum: 1
-      maximum: 9900000000
+          description: The rejection code that indicates the type of rejection
+          example: account_number_not_active
+          enum:
+          - account_number_not_active
+          - beneficiary_account_number_unrecognized
+          - non_sufficient_funds
+          - ofac_rejection
+          - internal_error
+        details:
+          type: string
+          description: Additional info about the rejection
+          example: Account number account_123 is inactive.
     InternalTransferV1:
       type: object
       required:
@@ -312,35 +311,6 @@ components:
           format: date-time
           description: The RFC3339 timestamp at which the InternalTransfer object was last updated.
           example: '2022-06-27T11:22:33Z'
-    Metadata:
-      type: object
-      additionalProperties:
-        type: string
-      description: A set of key-value pairs that can be used to store additional information related to this object.
-    InternalTransferRejectionReason:
-      type: object
-      properties:
-        reason:
-          type: string
-          description: The rejection code that indicates the type of rejection
-          example: account_number_not_active
-          enum:
-          - account_number_not_active
-          - beneficiary_account_number_unrecognized
-          - non_sufficient_funds
-          - ofac_rejection
-          - internal_error
-        details:
-          type: string
-          description: Additional info about the rejection
-          example: Account number account_123 is inactive.
-    Amount:
-      description: The amount of the transaction in cents.
-      type: integer
-      format: int64
-      example: 5000
-      minimum: 0
-      maximum: 9900000000
     APIError:
       type: object
       properties:
@@ -364,6 +334,36 @@ components:
         instance:
           type: string
           description: The object causing this specific occurrence of the error, if applicable.
+    Amount:
+      description: The amount of the transaction in cents.
+      type: integer
+      format: int64
+      example: 5000
+      minimum: 0
+      maximum: 9900000000
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    InternalTransferStatusV1:
+      description: The current status of the InternalTransfer object.
+      type: string
+      example: posted
+      enum:
+      - processing
+      - posted
+      - rejected
   securitySchemes:
     bearerAuth:
       type: http

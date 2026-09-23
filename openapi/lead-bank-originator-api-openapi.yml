@@ -1,6 +1,6 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: Lead Bank Account Number Originator API
+  title: Lead Bank Originator API
   description: Lead Bank's APIs
   version: v1.0
 servers:
@@ -561,11 +561,6 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
-    AccountID:
-      type: string
-      description: The ID of the Account object.
-      example: account_xyz123
-      pattern: ^account_\w+$
     AchOriginatorUpdateParameters:
       type: object
       description: ACH controls for updating originators.
@@ -584,17 +579,6 @@ components:
         limits:
           $ref: '#/components/schemas/AchOriginatorUpdateLimits'
           description: The ACH limits for the originator.
-    OriginatorStatus:
-      type: string
-      description: Originator Status
-      example: active
-      enum:
-      - pending
-      - active
-      - inactive
-      - rejected
-      - canceled
-      - suspended
     ListOriginator:
       type: object
       required:
@@ -608,15 +592,66 @@ components:
         has_more:
           type: boolean
           description: Indicates if there are more originators to retrieve.
-    AchOriginatorUpdateLimits:
+    AccountID:
+      type: string
+      description: The ID of the Account object.
+      example: account_xyz123
+      pattern: ^account_\w+$
+    OutgoingSecCode:
+      type: string
+      description: 'The Standard Entry Class, SEC, to code the outgoing ACH.
+
+        Lead currently supports:
+
+        * `CCD`: Corporate payment
+
+        * `PPD`: Written authorization to initiate payment
+
+        * `TEL`: Telephone initiated payment
+
+        * `WEB`: Web initiated payment
+
+        * `CIE`: Customer initiated entry
+
+        '
+      example: WEB
+      enum:
+      - CCD
+      - PPD
+      - TEL
+      - WEB
+      - CIE
+    CompanyId:
+      type: string
+      description: ACH Company Id
+      example: 1234567890
+      pattern: ^\d{10}$
+    EntityID:
+      type: string
+      description: The ID of your entity.
+      example: entity_xyz123
+      pattern: ^entity_[^\s]{1,33}$
+    AchOriginatorParameters:
       type: object
+      description: ACH controls for originators.
+      required:
+      - limits
+      - allowed_sec_codes
       properties:
-        calendar_day_maximum_amount:
-          $ref: '#/components/schemas/AchCalendarDayMaximumAmount'
-          description: Maximum amount per calendar day.
-        rolling_30_calendar_day_maximum_amount:
-          $ref: '#/components/schemas/AchRolling30CalendarDayMaximumAmount'
-          description: Maximum amount per rolling 30 calendar days.
+        allowed_sec_codes:
+          type: array
+          description: List of allowed SEC codes for ACH transactions.
+          items:
+            $ref: '#/components/schemas/OutgoingSecCode'
+        nested_third_parties:
+          type: array
+          description: List of nested third-party entity IDs.
+          items:
+            $ref: '#/components/schemas/EntityID'
+          maxItems: 5
+        limits:
+          $ref: '#/components/schemas/AchOriginatorLimits'
+          description: The ACH limits for the originator.
     AchRolling30CalendarDayMaximumAmount:
       type: object
       required:
@@ -635,21 +670,63 @@ components:
           description: Debit limit per transaction in cents.
           minimum: 0
           maximum: 990000000000
-    InvalidParameterDetail:
+    AchCalendarDayMaximumAmount:
+      type: object
+      required:
+      - credit
+      - debit
+      properties:
+        credit:
+          type: integer
+          format: int64
+          description: Credit limit per transaction in cents.
+          minimum: 0
+          maximum: 990000000000
+        debit:
+          type: integer
+          format: int64
+          description: Debit limit per transaction in cents.
+          minimum: 0
+          maximum: 990000000000
+    APIError:
       type: object
       properties:
-        parameter:
+        code:
           type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
+          description: The error code.
+        title:
           type: string
-          description: Why the parameter is invalid.
-    EntityID:
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+    OriginatorStatus:
       type: string
-      description: The ID of your entity.
-      example: entity_xyz123
-      pattern: ^entity_[^\s]{1,33}$
+      description: Originator Status
+      example: active
+      enum:
+      - pending
+      - active
+      - inactive
+      - rejected
+      - canceled
+      - suspended
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
     Originator:
       type: object
       properties:
@@ -682,34 +759,25 @@ components:
           type: string
           format: date-time
           example: '2022-06-27T11:22:33Z'
-    CompanyId:
-      type: string
-      description: ACH Company Id
-      example: 1234567890
-      pattern: ^\d{10}$
-    AchCalendarDayMaximumAmount:
+    InvalidParameterDetail:
       type: object
-      required:
-      - credit
-      - debit
       properties:
-        credit:
-          type: integer
-          format: int64
-          description: Credit limit per transaction in cents.
-          minimum: 0
-          maximum: 990000000000
-        debit:
-          type: integer
-          format: int64
-          description: Debit limit per transaction in cents.
-          minimum: 0
-          maximum: 990000000000
-    Metadata:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    AchOriginatorUpdateLimits:
       type: object
-      additionalProperties:
-        type: string
-      description: A set of key-value pairs that can be used to store additional information related to this object.
+      properties:
+        calendar_day_maximum_amount:
+          $ref: '#/components/schemas/AchCalendarDayMaximumAmount'
+          description: Maximum amount per calendar day.
+        rolling_30_calendar_day_maximum_amount:
+          $ref: '#/components/schemas/AchRolling30CalendarDayMaximumAmount'
+          description: Maximum amount per rolling 30 calendar days.
     AchOriginatorLimits:
       type: object
       required:
@@ -722,74 +790,6 @@ components:
         rolling_30_calendar_day_maximum_amount:
           $ref: '#/components/schemas/AchRolling30CalendarDayMaximumAmount'
           description: Maximum amount per rolling 30 calendar days.
-    OutgoingSecCode:
-      type: string
-      description: 'The Standard Entry Class, SEC, to code the outgoing ACH.
-
-        Lead currently supports:
-
-        * `CCD`: Corporate payment
-
-        * `PPD`: Written authorization to initiate payment
-
-        * `TEL`: Telephone initiated payment
-
-        * `WEB`: Web initiated payment
-
-        * `CIE`: Customer initiated entry
-
-        '
-      example: WEB
-      enum:
-      - CCD
-      - PPD
-      - TEL
-      - WEB
-      - CIE
-    AchOriginatorParameters:
-      type: object
-      description: ACH controls for originators.
-      required:
-      - limits
-      - allowed_sec_codes
-      properties:
-        allowed_sec_codes:
-          type: array
-          description: List of allowed SEC codes for ACH transactions.
-          items:
-            $ref: '#/components/schemas/OutgoingSecCode'
-        nested_third_parties:
-          type: array
-          description: List of nested third-party entity IDs.
-          items:
-            $ref: '#/components/schemas/EntityID'
-          maxItems: 5
-        limits:
-          $ref: '#/components/schemas/AchOriginatorLimits'
-          description: The ACH limits for the originator.
-    APIError:
-      type: object
-      properties:
-        code:
-          type: string
-          description: The error code.
-        title:
-          type: string
-          description: The error title.
-        detail:
-          type: string
-          description: A detailed error description.
-        status:
-          type: string
-          description: The HTTP status code.
-        invalid_parameters:
-          type: array
-          description: Invalid request parameters with reasons, if applicable.
-          items:
-            $ref: '#/components/schemas/InvalidParameterDetail'
-        instance:
-          type: string
-          description: The object causing this specific occurrence of the error, if applicable.
   securitySchemes:
     bearerAuth:
       type: http

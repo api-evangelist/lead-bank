@@ -1,6 +1,6 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: Lead Bank Account Number OAuth API
+  title: Lead Bank O Auth API
   description: Lead Bank's APIs
   version: v1.0
 servers:

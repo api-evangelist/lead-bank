@@ -1,6 +1,6 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: Lead Bank Account Number Wire API
+  title: Lead Bank Wire API
   description: Lead Bank's APIs
   version: v1.0
 servers:
@@ -398,6 +398,69 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
+    WireOtherAgents:
+      description: Details of any other agents involved in the wire transfer.
+      type: object
+      properties:
+        previous_instructing_agent_one:
+          $ref: '#/components/schemas/WireAgent'
+          description: Object representing the “Previous Instructing Agent One”, which is a financial institution sitting in the payment chain between the Debtor Agent and the Instructing Agent.
+        previous_instructing_agent_two:
+          $ref: '#/components/schemas/WireAgent'
+          description: Object representing the “Previous Instructing Agent Two”, which is a financial institution sitting in the payment chain between the Debtor Agent and the Instructing Agent.
+        previous_instructing_agent_three:
+          $ref: '#/components/schemas/WireAgent'
+          description: Object representing the “Previous Instructing Agent Three”, which is a financial institution sitting in the payment chain between the Debtor Agent and the Instructing Agent.
+        intermediary_agent_one:
+          $ref: '#/components/schemas/WireAgent'
+          description: Object representing the “Intermediary Agent One”, which is a financial institution sitting in the payment chain between the Creditor Agent and the Instructed Agent.
+        intermediary_agent_two:
+          $ref: '#/components/schemas/WireAgent'
+          description: Object representing the “Intermediary Agent Two”, which is a financial institution sitting in the payment chain between the Creditor Agent and the Instructed Agent.
+        intermediary_agent_three:
+          $ref: '#/components/schemas/WireAgent'
+          description: Object representing the “Intermediary Agent Three”, which is a financial institution sitting in the payment chain between the Creditor Agent and the Instructed Agent.
+    AccountNumberID:
+      type: string
+      description: The ID of the Lead Bank Account Number object.
+      example: account_number_xyz123
+      pattern: ^account_number_\w+$
+    WireDirection:
+      type: string
+      description: 'Who is initiating the transaction.
+
+
+        outgoing: You are sending a wire transaction to a counterparty.
+
+        incoming: You are receiving an wire transaction from a counterparty.'
+      example: incoming
+      enum:
+      - outgoing
+      - incoming
+    WireInstructAgent:
+      type: object
+      description: Wire instruct agent information.
+      properties:
+        name:
+          type: string
+          description: Name of the financial institution.
+          example: Bank of America
+        routing_number:
+          type: string
+          description: Nine-character numeric ABA routing number of the financial institution.
+          example: '021000021'
+        business_identifier_code:
+          type: string
+          description: Business Identifier Code (BIC) of the financial institution.
+          minLength: 8
+          maxLength: 11
+          pattern: ^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$
+          example: CHASUS33
+    AccountID:
+      type: string
+      description: The ID of the Account object.
+      example: account_xyz123
+      pattern: ^account_\w+$
     WireReturnReasonEnum:
       type: string
       description: Reason to return a wire payment.
@@ -477,137 +540,25 @@ components:
       - untimely_transaction
       - removed_from_tracking
       - undue_payment
-    WireInstructAgent:
-      type: object
-      description: Wire instruct agent information.
-      properties:
-        name:
-          type: string
-          description: Name of the financial institution.
-          example: Bank of America
-        routing_number:
-          type: string
-          description: Nine-character numeric ABA routing number of the financial institution.
-          example: '021000021'
-        business_identifier_code:
-          type: string
-          description: Business Identifier Code (BIC) of the financial institution.
-          minLength: 8
-          maxLength: 11
-          pattern: ^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$
-          example: CHASUS33
-    AccountNumberID:
-      type: string
-      description: The ID of the Lead Bank Account Number object.
-      example: account_number_xyz123
-      pattern: ^account_number_\w+$
-    Metadata:
-      type: object
-      additionalProperties:
-        type: string
-      description: A set of key-value pairs that can be used to store additional information related to this object.
-    WireAmount:
-      description: The amount of the wire transaction in cents.
-      type: integer
-      format: int64
-      example: 5000
-      minimum: 1
-      maximum: 990000000000
-    WireAgent:
-      type: object
-      description: Wire agent information.
-      properties:
-        business_identifier_code:
-          type: string
-          description: Business Identifier Code (BIC) of the financial institution.
-          example: BOFAUS3NXXX
-        name:
-          type: string
-          description: Name of the financial institution.
-          example: Bank of America
-        routing_number:
-          type: string
-          description: Nine-character numeric ABA routing number of the financial institution.
-        address:
-          description: Address of the financial institution.
-          $ref: '#/components/schemas/WirePostalAddress'
-        local_routing_identifier:
-          $ref: '#/components/schemas/LocalRoutingIdentifier'
-    WireRejectionReasonV1:
+    WireAmounts:
       type: object
       properties:
-        reason:
-          $ref: '#/components/schemas/WireRejectionReasonEnum'
-          description: If a wire is rejected, this field will indicate the reason for the rejection.
-        additional_information:
+        settlement_amount:
+          $ref: '#/components/schemas/WireAmount'
+          description: Amount of money that moved across the Fedwire network from the instructing agent to the instructed agent.
+        settlement_currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+          description: The currency code of the settlement amount.
+        instructed_amount:
+          $ref: '#/components/schemas/WireAmount'
+          description: Amount of money to be moved between the debtor and creditor, before deduction of charges, expressed in the currency as ordered by the initiating party.
+        instructed_currency_code:
           type: string
-          description: If the rejection reason is “narrative”, then an accompanying free-form explanation is required and will appear here. For other reasons, participants may optionally send additional information as well.
-        message_identification:
-          $ref: '#/components/schemas/IMAD'
-          description: If Lead rejected an incoming wire on your behalf, this field contains the message identification (formerly known as imad) of the return wire that we sent.
-    APIError:
-      type: object
-      properties:
-        code:
+          description: The currency code of the instructed amount. A three-letter currency code as defined in ISO 4217.
+        instructed_to_settlement_exchange_rate:
+          description: Factor used to convert an amount from the instructed currency to the settlement currency.
           type: string
-          description: The error code.
-        title:
-          type: string
-          description: The error title.
-        detail:
-          type: string
-          description: A detailed error description.
-        status:
-          type: string
-          description: The HTTP status code.
-        invalid_parameters:
-          type: array
-          description: Invalid request parameters with reasons, if applicable.
-          items:
-            $ref: '#/components/schemas/InvalidParameterDetail'
-        instance:
-          type: string
-          description: The object causing this specific occurrence of the error, if applicable.
-    WireChargeBearer:
-      type: string
-      description: Specifies which party bears the charges associated with the wire transfer.
-      example: shared
-      enum:
-      - debtor
-      - shared
-      - creditor
-    WireRejectionReasonEnum:
-      type: string
-      description: Reason to return a wire payment.
-      example: honor_return_request
-      enum:
-      - account_blocked
-      - account_closed
-      - account_number_incorrect
-      - amount_blocked
-      - creditor_account_number_invalid
-      - creditor_address_incorrect
-      - creditor_name_mismatch
-      - creditor_request
-      - debtor_address_invalid
-      - honor_return_request
-      - narrative
-      - per_agent_request
-      - non_sufficient_funds
-      - routing_number_format_incorrect
-      - aggregate_limit_exceeded
-    WireReturnV1:
-      type: object
-      properties:
-        reason:
-          $ref: '#/components/schemas/WireReturnReasonEnum'
-          description: If wire is a return, this field will indicate the reason for the return
-        code:
-          type: string
-          description: The return code for the wire return.
-        additional_information:
-          type: string
-          description: If the return reason is NARR (stands for “narrative”), then an accompanying free-form explanation is required and will appear here. For other reasons, participants may optionally send additional information as well.
+          example: 1
     WireTransferPurposeV1:
       type: object
       description: The purpose or reason for which the wire is being sent.
@@ -654,55 +605,23 @@ components:
           maxLength: 140
           pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*[\w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]][ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
           example: Payment for consulting services
-    WireCreditorRequest:
+    WireChargeInfo:
       type: object
-      description: The person or entity to which the wire is being sent.
+      description: Details of a single charge assessed during wire transfer processing.
       required:
-      - name
-      - account_identifier
-      - address
+      - amount
+      - currency_code
       properties:
-        name:
+        amount:
           type: string
-          description: Name of the person or entity to which the wire is being sent.
-          minLength: 3
-          maxLength: 35
-          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*[\w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]][ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
-          example: Allan Scott
-        account_identifier:
-          type: object
-          description: Account identifier of the creditor.
-          required:
-          - type
-          - value
-          properties:
-            type:
-              type: string
-              description: Indicator for the type of account identifier to which the wire is being sent.
-              enum:
-              - account_number
-              - IBAN
-              example: account_number
-            value:
-              type: string
-              description: The value associated with the account identifier to which the wire is being sent.
-              minLength: 1
-              maxLength: 34
-              pattern: ^[a-zA-Z0-9 ]*[a-zA-Z0-9]+$
-              example: '1032345678'
-        address:
-          description: Address of the creditor.
-          $ref: '#/components/schemas/WirePostalAddressRequest'
-    LocalRoutingIdentifierRequest:
-      type: object
-      description: Routing or transit code used by the creditor agent's local clearing system for international wire transfers, such as a sort code, IFSC, or BSB. This field may be required for certain destinations.
-      properties:
-        value:
+          description: The amount of the charge.
+          example: '12.50'
+        currency_code:
           type: string
-          description: The value of the local routing identifier.
-          minLength: 1
-          maxLength: 35
-          example: '123456'
+          description: ISO 4217 three-letter currency code for the charge.
+          example: USD
+        charging_agent:
+          $ref: '#/components/schemas/WireAgent'
     WirePaymentIdentifiers:
       type: object
       description: Wire payment identifiers.
@@ -734,68 +653,18 @@ components:
           readOnly: true
           description: Unique identification, as assigned by an instructing party for an instructed party, to unambiguously identify the returned transaction.
           example: ReturnInstruction12345
-    WireStatus:
-      description: The current status of the wire object.
-      type: string
-      example: created
-      enum:
-      - created
-      - scheduled
-      - processing
-      - posted
-      - under_review
-      - rejected
-      - canceled
-      - cancel_pending
-    WireOtherAgents:
-      description: Details of any other agents involved in the wire transfer.
+    WireReturnV1:
       type: object
       properties:
-        previous_instructing_agent_one:
-          $ref: '#/components/schemas/WireAgent'
-          description: Object representing the “Previous Instructing Agent One”, which is a financial institution sitting in the payment chain between the Debtor Agent and the Instructing Agent.
-        previous_instructing_agent_two:
-          $ref: '#/components/schemas/WireAgent'
-          description: Object representing the “Previous Instructing Agent Two”, which is a financial institution sitting in the payment chain between the Debtor Agent and the Instructing Agent.
-        previous_instructing_agent_three:
-          $ref: '#/components/schemas/WireAgent'
-          description: Object representing the “Previous Instructing Agent Three”, which is a financial institution sitting in the payment chain between the Debtor Agent and the Instructing Agent.
-        intermediary_agent_one:
-          $ref: '#/components/schemas/WireAgent'
-          description: Object representing the “Intermediary Agent One”, which is a financial institution sitting in the payment chain between the Creditor Agent and the Instructed Agent.
-        intermediary_agent_two:
-          $ref: '#/components/schemas/WireAgent'
-          description: Object representing the “Intermediary Agent Two”, which is a financial institution sitting in the payment chain between the Creditor Agent and the Instructed Agent.
-        intermediary_agent_three:
-          $ref: '#/components/schemas/WireAgent'
-          description: Object representing the “Intermediary Agent Three”, which is a financial institution sitting in the payment chain between the Creditor Agent and the Instructed Agent.
-    WireAgentRequest:
-      type: object
-      description: Wire agent information.
-      properties:
-        routing_number:
+        reason:
+          $ref: '#/components/schemas/WireReturnReasonEnum'
+          description: If wire is a return, this field will indicate the reason for the return
+        code:
           type: string
-          description: Nine-character numeric ABA routing number of the financial institution.
-          minLength: 9
-          maxLength: 9
-          pattern: ^[0-9]+$
-          example: '021000021'
-        business_identifier_code:
+          description: The return code for the wire return.
+        additional_information:
           type: string
-          nullable: true
-          description: Business Identifier Code (BIC) of the financial institution. Required for international wires.
-          minLength: 8
-          maxLength: 11
-          pattern: ^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$
-          example: CHASUS33
-        local_routing_identifier:
-          $ref: '#/components/schemas/LocalRoutingIdentifierRequest'
-    CurrencyCode:
-      description: A three-letter currency code as defined in ISO 4217.
-      type: string
-      example: USD
-      enum:
-      - USD
+          description: If the return reason is NARR (stands for “narrative”), then an accompanying free-form explanation is required and will appear here. For other reasons, participants may optionally send additional information as well.
     WireRemittanceDetails:
       type: object
       description: Wire remittance details.
@@ -823,6 +692,18 @@ components:
           example: message from financial institution to financial institution
         transfer_purpose:
           $ref: '#/components/schemas/WireTransferPurposeV1'
+    WireCharges:
+      type: object
+      description: Information about charges associated with the wire transfer.
+      properties:
+        charge_bearer:
+          $ref: '#/components/schemas/WireChargeBearer'
+          description: Specifies which party bears the charges for the wire transfer.
+        breakdown:
+          type: array
+          description: Itemized list of charges assessed during wire transfer processing.
+          items:
+            $ref: '#/components/schemas/WireChargeInfo'
     WirePartyAccountIdentifier:
       type: object
       description: Object representing the account that the party holds at its financial institution
@@ -838,31 +719,94 @@ components:
           type: string
           description: The value of the account identifier where the wire is being sent. For U.S. domestic wires, this should always be the full account number.
           example: 1234567890
-    WireDirection:
+    WireStatus:
+      description: The current status of the wire object.
       type: string
-      description: 'Who is initiating the transaction.
-
-
-        outgoing: You are sending a wire transaction to a counterparty.
-
-        incoming: You are receiving an wire transaction from a counterparty.'
-      example: incoming
+      example: created
       enum:
-      - outgoing
-      - incoming
-    WireParty:
+      - created
+      - scheduled
+      - processing
+      - posted
+      - under_review
+      - rejected
+      - canceled
+      - cancel_pending
+    WirePostalAddressRequest:
       type: object
-      description: Wire party information.
+      required:
+      - line_one
       properties:
+        line_one:
+          type: string
+          description: Line one address of the party represented in an unstructured format.
+          minLength: 1
+          maxLength: 35
+          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*[\w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]][ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+          example: 123 Main St
+        line_two:
+          type: string
+          description: Line two address of the party represented in an unstructured format.
+          maxLength: 35
+          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+          example: Suite 100
+        line_three:
+          type: string
+          description: Line three address of the party represented in an unstructured format.
+          maxLength: 35
+          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+          example: Kansas City, MO 64105
+    RelatedWiresV1:
+      type: object
+      description: Related wire objects.
+      properties:
+        original_wire_id:
+          type: string
+          description: If this wire is a return wire (i.e., returning a wire previously received), this field will provide the preceding wire's identifier (wire_id).
+          example: wire_xyz001
+        return_wire_ids:
+          type: array
+          description: If this wire has been returned by any following wires, you can find the returning wire id(s) here.
+          items:
+            type: string
+            example: wire_xyz002
+    WireAgent:
+      type: object
+      description: Wire agent information.
+      properties:
+        business_identifier_code:
+          type: string
+          description: Business Identifier Code (BIC) of the financial institution.
+          example: BOFAUS3NXXX
         name:
           type: string
-          description: Name of the party.
-          example: Alan Scott
-        account_identifier:
-          $ref: '#/components/schemas/WirePartyAccountIdentifier'
+          description: Name of the financial institution.
+          example: Bank of America
+        routing_number:
+          type: string
+          description: Nine-character numeric ABA routing number of the financial institution.
         address:
-          description: Address of the party.
+          description: Address of the financial institution.
           $ref: '#/components/schemas/WirePostalAddress'
+        local_routing_identifier:
+          $ref: '#/components/schemas/LocalRoutingIdentifier'
+    IMAD:
+      type: string
+      description: Input Message Accountability Data (IMAD), a unique identifier available to originating and receiving banks of a wire message.
+      example: 20241215MMQFMP2L017736
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    WireAmount:
+      description: The amount of the wire transaction in cents.
+      type: integer
+      format: int64
+      example: 5000
+      minimum: 1
+      maximum: 990000000000
     WireReturnCode:
       type: string
       description: 'List of eligible return reason codes for wire transfers.
@@ -895,104 +839,6 @@ components:
       - NARR
       - RR02
       - RR03
-    WireAmounts:
-      type: object
-      properties:
-        settlement_amount:
-          $ref: '#/components/schemas/WireAmount'
-          description: Amount of money that moved across the Fedwire network from the instructing agent to the instructed agent.
-        settlement_currency_code:
-          $ref: '#/components/schemas/CurrencyCode'
-          description: The currency code of the settlement amount.
-        instructed_amount:
-          $ref: '#/components/schemas/WireAmount'
-          description: Amount of money to be moved between the debtor and creditor, before deduction of charges, expressed in the currency as ordered by the initiating party.
-        instructed_currency_code:
-          type: string
-          description: The currency code of the instructed amount. A three-letter currency code as defined in ISO 4217.
-        instructed_to_settlement_exchange_rate:
-          description: Factor used to convert an amount from the instructed currency to the settlement currency.
-          type: string
-          example: 1
-    AccountID:
-      type: string
-      description: The ID of the Account object.
-      example: account_xyz123
-      pattern: ^account_\w+$
-    WirePostalAddressRequest:
-      type: object
-      required:
-      - line_one
-      properties:
-        line_one:
-          type: string
-          description: Line one address of the party represented in an unstructured format.
-          minLength: 1
-          maxLength: 35
-          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*[\w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]][ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
-          example: 123 Main St
-        line_two:
-          type: string
-          description: Line two address of the party represented in an unstructured format.
-          maxLength: 35
-          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
-          example: Suite 100
-        line_three:
-          type: string
-          description: Line three address of the party represented in an unstructured format.
-          maxLength: 35
-          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
-          example: Kansas City, MO 64105
-    LocalRoutingIdentifier:
-      type: object
-      description: Routing or transit code used by the financial institution's local clearing system for international wire transfers, such as a sort code, IFSC, or BSB.
-      properties:
-        scheme:
-          type: string
-          description: The scheme or type of the local routing identifier (e.g. GBDSC for UK sort codes).
-          example: GBDSC
-        value:
-          type: string
-          description: The value of the local routing identifier.
-          minLength: 1
-          maxLength: 35
-          example: '123456'
-    RelatedWiresV1:
-      type: object
-      description: Related wire objects.
-      properties:
-        original_wire_id:
-          type: string
-          description: If this wire is a return wire (i.e., returning a wire previously received), this field will provide the preceding wire's identifier (wire_id).
-          example: wire_xyz001
-        return_wire_ids:
-          type: array
-          description: If this wire has been returned by any following wires, you can find the returning wire id(s) here.
-          items:
-            type: string
-            example: wire_xyz002
-    WireCharges:
-      type: object
-      description: Information about charges associated with the wire transfer.
-      properties:
-        charge_bearer:
-          $ref: '#/components/schemas/WireChargeBearer'
-          description: Specifies which party bears the charges for the wire transfer.
-        breakdown:
-          type: array
-          description: Itemized list of charges assessed during wire transfer processing.
-          items:
-            $ref: '#/components/schemas/WireChargeInfo'
-    InvalidParameterDetail:
-      type: object
-      properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
-          type: string
-          description: Why the parameter is invalid.
     WirePostalAddress:
       type: object
       properties:
@@ -1072,27 +918,76 @@ components:
           maxLength: 35
           pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
           example: Kansas City, MO 64105
-    WireChargeInfo:
+    WireAgentRequest:
       type: object
-      description: Details of a single charge assessed during wire transfer processing.
-      required:
-      - amount
-      - currency_code
+      description: Wire agent information.
       properties:
-        amount:
+        routing_number:
           type: string
-          description: The amount of the charge.
-          example: '12.50'
-        currency_code:
+          description: Nine-character numeric ABA routing number of the financial institution.
+          minLength: 9
+          maxLength: 9
+          pattern: ^[0-9]+$
+          example: '021000021'
+        business_identifier_code:
+          type:
+          - string
+          - 'null'
+          description: Business Identifier Code (BIC) of the financial institution. Required for international wires.
+          minLength: 8
+          maxLength: 11
+          pattern: ^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$
+          example: CHASUS33
+        local_routing_identifier:
+          $ref: '#/components/schemas/LocalRoutingIdentifierRequest'
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
           type: string
-          description: ISO 4217 three-letter currency code for the charge.
-          example: USD
-        charging_agent:
-          $ref: '#/components/schemas/WireAgent'
-    IMAD:
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    WireRejectionReasonEnum:
       type: string
-      description: Input Message Accountability Data (IMAD), a unique identifier available to originating and receiving banks of a wire message.
-      example: 20241215MMQFMP2L017736
+      description: Reason to return a wire payment.
+      example: honor_return_request
+      enum:
+      - account_blocked
+      - account_closed
+      - account_number_incorrect
+      - amount_blocked
+      - creditor_account_number_invalid
+      - creditor_address_incorrect
+      - creditor_name_mismatch
+      - creditor_request
+      - debtor_address_invalid
+      - honor_return_request
+      - narrative
+      - per_agent_request
+      - non_sufficient_funds
+      - routing_number_format_incorrect
+      - aggregate_limit_exceeded
+    WireChargeBearer:
+      type: string
+      description: Specifies which party bears the charges associated with the wire transfer.
+      example: shared
+      enum:
+      - debtor
+      - shared
+      - creditor
+    LocalRoutingIdentifierRequest:
+      type: object
+      description: Routing or transit code used by the creditor agent's local clearing system for international wire transfers, such as a sort code, IFSC, or BSB. This field may be required for certain destinations.
+      properties:
+        value:
+          type: string
+          description: The value of the local routing identifier.
+          minLength: 1
+          maxLength: 35
+          example: '123456'
     WireV1:
       type: object
       properties:
@@ -1174,6 +1069,112 @@ components:
           $ref: '#/components/schemas/WireRejectionReasonV1'
         metadata:
           $ref: '#/components/schemas/Metadata'
+    WireCreditorRequest:
+      type: object
+      description: The person or entity to which the wire is being sent.
+      required:
+      - name
+      - account_identifier
+      - address
+      properties:
+        name:
+          type: string
+          description: Name of the person or entity to which the wire is being sent.
+          minLength: 3
+          maxLength: 35
+          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*[\w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]][ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+          example: Allan Scott
+        account_identifier:
+          type: object
+          description: Account identifier of the creditor.
+          required:
+          - type
+          - value
+          properties:
+            type:
+              type: string
+              description: Indicator for the type of account identifier to which the wire is being sent.
+              enum:
+              - account_number
+              - IBAN
+              example: account_number
+            value:
+              type: string
+              description: The value associated with the account identifier to which the wire is being sent.
+              minLength: 1
+              maxLength: 34
+              pattern: ^[a-zA-Z0-9 ]*[a-zA-Z0-9]+$
+              example: '1032345678'
+        address:
+          description: Address of the creditor.
+          $ref: '#/components/schemas/WirePostalAddressRequest'
+    WireParty:
+      type: object
+      description: Wire party information.
+      properties:
+        name:
+          type: string
+          description: Name of the party.
+          example: Alan Scott
+        account_identifier:
+          $ref: '#/components/schemas/WirePartyAccountIdentifier'
+        address:
+          description: Address of the party.
+          $ref: '#/components/schemas/WirePostalAddress'
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+    LocalRoutingIdentifier:
+      type: object
+      description: Routing or transit code used by the financial institution's local clearing system for international wire transfers, such as a sort code, IFSC, or BSB.
+      properties:
+        scheme:
+          type: string
+          description: The scheme or type of the local routing identifier (e.g. GBDSC for UK sort codes).
+          example: GBDSC
+        value:
+          type: string
+          description: The value of the local routing identifier.
+          minLength: 1
+          maxLength: 35
+          example: '123456'
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
+    WireRejectionReasonV1:
+      type: object
+      properties:
+        reason:
+          $ref: '#/components/schemas/WireRejectionReasonEnum'
+          description: If a wire is rejected, this field will indicate the reason for the rejection.
+        additional_information:
+          type: string
+          description: If the rejection reason is “narrative”, then an accompanying free-form explanation is required and will appear here. For other reasons, participants may optionally send additional information as well.
+        message_identification:
+          $ref: '#/components/schemas/IMAD'
+          description: If Lead rejected an incoming wire on your behalf, this field contains the message identification (formerly known as imad) of the return wire that we sent.
   securitySchemes:
     bearerAuth:
       type: http

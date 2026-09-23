@@ -1,26 +1,11 @@
 {
   "provider": "lead-bank",
   "sources": [
-    "lead-bank-account-number-api-openapi.yml",
-    "lead-bank-ach-api-openapi.yml",
-    "lead-bank-blockchain-payment-api-openapi.yml",
-    "lead-bank-compliance-api-openapi.yml",
-    "lead-bank-entity-api-openapi.yml",
-    "lead-bank-events-api-openapi.yml",
-    "lead-bank-funding-api-openapi.yml",
-    "lead-bank-instant-payments-api-openapi.yml",
-    "lead-bank-internal-transfer-api-openapi.yml",
-    "lead-bank-lending-api-openapi.yml",
-    "lead-bank-lending-simulation-api-openapi.yml",
-    "lead-bank-oauth-api-openapi.yml",
-    "lead-bank-originator-api-openapi.yml",
-    "lead-bank-simulation-api-openapi.yml",
-    "lead-bank-subledger-balances-api-openapi.yml",
-    "lead-bank-wire-api-openapi.yml"
+    "_original/lead-bank-openapi.json"
   ],
   "outputs": [
-    "lead-bank-account-number-api-openapi.yml",
     "lead-bank-ach-api-openapi.yml",
+    "lead-bank-account-number-api-openapi.yml",
     "lead-bank-blockchain-payment-api-openapi.yml",
     "lead-bank-compliance-api-openapi.yml",
     "lead-bank-entity-api-openapi.yml",
@@ -36,9 +21,35 @@
     "lead-bank-subledger-balances-api-openapi.yml",
     "lead-bank-wire-api-openapi.yml"
   ],
-  "archived": [],
+  "archived": [
+    "deleted 1 superseded output(s) from the previous generation"
+  ],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "lead-bank-openapi.json: upgraded openapi 3.0.1 -> OpenAPI 3.2.0",
+    "lead-bank-openapi.json: declared missing tag: Lending Simulation",
+    "lead-bank-openapi.json: declared missing tag: Subledger Balances",
+    "superseded outputs removed: lead-bank-o-auth-api-openapi.yml",
+    "apis.yml register: written (+1 apis, 22 total)"
+  ],
+  "skipped": [
+    "lead-bank-account-number-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "lead-bank-ach-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "lead-bank-blockchain-payment-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "lead-bank-compliance-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "lead-bank-entity-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "lead-bank-events-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "lead-bank-funding-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "lead-bank-instant-payments-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "lead-bank-internal-transfer-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "lead-bank-lending-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "lead-bank-lending-simulation-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "lead-bank-o-auth-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "lead-bank-originator-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "lead-bank-simulation-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "lead-bank-subledger-balances-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "lead-bank-wire-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }
