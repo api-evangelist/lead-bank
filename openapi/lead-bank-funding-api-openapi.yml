@@ -326,12 +326,16 @@ components:
           format: date-time
           description: The ISO-8601 timestamp at which the Funding object was last updated.
           example: '2025-09-02T11:05:00Z'
-    CurrencyCode:
-      description: A three-letter currency code as defined in ISO 4217.
-      type: string
-      example: USD
-      enum:
-      - USD
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
     FundingCurrencyCode:
       type: string
       description: A three-letter currency code as defined in ISO 4217. Must match the `currency_code` on the associated Subledger Balance object.
@@ -375,16 +379,6 @@ components:
       enum:
       - internal_error
       example: internal_error
-    InvalidParameterDetail:
-      type: object
-      properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
-          type: string
-          description: Why the parameter is invalid.
     FundingRejection:
       type: object
       description: Object containing information relevant for cases where the Funding object is in a rejected status. When the object is not in a rejected status, fields will still be present with empty strings.
@@ -395,6 +389,12 @@ components:
           type: string
           description: Additional info about the rejection. Reserved for future use.
           example: Funding object rejected due to an internal error.
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
   securitySchemes:
     bearerAuth:
       type: http

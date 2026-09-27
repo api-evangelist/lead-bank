@@ -586,156 +586,34 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
-    AccountNumberID:
-      type: string
-      description: The ID of the Lead Bank Account Number object.
-      example: account_number_xyz123
-      pattern: ^account_number_\w+$
-    InstantPaymentParty:
-      type: object
-      description: Details of a party in an instant payment.
-      required:
-      - name
-      - account_number
-      properties:
-        name:
-          type: string
-          description: The party's name.
-          minLength: 3
-          maxLength: 35
-          example: Alex Smith
-        account_number:
-          type: string
-          description: The party's account number.
-          minLength: 1
-          maxLength: 17
-          example: '1234567890'
-    OutgoingInstantPaymentReturnRequestReason:
-      type: string
-      description: 'The reason for initiating a return request.
-
-        * `creditor_account_number_invalid` - Invalid creditor account number
-
-        * `wrong_amount` - Wrong amount
-
-        * `customer_requested` - Requested by customer
-
-        * `duplication` - Duplicate payment
-
-        * `fraud_suspected` - Fraud suspected
-
-        * `narrative` - Narrative reason, additional_information required
-
-        * `service_not_rendered` - Service not rendered
-
-        * `technical_problem` - Technical problem
-
-        * `undue_payment` - Unduly paid'
-      example: duplication
-      enum:
-      - creditor_account_number_invalid
-      - wrong_amount
-      - customer_requested
-      - duplication
-      - fraud_suspected
-      - narrative
-      - service_not_rendered
-      - technical_problem
-      - undue_payment
-    Amount:
-      description: The amount of the transaction in cents.
-      type: integer
-      format: int64
-      example: 5000
-      minimum: 0
-      maximum: 9900000000
     SenderCompanyID:
       type: string
       description: The company id of the sender. Maximum number of characters is 10.
       example: 1234567890
-    SenderName:
+    StatementDescriptor:
       type: string
-      description: The name of the sender. Maximum number of characters is 16.
-      example: Lorum Inc.
-    OutgoingSecCode:
-      type: string
-      description: 'The Standard Entry Class, SEC, to code the outgoing ACH.
-
-        Lead currently supports:
-
-        * `CCD`: Corporate payment
-
-        * `PPD`: Written authorization to initiate payment
-
-        * `TEL`: Telephone initiated payment
-
-        * `WEB`: Web initiated payment
-
-        * `CIE`: Customer initiated entry
-
-        '
-      example: WEB
-      enum:
-      - CCD
-      - PPD
-      - TEL
-      - WEB
-      - CIE
-    SimulateResponse:
+      description: The description you would like to appear on your customers’ statement. Maximum number of characters is 10.
+      example: P2P Credit
+      minLength: 1
+      maxLength: 10
+      pattern: ^(?!0+$)(?! +$)[\x20-\x7E]*$
+    DebtorAgent:
       type: object
-    CurrencyCode:
-      description: A three-letter currency code as defined in ISO 4217.
-      type: string
-      example: USD
-      enum:
-      - USD
-    WireAmount:
-      description: The amount of the wire transaction in cents.
+      description: Details of the debtor agent financial institution.
+      properties:
+        routing_number:
+          type: string
+          description: Nine-character numeric ABA routing number for the debtor agent financial institution.
+          minLength: 9
+          maxLength: 9
+          pattern: ^[0-9]+$
+          example: '021000021'
+    InstantPaymentAmount:
+      description: The amount of the instant payment in cents.
       type: integer
       format: int64
       example: 5000
-      minimum: 1
-      maximum: 990000000000
-    SimulateIncomingWireRequest:
-      type: object
-      description: Request body to simulate an incoming wire.
-      required:
-      - amount
-      - creditor_account_number_id
-      - debtor
-      - debtor_agent
-      properties:
-        amount:
-          $ref: '#/components/schemas/WireAmount'
-        creditor_account_number_id:
-          $ref: '#/components/schemas/AccountNumberID'
-          description: The ID of the creditor account number associated with the wire.
-        debtor:
-          $ref: '#/components/schemas/SimulateWireDebtorRequest'
-          description: Details of the debtor sending funds.
-        remittance_details:
-          type: object
-          description: Details of the remittance information for the wire.
-          properties:
-            message_to_creditor:
-              type: string
-              description: Information intended specifically for the creditor.
-              example: Payment for invoice 12345
-              maxLength: 140
-              pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
-        payment_identifiers:
-          type: object
-          description: Payment identifiers for the wire.
-          properties:
-            end_to_end_identification:
-              type: string
-              description: Unique identification that the initiating party in a wire message can use to unambiguously identify the transaction. This is passed through, unchanged, throughout the entire wire chain.
-              maxLength: 35
-              pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
-              example: EndtoEnd12345
-        debtor_agent:
-          $ref: '#/components/schemas/DebtorAgent'
-          description: Debtor Agent financial institution details.
+      minimum: 0
     WireReturnCode:
       type: string
       description: 'List of eligible return reason codes for wire transfers.
@@ -768,120 +646,6 @@ components:
       - NARR
       - RR02
       - RR03
-    WirePostalAddress:
-      type: object
-      properties:
-        department:
-          type: string
-          description: Identification of a division of a large organization or building.
-          example: Procurement Department
-        sub_department:
-          type: string
-          description: Identification of a sub-division of a large organization or building.
-          example: IT Procurement
-        street_name:
-          type: string
-          description: Name of a street or thoroughfare.
-          example: Main Street
-        building_number:
-          type: string
-          description: Number that identifies the position of a building on a street.
-          example: '100'
-        building_name:
-          type: string
-          description: Name of the building or house.
-          example: City Hall
-        floor:
-          type: string
-          description: Floor or storey within a building.
-          example: 4th Floor
-        post_box:
-          type: string
-          description: Numbered box in a post office, assigned to a person or organisation, where letters are kept until called for.
-          example: PO Box 12345
-        room:
-          type: string
-          description: Building room number.
-          example: '600'
-        post_code:
-          type: string
-          description: Identifier consisting of a group of letters and/or numbers that is added to a postal address to assist the sorting of mail.
-          example: '12345'
-        town_name:
-          type: string
-          description: Name of a built-up area, with defined boundaries, and a local government.
-          example: Kansas City
-        town_location_name:
-          type: string
-          description: Specific location name within the town. Note that this field is not commonly used for US-based addresses.
-          example: Westside North
-        district_name:
-          type: string
-          description: Identifies a subdivision within a country sub-division. Note that this field is not commonly used for US-based addresses.
-          example: Manhattan
-        country_sub_division:
-          type: string
-          description: Identifies a subdivision of a country such as state, region, county.
-          example: NY
-        country:
-          type: string
-          description: ISO 3166, alpha-2 code representing a nation with its own government.
-          example: US
-          pattern: '[A-Z]{2,2}'
-        line_one:
-          type: string
-          description: Line one address of the party represented in an unstructured format.
-          minLength: 1
-          maxLength: 35
-          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*[\w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]][ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
-          example: 123 Main St
-        line_two:
-          type: string
-          description: Line two address of the party represented in an unstructured format.
-          maxLength: 35
-          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
-          example: Suite 100
-        line_three:
-          type: string
-          description: Line three address of the party represented in an unstructured format.
-          maxLength: 35
-          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
-          example: Kansas City, MO 64105
-    StatementDescriptor:
-      type: string
-      description: The description you would like to appear on your customers’ statement. Maximum number of characters is 10.
-      example: P2P Credit
-      minLength: 1
-      maxLength: 10
-      pattern: ^(?!0+$)(?! +$)[\x20-\x7E]*$
-    SenderRoutingNumber:
-      type: integer
-      format: int32
-      description: The 9 digit routing number of the sender.
-      example: 111122222
-      minLength: 9
-      maxLength: 9
-    DebtorAgent:
-      type: object
-      description: Details of the debtor agent financial institution.
-      properties:
-        routing_number:
-          type: string
-          description: Nine-character numeric ABA routing number for the debtor agent financial institution.
-          minLength: 9
-          maxLength: 9
-          pattern: ^[0-9]+$
-          example: '021000021'
-    InvalidParameterDetail:
-      type: object
-      properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
-          type: string
-          description: Why the parameter is invalid.
     OutgoingInstantPaymentReturnReason:
       type: string
       description: 'The reason for initiating an return.
@@ -911,6 +675,8 @@ components:
       - undue_payment
       - narrative
       - customer_requested
+    SimulateResponse:
+      type: object
     TransactionType:
       type: string
       description: ACH transaction type.
@@ -918,6 +684,13 @@ components:
       enum:
       - credit
       - debit
+    Amount:
+      description: The amount of the transaction in cents.
+      type: integer
+      format: int64
+      example: 5000
+      minimum: 0
+      maximum: 9900000000
     SimulateWireDebtorRequest:
       type: object
       description: The person or entity sending the wire.
@@ -958,57 +731,31 @@ components:
           $ref: '#/components/schemas/WirePostalAddress'
           required:
           - line_one
-    InstantPaymentAmount:
-      description: The amount of the instant payment in cents.
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    WireAmount:
+      description: The amount of the wire transaction in cents.
       type: integer
       format: int64
       example: 5000
-      minimum: 0
-    InstantPaymentAgent:
-      type: object
-      description: Details of a financial institution in an instant payment.
-      required:
-      - routing_number
-      properties:
-        routing_number:
-          type: string
-          description: The party's routing number.
-          minLength: 9
-          maxLength: 9
-          pattern: ^[0-9]+$
-          example: '111000111'
-    IncomingInstantPaymentReturnRequestRejectionReason:
+      minimum: 1
+      maximum: 990000000000
+    AccountNumberID:
       type: string
-      description: 'The reason for a rejected return request.
-
-        * `account_closed` - Account closed
-
-        * `non_sufficient_funds` - Insufficient funds
-
-        * `customer_requested` - Customer decision
-
-        * `legal_decision` - Legal decision
-
-        * `customer_no_response` - No answer from customer
-
-        * `returned_previously` - Already returned
-
-        * `narrative` - Narrative reason, additional_information required
-
-        * `per_agent_request` - Agent decision
-
-        * `other` - Other'
-      example: customer_no_response
-      enum:
-      - account_closed
-      - non_sufficient_funds
-      - customer_requested
-      - legal_decision
-      - customer_no_response
-      - returned_previously
-      - narrative
-      - per_agent_request
-      - other
+      description: The ID of the Lead Bank Account Number object.
+      example: account_number_xyz123
+      pattern: ^account_number_\w+$
+    SenderRoutingNumber:
+      type: integer
+      format: int32
+      description: The 9 digit routing number of the sender.
+      example: 111122222
+      minLength: 9
+      maxLength: 9
     APIError:
       type: object
       properties:
@@ -1107,6 +854,259 @@ components:
       - R83
       - R84
       - R85
+    IncomingInstantPaymentReturnRequestRejectionReason:
+      type: string
+      description: 'The reason for a rejected return request.
+
+        * `account_closed` - Account closed
+
+        * `non_sufficient_funds` - Insufficient funds
+
+        * `customer_requested` - Customer decision
+
+        * `legal_decision` - Legal decision
+
+        * `customer_no_response` - No answer from customer
+
+        * `returned_previously` - Already returned
+
+        * `narrative` - Narrative reason, additional_information required
+
+        * `per_agent_request` - Agent decision
+
+        * `other` - Other'
+      example: customer_no_response
+      enum:
+      - account_closed
+      - non_sufficient_funds
+      - customer_requested
+      - legal_decision
+      - customer_no_response
+      - returned_previously
+      - narrative
+      - per_agent_request
+      - other
+    InstantPaymentAgent:
+      type: object
+      description: Details of a financial institution in an instant payment.
+      required:
+      - routing_number
+      properties:
+        routing_number:
+          type: string
+          description: The party's routing number.
+          minLength: 9
+          maxLength: 9
+          pattern: ^[0-9]+$
+          example: '111000111'
+    OutgoingInstantPaymentReturnRequestReason:
+      type: string
+      description: 'The reason for initiating a return request.
+
+        * `creditor_account_number_invalid` - Invalid creditor account number
+
+        * `wrong_amount` - Wrong amount
+
+        * `customer_requested` - Requested by customer
+
+        * `duplication` - Duplicate payment
+
+        * `fraud_suspected` - Fraud suspected
+
+        * `narrative` - Narrative reason, additional_information required
+
+        * `service_not_rendered` - Service not rendered
+
+        * `technical_problem` - Technical problem
+
+        * `undue_payment` - Unduly paid'
+      example: duplication
+      enum:
+      - creditor_account_number_invalid
+      - wrong_amount
+      - customer_requested
+      - duplication
+      - fraud_suspected
+      - narrative
+      - service_not_rendered
+      - technical_problem
+      - undue_payment
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    WirePostalAddress:
+      type: object
+      properties:
+        department:
+          type: string
+          description: Identification of a division of a large organization or building.
+          example: Procurement Department
+        sub_department:
+          type: string
+          description: Identification of a sub-division of a large organization or building.
+          example: IT Procurement
+        street_name:
+          type: string
+          description: Name of a street or thoroughfare.
+          example: Main Street
+        building_number:
+          type: string
+          description: Number that identifies the position of a building on a street.
+          example: '100'
+        building_name:
+          type: string
+          description: Name of the building or house.
+          example: City Hall
+        floor:
+          type: string
+          description: Floor or storey within a building.
+          example: 4th Floor
+        post_box:
+          type: string
+          description: Numbered box in a post office, assigned to a person or organisation, where letters are kept until called for.
+          example: PO Box 12345
+        room:
+          type: string
+          description: Building room number.
+          example: '600'
+        post_code:
+          type: string
+          description: Identifier consisting of a group of letters and/or numbers that is added to a postal address to assist the sorting of mail.
+          example: '12345'
+        town_name:
+          type: string
+          description: Name of a built-up area, with defined boundaries, and a local government.
+          example: Kansas City
+        town_location_name:
+          type: string
+          description: Specific location name within the town. Note that this field is not commonly used for US-based addresses.
+          example: Westside North
+        district_name:
+          type: string
+          description: Identifies a subdivision within a country sub-division. Note that this field is not commonly used for US-based addresses.
+          example: Manhattan
+        country_sub_division:
+          type: string
+          description: Identifies a subdivision of a country such as state, region, county.
+          example: NY
+        country:
+          type: string
+          description: ISO 3166, alpha-2 code representing a nation with its own government.
+          example: US
+          pattern: '[A-Z]{2,2}'
+        line_one:
+          type: string
+          description: Line one address of the party represented in an unstructured format.
+          minLength: 1
+          maxLength: 35
+          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*[\w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]][ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+          example: 123 Main St
+        line_two:
+          type: string
+          description: Line two address of the party represented in an unstructured format.
+          maxLength: 35
+          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+          example: Suite 100
+        line_three:
+          type: string
+          description: Line three address of the party represented in an unstructured format.
+          maxLength: 35
+          pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+          example: Kansas City, MO 64105
+    SenderName:
+      type: string
+      description: The name of the sender. Maximum number of characters is 16.
+      example: Lorum Inc.
+    OutgoingSecCode:
+      type: string
+      description: 'The Standard Entry Class, SEC, to code the outgoing ACH.
+
+        Lead currently supports:
+
+        * `CCD`: Corporate payment
+
+        * `PPD`: Written authorization to initiate payment
+
+        * `TEL`: Telephone initiated payment
+
+        * `WEB`: Web initiated payment
+
+        * `CIE`: Customer initiated entry
+
+        '
+      example: WEB
+      enum:
+      - CCD
+      - PPD
+      - TEL
+      - WEB
+      - CIE
+    SimulateIncomingWireRequest:
+      type: object
+      description: Request body to simulate an incoming wire.
+      required:
+      - amount
+      - creditor_account_number_id
+      - debtor
+      - debtor_agent
+      properties:
+        amount:
+          $ref: '#/components/schemas/WireAmount'
+        creditor_account_number_id:
+          $ref: '#/components/schemas/AccountNumberID'
+          description: The ID of the creditor account number associated with the wire.
+        debtor:
+          $ref: '#/components/schemas/SimulateWireDebtorRequest'
+          description: Details of the debtor sending funds.
+        remittance_details:
+          type: object
+          description: Details of the remittance information for the wire.
+          properties:
+            message_to_creditor:
+              type: string
+              description: Information intended specifically for the creditor.
+              example: Payment for invoice 12345
+              maxLength: 140
+              pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+        payment_identifiers:
+          type: object
+          description: Payment identifiers for the wire.
+          properties:
+            end_to_end_identification:
+              type: string
+              description: Unique identification that the initiating party in a wire message can use to unambiguously identify the transaction. This is passed through, unchanged, throughout the entire wire chain.
+              maxLength: 35
+              pattern: ^[ \w/\-\?:\(\)\.,'\+!@#$%^&\*=`\{\|\}~";<>\[\\\]]*$
+              example: EndtoEnd12345
+        debtor_agent:
+          $ref: '#/components/schemas/DebtorAgent'
+          description: Debtor Agent financial institution details.
+    InstantPaymentParty:
+      type: object
+      description: Details of a party in an instant payment.
+      required:
+      - name
+      - account_number
+      properties:
+        name:
+          type: string
+          description: The party's name.
+          minLength: 3
+          maxLength: 35
+          example: Alex Smith
+        account_number:
+          type: string
+          description: The party's account number.
+          minLength: 1
+          maxLength: 17
+          example: '1234567890'
   securitySchemes:
     bearerAuth:
       type: http

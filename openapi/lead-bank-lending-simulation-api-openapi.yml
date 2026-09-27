@@ -67,12 +67,65 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
-    CurrencyCode:
-      description: A three-letter currency code as defined in ISO 4217.
+    AccountType:
       type: string
-      example: USD
+      example: checking
+      description: The account type for the bank account. This should be one of checking or savings.
       enum:
-      - USD
+      - checking
+      - savings
+    ClientLoanID:
+      type: string
+      description: The ID of your loan. This must be the same loan_id used in the Loan Origination Request.
+    StatementDescriptor:
+      type: string
+      description: The description you would like to appear on your customers’ statement. Maximum number of characters is 10.
+      example: P2P Credit
+      minLength: 1
+      maxLength: 10
+      pattern: ^(?!0+$)(?! +$)[\x20-\x7E]*$
+    AchCorrection:
+      type: object
+      description: The corrected `counterparty` details.
+      properties:
+        account_number:
+          type: string
+          description: The updated account number for the `counterparty`.
+          example: '1032345678'
+          maxLength: 17
+        routing_number:
+          type: string
+          description: The updated routing number for the `counterparty`.
+          example: '021000021'
+          minLength: 9
+          maxLength: 9
+        account_type:
+          type: string
+          description: The updated account type for the `counterparty`.
+          enum:
+          - checking
+          - savings
+    DeliveryType:
+      type: string
+      example: same_business_day
+      description: 'How fast you want the counterparty to receive the ACH.
+
+        * `same_business_day`: if the ACH request is submitted before the cutoff window with the same business day option, funds will settle on the same day. 
+
+        * `next_business_day`: standard ACH processing, for funds to settle on the next business day.'
+      enum:
+      - same_business_day
+      - next_business_day
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
     DisbursementPaymentDetails:
       type: object
       required:
@@ -124,17 +177,45 @@ components:
           $ref: '#/components/schemas/AchCorrection'
         failure:
           $ref: '#/components/schemas/DisbursementFailure'
-    DeliveryType:
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+    PaymentMethod:
       type: string
-      example: same_business_day
-      description: 'How fast you want the counterparty to receive the ACH.
-
-        * `same_business_day`: if the ACH request is submitted before the cutoff window with the same business day option, funds will settle on the same day. 
-
-        * `next_business_day`: standard ACH processing, for funds to settle on the next business day.'
+      example: ach
+      description: The payment method chosen for disbursement. Only ACH is supported today.
       enum:
-      - same_business_day
-      - next_business_day
+      - ach
+    DisbursementStatus:
+      description: The current status of this Disbursement object.
+      type: string
+      example: succeeded
+      enum:
+      - created
+      - processing
+      - succeeded
+      - canceled
+      - failed
     DisbursementFailure:
       type: object
       properties:
@@ -199,93 +280,12 @@ components:
           $ref: '#/components/schemas/PaymentMethod'
         payment_details:
           $ref: '#/components/schemas/DisbursementPaymentDetails'
-    AccountType:
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
       type: string
-      example: checking
-      description: The account type for the bank account. This should be one of checking or savings.
+      example: USD
       enum:
-      - checking
-      - savings
-    AchCorrection:
-      type: object
-      description: The corrected `counterparty` details.
-      properties:
-        account_number:
-          type: string
-          description: The updated account number for the `counterparty`.
-          example: '1032345678'
-          maxLength: 17
-        routing_number:
-          type: string
-          description: The updated routing number for the `counterparty`.
-          example: '021000021'
-          minLength: 9
-          maxLength: 9
-        account_type:
-          type: string
-          description: The updated account type for the `counterparty`.
-          enum:
-          - checking
-          - savings
-    StatementDescriptor:
-      type: string
-      description: The description you would like to appear on your customers’ statement. Maximum number of characters is 10.
-      example: P2P Credit
-      minLength: 1
-      maxLength: 10
-      pattern: ^(?!0+$)(?! +$)[\x20-\x7E]*$
-    PaymentMethod:
-      type: string
-      example: ach
-      description: The payment method chosen for disbursement. Only ACH is supported today.
-      enum:
-      - ach
-    APIError:
-      type: object
-      properties:
-        code:
-          type: string
-          description: The error code.
-        title:
-          type: string
-          description: The error title.
-        detail:
-          type: string
-          description: A detailed error description.
-        status:
-          type: string
-          description: The HTTP status code.
-        invalid_parameters:
-          type: array
-          description: Invalid request parameters with reasons, if applicable.
-          items:
-            $ref: '#/components/schemas/InvalidParameterDetail'
-        instance:
-          type: string
-          description: The object causing this specific occurrence of the error, if applicable.
-    DisbursementStatus:
-      description: The current status of this Disbursement object.
-      type: string
-      example: succeeded
-      enum:
-      - created
-      - processing
-      - succeeded
-      - canceled
-      - failed
-    InvalidParameterDetail:
-      type: object
-      properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
-          type: string
-          description: Why the parameter is invalid.
-    ClientLoanID:
-      type: string
-      description: The ID of your loan. This must be the same loan_id used in the Loan Origination Request.
+      - USD
   securitySchemes:
     bearerAuth:
       type: http
