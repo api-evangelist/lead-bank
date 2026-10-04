@@ -67,18 +67,16 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
-    CurrencyCode:
-      description: A three-letter currency code as defined in ISO 4217.
-      type: string
-      example: USD
-      enum:
-      - USD
-    PaymentMethod:
-      type: string
-      example: ach
-      description: The payment method chosen for disbursement. Only ACH is supported today.
-      enum:
-      - ach
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
     DisbursementPaymentDetails:
       type: object
       required:
@@ -130,79 +128,12 @@ components:
           $ref: '#/components/schemas/AchCorrection'
         failure:
           $ref: '#/components/schemas/DisbursementFailure'
-    InvalidParameterDetail:
-      type: object
-      properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
-          type: string
-          description: Why the parameter is invalid.
-    AchCorrection:
-      type: object
-      description: The corrected `counterparty` details.
-      properties:
-        account_number:
-          type: string
-          description: The updated account number for the `counterparty`.
-          example: '1032345678'
-          maxLength: 17
-        routing_number:
-          type: string
-          description: The updated routing number for the `counterparty`.
-          example: '021000021'
-          minLength: 9
-          maxLength: 9
-        account_type:
-          type: string
-          description: The updated account type for the `counterparty`.
-          enum:
-          - checking
-          - savings
-    DisbursementFailure:
-      type: object
-      properties:
-        failure_code:
-          type: string
-          description: The failure code for failed disbursement. This applies in the case of rejected disbursements either by the Fed, ODFI or RDFI.
-          example: account_closed
-          enum:
-          - account_closed
-          - no_account
-          - bad_account_number
-          - account_frozen
-          - contact_lead
-        failure_details:
-          type: string
-          description: 'Details on failure reason and recommended next steps for failed disbursements.
-
-            * `account_closed`: This account is closed. Please contact the account owner and request valid bank account details.
-
-            * `no_account`: This account cannot be located. Please contact the account owner and request valid bank account details.
-
-            * `bad_account_number`: This account contains invalid account number structure. Please contact the account owner and request valid bank account details.
-
-            * `account_frozen`: This account is frozen and funds cannot be disbursed.
-
-            * `contact_lead`: We were unable to complete the disbursement. Please contact Lead for more information.'
-          enum:
-          - account_closed
-          - no_account
-          - bad_account_number
-          - account_frozen
-          - contact_lead
-    DisbursementStatus:
-      description: The current status of this Disbursement object.
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
       type: string
-      example: succeeded
+      example: USD
       enum:
-      - created
-      - processing
-      - succeeded
-      - canceled
-      - failed
+      - USD
     Disbursement:
       type: object
       properties:
@@ -235,20 +166,6 @@ components:
           $ref: '#/components/schemas/PaymentMethod'
         payment_details:
           $ref: '#/components/schemas/DisbursementPaymentDetails'
-    AccountType:
-      type: string
-      example: checking
-      description: The account type for the bank account. This should be one of checking or savings.
-      enum:
-      - checking
-      - savings
-    StatementDescriptor:
-      type: string
-      description: The description you would like to appear on your customers’ statement. Maximum number of characters is 10.
-      example: P2P Credit
-      minLength: 1
-      maxLength: 10
-      pattern: ^(?!0+$)(?! +$)[\x20-\x7E]*$
     DeliveryType:
       type: string
       example: same_business_day
@@ -260,9 +177,45 @@ components:
       enum:
       - same_business_day
       - next_business_day
-    ClientLoanID:
+    DisbursementFailure:
+      type: object
+      properties:
+        failure_code:
+          type: string
+          description: The failure code for failed disbursement. This applies in the case of rejected disbursements either by the Fed, ODFI or RDFI.
+          example: account_closed
+          enum:
+          - account_closed
+          - no_account
+          - bad_account_number
+          - account_frozen
+          - contact_lead
+        failure_details:
+          type: string
+          description: 'Details on failure reason and recommended next steps for failed disbursements.
+
+            * `account_closed`: This account is closed. Please contact the account owner and request valid bank account details.
+
+            * `no_account`: This account cannot be located. Please contact the account owner and request valid bank account details.
+
+            * `bad_account_number`: This account contains invalid account number structure. Please contact the account owner and request valid bank account details.
+
+            * `account_frozen`: This account is frozen and funds cannot be disbursed.
+
+            * `contact_lead`: We were unable to complete the disbursement. Please contact Lead for more information.'
+          enum:
+          - account_closed
+          - no_account
+          - bad_account_number
+          - account_frozen
+          - contact_lead
+    AccountType:
       type: string
-      description: The ID of your loan. This must be the same loan_id used in the Loan Origination Request.
+      example: checking
+      description: The account type for the bank account. This should be one of checking or savings.
+      enum:
+      - checking
+      - savings
     APIError:
       type: object
       properties:
@@ -286,6 +239,53 @@ components:
         instance:
           type: string
           description: The object causing this specific occurrence of the error, if applicable.
+    AchCorrection:
+      type: object
+      description: The corrected `counterparty` details.
+      properties:
+        account_number:
+          type: string
+          description: The updated account number for the `counterparty`.
+          example: '1032345678'
+          maxLength: 17
+        routing_number:
+          type: string
+          description: The updated routing number for the `counterparty`.
+          example: '021000021'
+          minLength: 9
+          maxLength: 9
+        account_type:
+          type: string
+          description: The updated account type for the `counterparty`.
+          enum:
+          - checking
+          - savings
+    PaymentMethod:
+      type: string
+      example: ach
+      description: The payment method chosen for disbursement. Only ACH is supported today.
+      enum:
+      - ach
+    StatementDescriptor:
+      type: string
+      description: The description you would like to appear on your customers’ statement. Maximum number of characters is 10.
+      example: P2P Credit
+      minLength: 1
+      maxLength: 10
+      pattern: ^(?!0+$)(?! +$)[\x20-\x7E]*$
+    DisbursementStatus:
+      description: The current status of this Disbursement object.
+      type: string
+      example: succeeded
+      enum:
+      - created
+      - processing
+      - succeeded
+      - canceled
+      - failed
+    ClientLoanID:
+      type: string
+      description: The ID of your loan. This must be the same loan_id used in the Loan Origination Request.
   securitySchemes:
     bearerAuth:
       type: http

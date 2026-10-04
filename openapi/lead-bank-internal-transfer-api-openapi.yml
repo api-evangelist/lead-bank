@@ -219,20 +219,6 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
-    CurrencyCode:
-      description: A three-letter currency code as defined in ISO 4217.
-      type: string
-      example: USD
-      enum:
-      - USD
-    InternalTransferStatusV1:
-      description: The current status of the InternalTransfer object.
-      type: string
-      example: posted
-      enum:
-      - processing
-      - posted
-      - rejected
     InvalidParameterDetail:
       type: object
       properties:
@@ -243,11 +229,13 @@ components:
         reason:
           type: string
           description: Why the parameter is invalid.
-    AccountNumberID:
-      type: string
-      description: The ID of the Lead Bank Account Number object.
-      example: account_number_xyz123
-      pattern: ^account_number_\w+$
+    Amount:
+      description: The amount of the transaction in cents.
+      type: integer
+      format: int64
+      example: 5000
+      minimum: 0
+      maximum: 9900000000
     InternalTransferRejectionReason:
       type: object
       properties:
@@ -265,6 +253,22 @@ components:
           type: string
           description: Additional info about the rejection
           example: Account number account_123 is inactive.
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    AccountID:
+      type: string
+      description: The ID of the Account object.
+      example: account_xyz123
+      pattern: ^account_\w+$
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
     APIError:
       type: object
       properties:
@@ -295,23 +299,14 @@ components:
       example: 5000
       minimum: 1
       maximum: 9900000000
-    Metadata:
-      type: object
-      additionalProperties:
-        type: string
-      description: A set of key-value pairs that can be used to store additional information related to this object.
-    Amount:
-      description: The amount of the transaction in cents.
-      type: integer
-      format: int64
-      example: 5000
-      minimum: 0
-      maximum: 9900000000
-    AccountID:
+    InternalTransferStatusV1:
+      description: The current status of the InternalTransfer object.
       type: string
-      description: The ID of the Account object.
-      example: account_xyz123
-      pattern: ^account_\w+$
+      example: posted
+      enum:
+      - processing
+      - posted
+      - rejected
     InternalTransferV1:
       type: object
       required:
@@ -364,6 +359,11 @@ components:
           format: date-time
           description: The RFC3339 timestamp at which the InternalTransfer object was last updated.
           example: '2022-06-27T11:22:33Z'
+    AccountNumberID:
+      type: string
+      description: The ID of the Lead Bank Account Number object.
+      example: account_number_xyz123
+      pattern: ^account_number_\w+$
   securitySchemes:
     bearerAuth:
       type: http
