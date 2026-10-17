@@ -133,6 +133,20 @@ paths:
                 status: '422'
 components:
   schemas:
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the Event object.
+        event:
+          $ref: '#/components/schemas/EventType'
+        created_at:
+          type: string
+          description: Timestamp at which the Event object was created.
+        object:
+          type: object
+          description: The object associated with this event.
     APIError:
       type: object
       properties:
@@ -156,30 +170,6 @@ components:
         instance:
           type: string
           description: The object causing this specific occurrence of the error, if applicable.
-    InvalidParameterDetail:
-      type: object
-      properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
-          type: string
-          description: Why the parameter is invalid.
-    Event:
-      type: object
-      properties:
-        id:
-          type: string
-          description: ID of the Event object.
-        event:
-          $ref: '#/components/schemas/EventType'
-        created_at:
-          type: string
-          description: Timestamp at which the Event object was created.
-        object:
-          type: object
-          description: The object associated with this event.
     EventType:
       type: string
       description: The type of event.
@@ -223,6 +213,16 @@ components:
       - instant_payment.return_request_status_updated
       - funding.posted
       - funding.rejected
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
   securitySchemes:
     bearerAuth:
       type: http

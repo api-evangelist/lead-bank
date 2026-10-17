@@ -264,6 +264,37 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
+    FundingStatus:
+      type: string
+      description: The current status of the Funding object.
+      enum:
+      - processing
+      - posted
+      - rejected
+      example: processing
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
     InvalidParameterDetail:
       type: object
       properties:
@@ -274,6 +305,22 @@ components:
         reason:
           type: string
           description: Why the parameter is invalid.
+    FundingCurrencyCode:
+      type: string
+      description: A three-letter currency code as defined in ISO 4217. Must match the `currency_code` on the associated Subledger Balance object.
+      example: USD
+      enum:
+      - USD
+    FundingRejection:
+      type: object
+      description: Object containing information relevant for cases where the Funding object is in a rejected status. When the object is not in a rejected status, fields will still be present with empty strings.
+      properties:
+        reason:
+          $ref: '#/components/schemas/FundingRejectionReason'
+        details:
+          type: string
+          description: Additional info about the rejection. Reserved for future use.
+          example: Funding object rejected due to an internal error.
     FundingV0:
       type: object
       properties:
@@ -336,65 +383,18 @@ components:
           format: date-time
           description: The ISO-8601 timestamp at which the Funding object was last updated.
           example: '2025-09-02T11:05:00Z'
-    CurrencyCode:
-      description: A three-letter currency code as defined in ISO 4217.
-      type: string
-      example: USD
-      enum:
-      - USD
-    FundingRejection:
-      type: object
-      description: Object containing information relevant for cases where the Funding object is in a rejected status. When the object is not in a rejected status, fields will still be present with empty strings.
-      properties:
-        reason:
-          $ref: '#/components/schemas/FundingRejectionReason'
-        details:
-          type: string
-          description: Additional info about the rejection. Reserved for future use.
-          example: Funding object rejected due to an internal error.
-    APIError:
-      type: object
-      properties:
-        code:
-          type: string
-          description: The error code.
-        title:
-          type: string
-          description: The error title.
-        detail:
-          type: string
-          description: A detailed error description.
-        status:
-          type: string
-          description: The HTTP status code.
-        invalid_parameters:
-          type: array
-          description: Invalid request parameters with reasons, if applicable.
-          items:
-            $ref: '#/components/schemas/InvalidParameterDetail'
-        instance:
-          type: string
-          description: The object causing this specific occurrence of the error, if applicable.
     FundingRejectionReason:
       type: string
       description: The rejection code that indicates the type of rejection. Note that Lead may introduce additional enums in the future; partner integrations should be ready to handle them as non-breaking changes.
       enum:
       - internal_error
       example: internal_error
-    FundingCurrencyCode:
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
       type: string
-      description: A three-letter currency code as defined in ISO 4217. Must match the `currency_code` on the associated Subledger Balance object.
       example: USD
       enum:
       - USD
-    FundingStatus:
-      type: string
-      description: The current status of the Funding object.
-      enum:
-      - processing
-      - posted
-      - rejected
-      example: processing
   securitySchemes:
     bearerAuth:
       type: http
