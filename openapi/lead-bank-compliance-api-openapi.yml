@@ -26,15 +26,11 @@ paths:
 
         - Maximum 20 entities per relationship type
 
-        - Cannot mix individual entities with business or sole_prop entities in account_holders; business and sole_prop entities may be combined
-
         - Credit fields required for all applications
 
         - Adverse action notice required for declined applications
 
         - Authorized signers required for commercial account holders
-
-        - client_application_id cannot start with reserved prefix ''application_''
 
         - credit.limit cannot exceed credit.max_limit
 
@@ -63,7 +59,6 @@ paths:
               approved_commercial:
                 summary: Approved commercial application
                 value:
-                  client_application_id: APP-2024-001
                   status: approved
                   entities:
                     account_holder_type: commercial
@@ -95,7 +90,6 @@ paths:
               declined_consumer:
                 summary: Declined consumer application
                 value:
-                  client_application_id: APP-2024-002
                   status: declined
                   entities:
                     account_holder_type: consumer
@@ -128,7 +122,6 @@ paths:
               canceled_commercial:
                 summary: Canceled commercial application
                 value:
-                  client_application_id: APP-2024-003
                   status: canceled
                   entities:
                     account_holder_type: commercial
@@ -212,15 +205,6 @@ paths:
                       reason: missing
                     - name: entities
                       reason: missing
-                invalid_client_id_prefix:
-                  summary: Invalid client_application_id prefix
-                  value:
-                    code: parameters_invalid
-                    title: Your request parameters did not validate.
-                    detail: client_application_id cannot start with the reserved prefix 'application_'.
-                    invalid_parameters:
-                    - name: client_application_id
-                      reason: invalid_namespace
                 missing_aan_for_declined:
                   summary: Missing adverse action notice for declined status
                   value:
@@ -281,22 +265,93 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIError'
+    get:
+      tags:
+      - Compliance
+      operationId: retrieve-an-application-by-client-application-id
+      summary: Retrieve an application by client application ID
+      description: 'Retrieves an application by the `client_application_id` you assigned, supplied
+
+        as a query parameter: `GET /v0/applications?client_application_id=...`. This is
+
+        the filtered form of the applications collection and is distinct from
+
+        `GET /v0/applications/{id}`, which takes the server-generated Application ID
+
+        (`application_*`). The response body is identical to `GET /v0/applications/{id}`.'
+      parameters:
+      - name: client_application_id
+        in: query
+        required: true
+        description: The `client_application_id` assigned to the application.
+        schema:
+          type: string
+        example: APP-2024-001
+      responses:
+        '200':
+          description: Application object retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+        '400':
+          description: The request could not be processed (e.g. missing client_application_id).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '401':
+          description: Valid access token was not used to call the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Valid access token lacks the proper scopes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: client_application_id passed in is not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: rate_limit_exceeded
+                title: You've reached the rate limit for this call, your request was not processed.
+                detail: If you are continuously hitting rate limits please contact the Lead team.
+                invalid_parameters: []
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
   /v0/applications/{id}:
     get:
       tags:
       - Compliance
       operationId: retrieve-an-application
       summary: Retrieve an application
-      description: 'Retrieves a specific application by its ID.
+      description: 'Retrieves a specific application by its server-generated ID (application_*).
 
-        Accepts either a server-generated ID (application_*) or client-provided application ID.
 
-        The server detects the ID type by prefix.'
+        To retrieve an application by the client_application_id you assigned, use the
+
+        filtered collection form instead: GET /v0/applications?client_application_id=...'
       parameters:
       - name: id
         in: path
         required: true
-        description: Server-generated ID (application_*) application ID
+        description: Server-generated application ID (application_*)
         schema:
           $ref: '#/components/schemas/ApplicationID'
       responses:
@@ -367,9 +422,11 @@ paths:
         explicit values overwrite, nested objects merge recursively.
 
 
-        Note: Entity relationships cannot be modified via this endpoint.
+        Note: Entity relationships are set when the application is created and cannot be
 
-        Use POST /entity_relationships/batch to add and DELETE /entity_relationships/{entity_id} to remove.
+        modified afterward. There is no endpoint for adding or removing entity relationships
+
+        on an existing application; GET /v0/applications/{id}/entity_relationships is read-only.
 
 
         ## Idempotency
@@ -564,7 +621,7 @@ paths:
 
         - Maximum 20 entities per relationship type
 
-        - Cannot mix individual entities with business or sole_prop entities in account_holders; business and sole_prop entities may be combined
+        - Cannot mix individual and business/sole_prop entities in account_holders
 
         - Authorized signers required for business/sole_prop account holders
 
@@ -725,6 +782,76 @@ paths:
               example:
                 code: rate_limit_exceeded
                 title: You've reached the rate limit for this call.
+                detail: If you are continuously hitting rate limits please contact the Lead team.
+                invalid_parameters: []
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+    get:
+      tags:
+      - Compliance
+      operationId: retrieve-an-account-by-client-account-id
+      summary: Retrieve an account by client account ID
+      description: 'Retrieves an account by the `client_account_id` you assigned, supplied as a
+
+        query parameter: `GET /v0/accounts?client_account_id=...`. This is the filtered
+
+        form of the accounts collection and is distinct from `GET /v0/accounts/{id}`,
+
+        which takes the server-generated Account ID (`account_*`). The response body is
+
+        identical to `GET /v0/accounts/{id}`.'
+      parameters:
+      - name: client_account_id
+        in: query
+        required: true
+        description: The `client_account_id` assigned to the account.
+        schema:
+          type: string
+        example: BIZ-2024-001
+      responses:
+        '200':
+          description: Account object retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '400':
+          description: The request could not be processed (e.g. missing client_account_id).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '401':
+          description: Valid access token was not used to call the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Valid access token lacks the proper scopes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: client_account_id passed in is not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: rate_limit_exceeded
+                title: You've reached the rate limit for this call, your request was not processed.
                 detail: If you are continuously hitting rate limits please contact the Lead team.
                 invalid_parameters: []
         '500':
@@ -1475,8 +1602,1664 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIError'
+  /v0/cards:
+    get:
+      tags:
+      - Compliance
+      operationId: retrieve-a-card-by-client-card-id
+      summary: Retrieve a card by client card ID
+      description: '> **Beta:** This endpoint is in beta and may change before general availability.
+
+
+        Retrieves a card by the `client_card_id` you assigned, supplied as a query
+
+        parameter: `GET /v0/cards?client_card_id=...`. This is the filtered form of
+
+        the cards collection and is distinct from `GET /v0/cards/{id}`, which takes
+
+        the server-generated Card ID (`card_*`). The response body is identical to
+
+        `GET /v0/cards/{id}`.'
+      parameters:
+      - name: client_card_id
+        in: query
+        required: true
+        description: The `client_card_id` assigned to the card.
+        schema:
+          type: string
+        example: my-client-card-001
+      responses:
+        '200':
+          description: Card object retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '400':
+          description: The request could not be processed (e.g. an empty `client_card_id` or invalid program context).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '401':
+          description: Valid access token was not used to call the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Valid access token lacks the proper scopes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: client_card_id passed in is not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Request validation failed (e.g. the `client_card_id` query parameter is missing).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                missing_client_card_id:
+                  summary: Missing client_card_id query parameter
+                  value:
+                    code: validation_error
+                    title: Validation Error
+                    detail: One or more request parameters failed validation
+                    invalid_parameters:
+                    - name: client_card_id
+                      reason: 'parameter "client_card_id" in query has an error: value is required but missing'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: rate_limit_exceeded
+                title: You've reached the rate limit for this call, your request was not processed.
+                detail: If you are continuously hitting rate limits please contact the Lead team.
+                invalid_parameters: []
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+    post:
+      tags:
+      - Compliance
+      operationId: create-a-card
+      summary: Create a card
+      description: '> **Beta:** This endpoint is in beta and may change before general availability.
+
+
+        Creates a new card.
+
+
+        ## Business Rules
+
+        - A new card is created in the `active` state. `status` is system-managed and cannot be set on create; status changes go through the status-transition endpoints.
+
+        - `details.replacement_for` references an existing card that this card replaces. When provided, the referenced card must be in `closed` status at the time of the write and must not already be referenced by another card.
+
+
+        ## Idempotency
+
+        The Idempotency-Key header is required. Reusing a key with a different request
+
+        body will return a 422 error.'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: Unique key to ensure idempotent requests
+        schema:
+          type: string
+          maxLength: 255
+        example: card-create-12345-abc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCardRequest'
+            examples:
+              consumer_card:
+                summary: Consumer card
+                value:
+                  account_id: account_xyz123
+                  entity_id: entity_xyz123
+                  details:
+                    card_product_name: Rewards Visa
+                    is_virtual: false
+                    card_type: consumer
+                    expiry_date: '2029-01-31'
+                    last_four: '1234'
+                  metadata: {}
+              replacement_card:
+                summary: Replacement card for a closed card
+                value:
+                  account_id: account_xyz123
+                  entity_id: entity_xyz123
+                  details:
+                    card_product_name: Rewards Visa
+                    is_virtual: false
+                    card_type: consumer
+                    expiry_date: '2029-01-31'
+                    last_four: '5678'
+                    replacement_for: card_old123
+                  metadata:
+                    replacement_reason: lost
+      responses:
+        '200':
+          description: Card created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '400':
+          description: Malformed request or missing required header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                invalid_json:
+                  summary: Malformed JSON
+                  value:
+                    code: payload_invalid
+                    title: Your request body did not parse.
+                    detail: We couldn't parse your request body, please check that your request body is valid JSON.
+                    invalid_parameters: []
+                missing_idempotency_key:
+                  summary: Missing Idempotency-Key header
+                  value:
+                    code: operation_not_allowed
+                    title: This operation cannot be done on this object.
+                    detail: One or more request parameters failed validation
+                    invalid_parameters:
+                    - name: Idempotency-Key
+                      reason: 'parameter "Idempotency-Key" in header has an error: value is required but missing'
+        '401':
+          description: Valid access token was not used to call the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Valid access token lacks the proper scopes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                missing_required_fields:
+                  summary: Missing required parameters
+                  value:
+                    code: parameters_invalid
+                    title: Your request parameters did not validate.
+                    detail: The request is well-formed but contains semantic errors.
+                    invalid_parameters:
+                    - name: account_id
+                      reason: missing
+                    - name: entity_id
+                      reason: missing
+                replacement_for_target_not_closed:
+                  summary: replacement_for target is not in closed status
+                  value:
+                    code: parameters_invalid
+                    title: Your request parameters did not validate.
+                    detail: The card referenced by replacement_for must be in `closed` status at the time of the write.
+                    invalid_parameters:
+                    - name: details.replacement_for
+                      reason: target_not_closed
+                replacement_for_conflict:
+                  summary: replacement_for target is already referenced
+                  value:
+                    code: parameters_invalid
+                    title: Your request parameters did not validate.
+                    detail: The card referenced by replacement_for is already referenced by another card.
+                    invalid_parameters:
+                    - name: details.replacement_for
+                      reason: target_already_replaced
+                idempotency_mismatch:
+                  summary: Idempotency key reused with different request
+                  value:
+                    code: idempotency_request_inconsistent
+                    title: The request made does not match the previous request made with this idempotency key.
+                    detail: If you are trying to make a new request, then please update the idempotency key; otherwise, please use the same request body to make this request.
+                    invalid_parameters: []
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: rate_limit_exceeded
+                title: You've reached the rate limit for this call.
+                detail: If you are continuously hitting rate limits please contact the Lead team.
+                invalid_parameters: []
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v0/cards/{id}:
+    get:
+      tags:
+      - Compliance
+      operationId: retrieve-a-card
+      summary: Retrieve a card
+      description: '> **Beta:** This endpoint is in beta and may change before general availability.
+
+
+        Retrieves a specific card by its ID. Accepts either the server-generated
+
+        Card ID (`card_*`) or the `client_card_id` of a card created via file
+
+        upload.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 'The Card ID. Either the server-generated Card ID (`card_*`) or the
+
+          `client_card_id` assigned when the card was created via file upload.
+
+          '
+        schema:
+          type: string
+        example: card_2N5Hk8xYmQpL9rBvC3jD
+      responses:
+        '200':
+          description: Card object retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '400':
+          description: The request could not be processed (e.g. invalid program context).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '401':
+          description: Valid access token was not used to call the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Valid access token lacks the proper scopes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Card ID passed in is not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: rate_limit_exceeded
+                title: You've reached the rate limit for this call, your request was not processed.
+                detail: If you are continuously hitting rate limits please contact the Lead team.
+                invalid_parameters: []
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+    patch:
+      tags:
+      - Compliance
+      operationId: update-a-card
+      summary: Update a card
+      description: '> **Beta:** This endpoint is in beta and may change before general availability.
+
+
+        Updates mutable attributes of a card. This is a partial update: only the
+
+        fields present in the request body are changed; omitted fields are left
+
+        unchanged. Card `status` is system-managed and changes through the
+
+        status-transition endpoints, not this endpoint.
+
+
+        ## Idempotency
+
+        The Idempotency-Key header is required. Reusing a key with a different request
+
+        body will return a 422 error.'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: Unique key to ensure idempotent requests
+        schema:
+          type: string
+          maxLength: 255
+        example: card-update-12345-abc
+      - name: id
+        in: path
+        required: true
+        description: 'The server-generated Card ID (`card_*`). Unlike retrieve, this endpoint
+
+          accepts only the server-generated ID, not a `client_card_id`.
+
+          '
+        schema:
+          $ref: '#/components/schemas/CardID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchCardRequest'
+            examples:
+              update_metadata:
+                summary: Update metadata
+                value:
+                  metadata:
+                    cost_center: '1234'
+              update_product_name:
+                summary: Rename the card product
+                value:
+                  details:
+                    card_product_name: Rewards Visa Signature
+      responses:
+        '200':
+          description: Card updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '400':
+          description: Malformed request or missing required header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '401':
+          description: Valid access token was not used to call the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Valid access token lacks the proper scopes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Card ID passed in is not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                idempotency_mismatch:
+                  summary: Idempotency key reused with different request
+                  value:
+                    code: idempotency_request_inconsistent
+                    title: The request made does not match the previous request made with this idempotency key.
+                    detail: If you are trying to make a new request, then please update the idempotency key; otherwise, please use the same request body to make this request.
+                    invalid_parameters: []
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: rate_limit_exceeded
+                title: You've reached the rate limit for this call.
+                detail: If you are continuously hitting rate limits please contact the Lead team.
+                invalid_parameters: []
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v0/cards/{id}/activate:
+    post:
+      tags:
+      - Compliance
+      operationId: activate-a-card
+      summary: Activate a card
+      description: '> **Beta:** This endpoint is in beta and may change before general availability.
+
+
+        Transitions a card from `inactive` or `closed` to `active` status.
+
+        Reactivating a closed card clears its `closed_at` and `status_reason`.
+
+        A card that has been replaced (i.e., its ID has been referenced in the
+
+        `replacement_for` field on a separate card) or has an `expiry_date`
+
+        in the past cannot be reactivated.
+
+
+        ## Idempotency
+
+        The Idempotency-Key header is required.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The server-generated Card ID.
+        schema:
+          $ref: '#/components/schemas/CardID'
+        example: card_2N5Hk8xYmQpL9rBvC3jD
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: Unique key to ensure idempotent requests
+        schema:
+          type: string
+          maxLength: 255
+        example: card-activate-12345-abc
+      responses:
+        '200':
+          description: Card activated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '400':
+          description: Malformed request or missing required header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '401':
+          description: Valid access token was not used to call the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Valid access token lacks the proper scopes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Card ID passed in is not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Invalid status transition.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: invalid_status_transition
+                title: Invalid status transition.
+                detail: Card cannot be activated from current status.
+                invalid_parameters: []
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v0/cards/{id}/deactivate:
+    post:
+      tags:
+      - Compliance
+      operationId: deactivate-a-card
+      summary: Deactivate a card
+      description: '> **Beta:** This endpoint is in beta and may change before general availability.
+
+
+        Transitions a card from `active` or `closed` to `inactive` status.
+
+
+        ## Idempotency
+
+        The Idempotency-Key header is required.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The server-generated Card ID.
+        schema:
+          $ref: '#/components/schemas/CardID'
+        example: card_2N5Hk8xYmQpL9rBvC3jD
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: Unique key to ensure idempotent requests
+        schema:
+          type: string
+          maxLength: 255
+        example: card-deactivate-12345-abc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardDeactivateRequest'
+            examples:
+              deactivate_with_reason:
+                summary: Deactivate with reason
+                value:
+                  status_reason: dormant
+      responses:
+        '200':
+          description: Card deactivated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '400':
+          description: Malformed request or missing required header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '401':
+          description: Valid access token was not used to call the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Valid access token lacks the proper scopes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Card ID passed in is not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Invalid status transition.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: invalid_status_transition
+                title: Invalid status transition.
+                detail: Card cannot be deactivated from current status.
+                invalid_parameters: []
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+  /v0/cards/{id}/close:
+    post:
+      tags:
+      - Compliance
+      operationId: close-a-card
+      summary: Close a card
+      description: '> **Beta:** This endpoint is in beta and may change before general availability.
+
+
+        Transitions a card from `active` or `inactive` to `closed` status.
+
+        A closed card can later be referenced as a `replacement_for` target
+
+        or reactivated via the activate endpoint (unless it has been replaced).
+
+
+        ## Idempotency
+
+        The Idempotency-Key header is required.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The server-generated Card ID.
+        schema:
+          $ref: '#/components/schemas/CardID'
+        example: card_2N5Hk8xYmQpL9rBvC3jD
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: Unique key to ensure idempotent requests
+        schema:
+          type: string
+          maxLength: 255
+        example: card-close-12345-abc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardCloseRequest'
+            examples:
+              close_with_reason:
+                summary: Close with reason
+                value:
+                  status_reason: client_closed
+      responses:
+        '200':
+          description: Card closed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '400':
+          description: Malformed request or missing required header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '401':
+          description: Valid access token was not used to call the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Valid access token lacks the proper scopes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Card ID passed in is not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Invalid status transition.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                code: invalid_status_transition
+                title: Invalid status transition.
+                detail: Card cannot be closed from current status.
+                invalid_parameters: []
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Server error. Please try your request again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
 components:
   schemas:
+    AccountDetails:
+      type: object
+      description: Core details of the account
+      readOnly: true
+      properties:
+        product_name:
+          type: string
+          description: Partner's name for their product
+        closed_at:
+          type: string
+          format: date-time
+          description: Timestamp when the account was closed. Updated by /close endpoint.
+          readOnly: true
+        credit:
+          $ref: '#/components/schemas/AccountCredit'
+        adverse_action_notice:
+          $ref: '#/components/schemas/AdverseActionNotice'
+    ComplianceDocumentType:
+      type: string
+      description: Type of document associated with an application
+      enum:
+      - aan
+      - loan_agreement
+      - loc_agreement
+      - truth_in_lending_document
+      - ach_authorization
+      - notice_of_incompleteness
+      - credit_score_notice
+      - offer_summary
+      - personal_guarantee
+      - consumer_credit_auth
+      - partner_privacy_policy
+      - lead_privacy_policy
+      - terms_of_use
+      - esign_agreement
+      - credit_pull_consent
+      - fcra_notice
+      - tcpa_consent
+      - patriot_act_notice
+      - mla_notice
+      - pre_approval_terms
+      - eft_authorization
+      - prohibited_industry_certification
+      - decision_maker_document
+      - bo_certification
+      - missed_payments_policy
+      - consent_to_link_account
+      - consent_to_link_hsa
+      - negative_option_consent
+      - lead_funds_transfer_agreement
+      - deposit_agreement
+      - cardholder_agreement
+      - periodic_statement
+      - autopay_authorization
+    CreateAccountDetails:
+      type: object
+      description: Details for creating an account
+      properties:
+        product_name:
+          type: string
+          description: Partner's name for their product
+        credit:
+          $ref: '#/components/schemas/CreateAccountCredit'
+        adverse_action_notice:
+          $ref: '#/components/schemas/AdverseActionNotice'
+      required:
+      - product_name
+    Scra:
+      type: object
+      description: SCRA (Servicemembers Civil Relief Act) details
+      properties:
+        start_date:
+          type: string
+          format: date
+          description: Start date for SCRA protections
+        end_date:
+          type: string
+          format: date
+          description: End date for SCRA protections
+      required:
+      - start_date
+    AccountStatus:
+      type: string
+      description: Current state of the account
+      enum:
+      - active
+      - inactive
+      - closed
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+    EntityID:
+      type: string
+      description: The ID of your entity.
+      example: entity_xyz123
+      pattern: ^entity_[^\s]{1,33}$
+    PatchCardDetails:
+      type: object
+      description: 'The mutable subset of a card''s details. Only the fields present are updated;
+
+        physical attributes (card_type, last_four, is_virtual) and expiry_date are
+
+        immutable and cannot be changed through this endpoint.
+
+        '
+      properties:
+        card_product_name:
+          type: string
+          description: The name of the card product in the partner's system.
+    ApplicationCreditReport:
+      type: object
+      readOnly: true
+      description: Credit report information (response, all properties optional)
+      properties:
+        score:
+          type: integer
+          description: Credit score returned by the bureau. Supported range is 300-850. Mutually exclusive with `non_score_value`.
+          minimum: 300
+          maximum: 850
+        non_score_value:
+          type: string
+          description: Indicates the state of a credit file when a numeric score is not available. Mutually exclusive with `score`.
+          enum:
+          - unestablished
+          - frozen
+        pulled_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the credit report was pulled.
+        source:
+          type: string
+          description: 'Credit bureau that issued the report. Possible values: `equifax`, `experian`, `transunion`.'
+          enum:
+          - equifax
+          - transunion
+          - experian
+    EntityRelationshipType:
+      type: string
+      description: Indicates the type of Entity
+      enum:
+      - account_holder
+      - authorized_signer
+      - authorized_user
+      example: account_holder
+    AccountID:
+      type: string
+      description: The ID of the Account object.
+      example: account_xyz123
+      pattern: ^account_\w+$
+    ApplicationDecision:
+      type: object
+      readOnly: true
+      description: Decision-related information (response, all properties optional)
+      properties:
+        decided_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the underwriting decision was made.
+        reason:
+          type: string
+          description: The reason for the decision.
+        exception_approval_reason:
+          type: string
+          description: This should only be provided if the decision was made as an exception to underwriting criteria. Reason for exception approval, if this decision was made as an exception to the traditional underwriting process.
+    CardDeactivateRequest:
+      type: object
+      description: Request body for deactivating a card.
+      properties:
+        status_reason:
+          $ref: '#/components/schemas/CardDeactivateStatusReason'
+      required:
+      - status_reason
+    Account:
+      type: object
+      description: An account object
+      readOnly: true
+      properties:
+        id:
+          $ref: '#/components/schemas/AccountID'
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          readOnly: true
+        application_id:
+          $ref: '#/components/schemas/ApplicationID'
+        status:
+          $ref: '#/components/schemas/AccountStatus'
+        status_reason:
+          $ref: '#/components/schemas/AccountStatusReason'
+        capabilities:
+          type: array
+          description: List of items that inform Lead how the Account will be used
+          items:
+            $ref: '#/components/schemas/AccountCapability'
+        entities:
+          $ref: '#/components/schemas/AccountEntities'
+        details:
+          $ref: '#/components/schemas/AccountDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        documents:
+          type: array
+          description: Array of associated legal or informational documents
+          items:
+            $ref: '#/components/schemas/ComplianceDocument'
+        client_account_id:
+          type: string
+          readOnly: true
+          description: 'Client-provided identifier for the account. Optional: present only for
+
+            accounts created via file upload, and omitted for accounts created through
+
+            the API, which are identified solely by their server-generated ID.
+
+            '
+    AccountEntities:
+      type: object
+      readOnly: true
+      description: Entity relationships associated with the account (response only)
+      properties:
+        account_holder_type:
+          type: string
+          description: Derived from the type of the entity referenced in account_holders
+          enum:
+          - consumer
+          - commercial
+    CreateApplicationDetails:
+      type: object
+      description: Details for creating an application
+      properties:
+        product_name:
+          type: string
+          description: Your internal product name. This tells Lead's Due Diligence team which product this application, if approved, would open an account for.
+          example: Growth Business Credit Line
+        credit:
+          $ref: '#/components/schemas/CreateApplicationCredit'
+        adverse_action_notice:
+          $ref: '#/components/schemas/AdverseActionNotice'
+      required:
+      - product_name
+      - credit
+    Application:
+      type: object
+      description: An application object representing a credit application
+      readOnly: true
+      properties:
+        id:
+          $ref: '#/components/schemas/ApplicationID'
+        client_application_id:
+          type: string
+          readOnly: true
+          description: 'Client-provided identifier for the application. Optional: present only for
+
+            applications created via file upload, and omitted for applications created
+
+            through the API, which are identified solely by their server-generated ID.
+
+            '
+        created_at:
+          type: string
+          format: date-time
+          description: Lead server-generated ISO 8601 timestamp when the application was created.
+        updated_at:
+          type: string
+          format: date-time
+          description: Lead server-generated ISO 8601 timestamp when the application was last updated.
+        status:
+          $ref: '#/components/schemas/ApplicationStatus'
+        entities:
+          $ref: '#/components/schemas/ApplicationEntities'
+        details:
+          $ref: '#/components/schemas/ApplicationDetails'
+        decision:
+          $ref: '#/components/schemas/ApplicationDecision'
+        documents:
+          type: array
+          description: Documents associated with the application
+          items:
+            $ref: '#/components/schemas/ApplicationComplianceDocument'
+        metadata:
+          type: object
+          description: Arbitrary metadata associated with the application
+          additionalProperties:
+            type: string
+    CardType:
+      type: string
+      description: The product category the card belongs to.
+      enum:
+      - hsa
+      - fsa
+      - consumer
+      - commercial
+    PatchApplicationDetails:
+      type: object
+      description: Details for updating an application (all fields optional)
+      properties:
+        product_name:
+          type: string
+          description: Your internal product name. This tells Lead's Due Diligence team which product this application, if approved, would open an account for.
+          example: Growth Business Credit Line
+        credit:
+          $ref: '#/components/schemas/PatchApplicationCredit'
+        adverse_action_notice:
+          $ref: '#/components/schemas/AdverseActionNotice'
+    Card:
+      type: object
+      description: A card object
+      readOnly: true
+      properties:
+        id:
+          $ref: '#/components/schemas/CardID'
+        client_card_id:
+          type: string
+          readOnly: true
+          description: 'Client-provided identifier for the card. Optional: present only for
+
+            cards created via file upload, and omitted for cards created through
+
+            the API, which are identified solely by their server-generated ID.
+
+            '
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+        entity_id:
+          $ref: '#/components/schemas/EntityID'
+        status:
+          $ref: '#/components/schemas/CardStatus'
+        status_reason:
+          type: string
+          readOnly: true
+          description: 'The reason for the card''s current status. Empty when the card is `active`; otherwise
+
+            populated. Set via the status-transition endpoints.
+
+            '
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp.
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp.
+          readOnly: true
+        details:
+          $ref: '#/components/schemas/CardDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    CardID:
+      type: string
+      description: The server-generated ID of the Card object.
+      example: card_xyz123
+      pattern: ^card_\w+$
+    AccountCredit:
+      type: object
+      description: Details specific to credit-based accounts
+      additionalProperties: false
+      properties:
+        is_secured:
+          type: boolean
+          description: Indicates if this is a secured credit/deposit product
+        is_mla:
+          type: boolean
+          description: Indicates if this account is considered a Military Lending Act account
+        underwriting_grade:
+          type: string
+          description: Grade given to the customer based on underwriting
+        currency:
+          type: string
+          description: The currency for the account (3-letter ISO code)
+          example: USD
+        available_credit:
+          type: integer
+          description: Available credit for the customer to draw (in minor units)
+        limit:
+          type: integer
+          description: Current credit limit (in minor units)
+        max_limit:
+          type: integer
+          description: Maximum credit limit approved in underwriting (in minor units)
+        scra:
+          $ref: '#/components/schemas/Scra'
+        report:
+          $ref: '#/components/schemas/CreditReport'
+    PatchAccountDetails:
+      type: object
+      description: Details for updating an account
+      properties:
+        product_name:
+          type: string
+          description: Partner's name for their product
+        credit:
+          $ref: '#/components/schemas/PatchAccountCredit'
+        adverse_action_notice:
+          $ref: '#/components/schemas/AdverseActionNotice'
+    AdverseActionNotice:
+      type: object
+      description: Adverse action notice information
+      properties:
+        delivered_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the adverse action notice was sent to the applicant.
+        reason:
+          type: string
+          description: The reason stated in the adverse action notice.
+        delivery_method:
+          type: string
+          description: 'How the notice was delivered to the applicant. Possible values: `email`, `text`, `other`.'
+          enum:
+          - email
+          - text
+          - other
+      required:
+      - delivered_at
+      - reason
+      - delivery_method
+    EntityRelationship:
+      type: object
+      description: Common fields for entity relationships
+      properties:
+        entity_id:
+          $ref: '#/components/schemas/EntityID'
+        relationship_type:
+          $ref: '#/components/schemas/EntityRelationshipType'
+      required:
+      - entity_id
+      - relationship_type
+    CreateApplicationRequest:
+      type: object
+      description: Request body for creating a new application in terminal status
+      properties:
+        status:
+          $ref: '#/components/schemas/ApplicationStatus'
+        entities:
+          $ref: '#/components/schemas/CreateApplicationEntities'
+        details:
+          $ref: '#/components/schemas/CreateApplicationDetails'
+        decision:
+          $ref: '#/components/schemas/Decision'
+        documents:
+          type: array
+          description: Documents associated with the application
+          items:
+            $ref: '#/components/schemas/CreateComplianceDocument'
+        metadata:
+          type: object
+          description: Arbitrary metadata associated with the application
+          additionalProperties:
+            type: string
+      required:
+      - status
+      - entities
+      - details
+      - decision
+      - documents
+    ApplicationAdverseActionNotice:
+      type: object
+      readOnly: true
+      description: Adverse action notice information (response, all properties optional)
+      properties:
+        delivered_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the adverse action notice was sent to the applicant.
+        reason:
+          type: string
+          description: The reason stated in the adverse action notice.
+        delivery_method:
+          type: string
+          description: 'How the notice was delivered to the applicant. Possible values: `email`, `text`, `other`.'
+          enum:
+          - email
+          - text
+          - other
+    CardDeactivateStatusReason:
+      type: string
+      description: Valid reasons for deactivating a card.
+      enum:
+      - dormant
+      - frozen
+      - other
+    CardCloseStatusReason:
+      type: string
+      description: Valid reasons for closing a card.
+      enum:
+      - entity_closed
+      - client_closed
+      - paid_off
+      - charged_off
+      - canceled
+    AccountCloseRequest:
+      type: object
+      description: Request body for closing an account
+      properties:
+        status_reason:
+          $ref: '#/components/schemas/AccountCloseStatusReason'
+      required:
+      - status_reason
+    PatchCardRequest:
+      type: object
+      description: 'Request body for updating a card. This is a partial update: every field is
+
+        optional and only the fields present are changed. Card `status` is
+
+        system-managed (see the status-transition endpoints) and cannot be set here.
+
+        '
+      properties:
+        details:
+          $ref: '#/components/schemas/PatchCardDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    ApplicationID:
+      type: string
+      description: Unique identifier for the application. Prefixed with `application_`.
+      example: application_xyz123
+      pattern: ^application_\w+$
+    CardCloseRequest:
+      type: object
+      description: Request body for closing a card.
+      properties:
+        status_reason:
+          $ref: '#/components/schemas/CardCloseStatusReason'
+      required:
+      - status_reason
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
+    ApplicationDetails:
+      type: object
+      readOnly: true
+      description: Application details (response, all properties optional)
+      properties:
+        product_name:
+          type: string
+          description: Your internal product name. This tells Lead's Due Diligence team which product this application, if approved, would open an account for.
+          example: Growth Business Credit Line
+        credit:
+          $ref: '#/components/schemas/ApplicationCredit'
+        adverse_action_notice:
+          $ref: '#/components/schemas/ApplicationAdverseActionNotice'
+    CardDetails:
+      type: object
+      description: Physical and product attributes of the card.
+      properties:
+        card_product_name:
+          type: string
+          description: The name of the card product in the partner's system.
+        is_virtual:
+          type: boolean
+          description: True if the card exists as a virtual card; false if a physical representation of the card exists.
+        card_type:
+          $ref: '#/components/schemas/CardType'
+        expiry_date:
+          type: string
+          format: date
+          description: 'ISO 8601 calendar date (YYYY-MM-DD) when the card expires. Always the last day of the
+
+            expiration month (e.g. an expiration of 01/29 is `2029-01-31`).
+
+            '
+        last_four:
+          type: string
+          description: 'Last four digits of the card''s PAN. Required when creating a card via
+
+            the API; on responses it is omitted for cards that have no PAN on file
+
+            (e.g. some file-ingested cards).
+
+            '
+          pattern: ^[0-9]{4}$
+          example: '1234'
+        replacement_for:
+          allOf:
+          - $ref: '#/components/schemas/CardID'
+          description: 'Optional. The server-generated ID (`card_*`) of the card this new card
+
+            replaces. The referenced card must exist, must be in `closed` status at
+
+            the time of the write, and must not already be referenced by another
+
+            card. The system atomically sets `replaced_by` on the referenced card.
+
+            '
+        closed_at:
+          type: string
+          format: date-time
+          description: Timestamp when the card was closed. Present only when status is `closed`.
+          readOnly: true
+      required:
+      - card_product_name
+      - is_virtual
+      - card_type
+      - expiry_date
+    AccountStatusReason:
+      type: string
+      description: Machine-readable reason for the current status
+      enum:
+      - client_closed
+      - entity_closed
+      - frozen
+      - dormant
+      - active
+      - paid_off
+      - charged_off
+      - canceled
+      - other
+    CreateComplianceDocument:
+      type: object
+      description: "Document reference for creating applications and accounts.\n\nOne of `displayed_at` or `consented_at` is required depending on document type:\n- `displayed_at`: Required for aan, loan_agreement, loc_agreement, truth_in_lending_document,\n  ach_authorization, notice_of_incompleteness, credit_score_notice, offer_summary, personal_guarantee,\n  consumer_credit_auth, partner_privacy_policy, lead_privacy_policy, terms_of_use, fcra_notice,\n  tcpa_consent, patriot_act_notice, mla_notice, pre_approval_terms, eft_authorization,\n  prohibited_industry_certification, decision_maker_document, bo_certification, missed_payments_policy,\n  lead_funds_transfer_agreement, periodic_statement\n- `consented_at`: Required for esign_agreement, credit_pull_consent, consent_to_link_account,\n  consent_to_link_hsa, negative_option_consent, deposit_agreement, cardholder_agreement,\n  autopay_authorization\n"
+      properties:
+        document_id:
+          type: string
+          description: Unique identifier for the document being referenced. Please use the file name of the file delivered to Lead's `/documents` SFTP directory.
+          example: document_2N5Hk8xYmQpL9rBvC3jD
+        type:
+          $ref: '#/components/schemas/ComplianceDocumentType'
+        displayed_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the document was displayed to the applicant. Present on disclosure documents.
+        consented_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the applicant consented to the document. Present on consent documents.
+        version:
+          type: string
+          description: It is recommended to use this for static documents uploaded once and uploaded for many users. Uploads with a new version should have a different document_id as well.
+          example: v1
+      required:
+      - document_id
+      - type
+      oneOf:
+      - title: Disclosure
+        description: Disclosure document — `displayed_at` is required.
+        properties:
+          type:
+            type: string
+            enum:
+            - aan
+            - loan_agreement
+            - loc_agreement
+            - truth_in_lending_document
+            - ach_authorization
+            - notice_of_incompleteness
+            - credit_score_notice
+            - offer_summary
+            - personal_guarantee
+            - consumer_credit_auth
+            - partner_privacy_policy
+            - lead_privacy_policy
+            - terms_of_use
+            - fcra_notice
+            - tcpa_consent
+            - patriot_act_notice
+            - mla_notice
+            - pre_approval_terms
+            - eft_authorization
+            - prohibited_industry_certification
+            - decision_maker_document
+            - bo_certification
+            - missed_payments_policy
+            - lead_funds_transfer_agreement
+            - periodic_statement
+        required:
+        - displayed_at
+      - title: Consent
+        description: Consent document — `consented_at` is required.
+        properties:
+          type:
+            type: string
+            enum:
+            - esign_agreement
+            - credit_pull_consent
+            - consent_to_link_account
+            - consent_to_link_hsa
+            - negative_option_consent
+            - deposit_agreement
+            - cardholder_agreement
+            - autopay_authorization
+        required:
+        - consented_at
+    PatchAccountRequest:
+      type: object
+      description: Request body for updating an existing account
+      properties:
+        application_id:
+          $ref: '#/components/schemas/ApplicationID'
+        capabilities:
+          type: array
+          description: List of items that inform Lead how the Account will be used
+          items:
+            $ref: '#/components/schemas/AccountCapability'
+        details:
+          $ref: '#/components/schemas/PatchAccountDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        documents:
+          type: array
+          description: Array of associated legal or informational documents
+          items:
+            $ref: '#/components/schemas/CreateComplianceDocument'
+    AccountCloseStatusReason:
+      type: string
+      description: Valid reasons for closing an account
+      enum:
+      - entity_closed
+      - client_closed
+      - paid_off
+      - charged_off
+      - canceled
+    ApplicationComplianceDocument:
+      type: object
+      readOnly: true
+      description: Document reference associated with an application (response, all properties optional)
+      properties:
+        document_id:
+          type: string
+          description: Unique identifier for the document being referenced. Please use the file name of the file delivered to Lead's `/documents` SFTP directory.
+          example: document_2N5Hk8xYmQpL9rBvC3jD
+        type:
+          $ref: '#/components/schemas/ComplianceDocumentType'
+        displayed_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the document was displayed to the applicant. Present on disclosure documents.
+        consented_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the applicant consented to the document. Present on consent documents.
+        version:
+          type: string
+          description: It is recommended to use this for static documents uploaded once and uploaded for many users. Uploads with a new version should have a different document_id as well.
+          example: v1
+    AccountDeactivateStatusReason:
+      type: string
+      description: Valid reasons for deactivating an account
+      enum:
+      - dormant
+      - frozen
+      - other
+    AccountDeactivateRequest:
+      type: object
+      description: Request body for deactivating an account
+      properties:
+        status_reason:
+          $ref: '#/components/schemas/AccountDeactivateStatusReason'
+      required:
+      - status_reason
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    CreateApplicationEntities:
+      type: object
+      description: 'Entity relationships for the application.
+
+        Maximum 20 entities per relationship type.
+
+        Authorized signers required for commercial account holders.
+
+        '
+      properties:
+        account_holders:
+          type: array
+          description: List of entity IDs that are account holders
+          items:
+            $ref: '#/components/schemas/EntityID'
+          minItems: 1
+          maxItems: 20
+        authorized_signers:
+          type: array
+          description: List of entity IDs that are authorized signers (required for commercial)
+          items:
+            $ref: '#/components/schemas/EntityID'
+          maxItems: 20
+        authorized_users:
+          type: array
+          description: List of entity IDs that are authorized users
+          items:
+            $ref: '#/components/schemas/EntityID'
+          maxItems: 20
+      required:
+      - account_holders
+    AccountCapability:
+      type: string
+      description: Capability that informs Lead how the Account will be used
+      enum:
+      - deposit
+      - credit_with_underwriting
+      - credit_without_underwriting
+    CreateAccountRequest:
+      type: object
+      description: Request body for creating a new account
+      properties:
+        application_id:
+          $ref: '#/components/schemas/ApplicationID'
+        capabilities:
+          type: array
+          description: List of items that inform Lead how the Account will be used
+          items:
+            $ref: '#/components/schemas/AccountCapability'
+          minItems: 1
+        entities:
+          $ref: '#/components/schemas/CreateAccountEntities'
+        details:
+          $ref: '#/components/schemas/CreateAccountDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        documents:
+          type: array
+          description: Array of associated legal or informational documents
+          items:
+            $ref: '#/components/schemas/CreateComplianceDocument'
+      required:
+      - capabilities
+      - entities
+      - details
+      - documents
+    CreateAccountEntities:
+      type: object
+      description: 'Entity relationships for the account (POST request only).
+
+        Maximum 20 entities per relationship type.
+
+        Cannot mix individual and business/sole_prop entities in account_holders.
+
+        Authorized signers required for business/sole_prop account holders.
+
+        '
+      properties:
+        account_holders:
+          type: array
+          description: Account holders (min 1, max 20)
+          items:
+            $ref: '#/components/schemas/EntityID'
+          minItems: 1
+          maxItems: 20
+        authorized_signers:
+          type: array
+          description: Authorized signers on the account (required with min 1 if business/sole_prop account holders)
+          items:
+            $ref: '#/components/schemas/EntityID'
+          maxItems: 20
+        authorized_users:
+          type: array
+          description: Authorized users on the account
+          items:
+            $ref: '#/components/schemas/EntityID'
+          maxItems: 20
+      required:
+      - account_holders
+    PatchApplicationCredit:
+      type: object
+      description: Credit details for updating an application (all fields optional)
+      properties:
+        is_secured:
+          type: boolean
+          description: Indicates if this is a secured credit/deposit product. `true` if the product is secured (collateral attached); `false` otherwise.
+        is_mla:
+          type: boolean
+          description: '`true` if the applicant is subject to the Military Lending Act; `false` otherwise.'
+        currency:
+          $ref: '#/components/schemas/ComplianceCurrencyCode'
+        underwriting_grade:
+          type: string
+          description: Your internal underwriting grade for the applicant. Accepts any string mapped to your specific scoring framework.
+          example: '99'
+        limit:
+          type: integer
+          description: The credit limit assigned to the applicant, in minor units (e.g., cents).
+          minimum: 0
+          example: 5000000
+        max_limit:
+          type: integer
+          description: The maximum credit limit the applicant was approved for based on original underwriting, in minor units (e.g., cents).
+          minimum: 0
+          example: 10000000
+        report:
+          $ref: '#/components/schemas/CreditReport'
     CreateAccountCredit:
       type: object
       description: Details specific to credit-based accounts (for POST - all fields required)
@@ -1516,23 +3299,58 @@ components:
       - available_credit
       - limit
       - max_limit
-    Decision:
+    ApplicationCredit:
       type: object
-      description: Decision-related information for the application
+      readOnly: true
+      description: Credit details for an application (response, all properties optional)
       properties:
-        decided_at:
+        is_secured:
+          type: boolean
+          description: Indicates if this is a secured credit/deposit product. `true` if the product is secured (collateral attached); `false` otherwise.
+        is_mla:
+          type: boolean
+          description: '`true` if the applicant is subject to the Military Lending Act; `false` otherwise.'
+        currency:
+          $ref: '#/components/schemas/ComplianceCurrencyCode'
+        underwriting_grade:
+          type: string
+          description: Your internal underwriting grade for the applicant. Accepts any string mapped to your specific scoring framework.
+          example: '99'
+        limit:
+          type: integer
+          description: The credit limit assigned to the applicant, in minor units (e.g., cents).
+          minimum: 0
+          example: 5000000
+        max_limit:
+          type: integer
+          description: The maximum credit limit the applicant was approved for based on original underwriting, in minor units (e.g., cents).
+          minimum: 0
+          example: 10000000
+        report:
+          $ref: '#/components/schemas/ApplicationCreditReport'
+    ComplianceDocument:
+      type: object
+      description: Document reference associated with an application (response schema - all fields optional)
+      readOnly: true
+      properties:
+        document_id:
+          type: string
+          description: Unique identifier for the document being referenced. Please use the file name of the file delivered to Lead's `/documents` SFTP directory.
+          example: document_2N5Hk8xYmQpL9rBvC3jD
+        type:
+          $ref: '#/components/schemas/ComplianceDocumentType'
+        displayed_at:
           type: string
           format: date-time
-          description: ISO 8601 timestamp when the underwriting decision was made.
-        reason:
+          description: ISO 8601 timestamp when the document was displayed to the applicant. Present on disclosure documents.
+        consented_at:
           type: string
-          description: The reason for the decision.
-        exception_approval_reason:
+          format: date-time
+          description: ISO 8601 timestamp when the applicant consented to the document. Present on consent documents.
+        version:
           type: string
-          description: This should only be provided if the decision was made as an exception to underwriting criteria. Reason for exception approval, if this decision was made as an exception to the traditional underwriting process.
-      required:
-      - decided_at
-      - reason
+          description: It is recommended to use this for static documents uploaded once and uploaded for many users. Uploads with a new version should have a different document_id as well.
+          example: v1
     PatchAccountCredit:
       type: object
       description: Details specific to credit-based accounts (for PATCH - all fields optional)
@@ -1563,6 +3381,83 @@ components:
           $ref: '#/components/schemas/Scra'
         report:
           $ref: '#/components/schemas/CreditReport'
+    ApplicationEntities:
+      type: object
+      readOnly: true
+      description: Entity relationships associated with the application (response only)
+      properties:
+        account_holder_type:
+          type: string
+          description: Denotes whether the application is for a consumer or commercial account. `consumer` if all account holders are individuals; `commercial` if all account holders are businesses or sole proprietors.
+          enum:
+          - consumer
+          - commercial
+          example: commercial
+        account_holders:
+          type: array
+          description: List of entity IDs that are account holders
+          items:
+            $ref: '#/components/schemas/EntityID'
+        authorized_signers:
+          type: array
+          description: List of entity IDs that are authorized signers
+          items:
+            $ref: '#/components/schemas/EntityID'
+    Decision:
+      type: object
+      description: Decision-related information for the application
+      properties:
+        decided_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the underwriting decision was made.
+        reason:
+          type: string
+          description: The reason for the decision.
+        exception_approval_reason:
+          type: string
+          description: This should only be provided if the decision was made as an exception to underwriting criteria. Reason for exception approval, if this decision was made as an exception to the traditional underwriting process.
+      required:
+      - decided_at
+      - reason
+    CreateCardRequest:
+      type: object
+      description: Request body for creating a new card.
+      properties:
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+        entity_id:
+          $ref: '#/components/schemas/EntityID'
+        details:
+          $ref: '#/components/schemas/CreateCardDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      required:
+      - account_id
+      - entity_id
+      - details
+    CreateCardDetails:
+      description: 'Card details for a create request. Extends CardDetails, additionally
+
+        requiring last_four (the API only creates cards that carry a PAN; the
+
+        optional last_four on CardDetails is for responses, where file-ingested
+
+        cards may have none).
+
+        '
+      allOf:
+      - $ref: '#/components/schemas/CardDetails'
+      - type: object
+        required:
+        - last_four
+    ApplicationStatus:
+      type: string
+      description: 'Terminal state of the application. Possible values: `approved`, `declined`, `canceled`.'
+      enum:
+      - approved
+      - declined
+      - canceled
     ComplianceCurrencyCode:
       type: string
       description: A three-letter currency code as defined in ISO 4217
@@ -1730,672 +3625,6 @@ components:
       - ZAR
       - ZMW
       - ZWG
-    AccountDetails:
-      type: object
-      description: Core details of the account
-      readOnly: true
-      properties:
-        product_name:
-          type: string
-          description: Partner's name for their product
-        closed_at:
-          type: string
-          format: date-time
-          description: Timestamp when the account was closed. Updated by /close endpoint.
-          readOnly: true
-        credit:
-          $ref: '#/components/schemas/AccountCredit'
-        adverse_action_notice:
-          $ref: '#/components/schemas/AdverseActionNotice'
-    EntityID:
-      type: string
-      description: The ID of your entity.
-      example: entity_xyz123
-      pattern: ^entity_[^\s]{1,33}$
-    ApplicationEntities:
-      type: object
-      readOnly: true
-      description: Entity relationships associated with the application (response only)
-      properties:
-        account_holder_type:
-          type: string
-          description: Denotes whether the application is for a consumer or commercial account. `consumer` if all account holders are individuals; `commercial` if all account holders are businesses or sole proprietors.
-          enum:
-          - consumer
-          - commercial
-          example: commercial
-        account_holders:
-          type: array
-          description: List of entity IDs that are account holders
-          items:
-            $ref: '#/components/schemas/EntityID'
-        authorized_signers:
-          type: array
-          description: List of entity IDs that are authorized signers
-          items:
-            $ref: '#/components/schemas/EntityID'
-    CreateAccountEntities:
-      type: object
-      description: 'Entity relationships for the account (POST request only).
-
-        Maximum 20 entities per relationship type.
-
-        Cannot mix individual and business/sole_prop entities in account_holders.
-
-        Authorized signers required for business/sole_prop account holders.
-
-        '
-      properties:
-        account_holders:
-          type: array
-          description: Account holders (min 1, max 20)
-          items:
-            $ref: '#/components/schemas/EntityID'
-          minItems: 1
-          maxItems: 20
-        authorized_signers:
-          type: array
-          description: Authorized signers on the account (required with min 1 if business/sole_prop account holders)
-          items:
-            $ref: '#/components/schemas/EntityID'
-          maxItems: 20
-        authorized_users:
-          type: array
-          description: Authorized users on the account
-          items:
-            $ref: '#/components/schemas/EntityID'
-          maxItems: 20
-      required:
-      - account_holders
-    AccountID:
-      type: string
-      description: The ID of the Account object.
-      example: account_xyz123
-      pattern: ^account_\w+$
-    AdverseActionNotice:
-      type: object
-      description: Adverse action notice information
-      properties:
-        delivered_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the adverse action notice was sent to the applicant.
-        reason:
-          type: string
-          description: The reason stated in the adverse action notice.
-        delivery_method:
-          type: string
-          description: 'How the notice was delivered to the applicant. Possible values: `email`, `text`, `other`.'
-          enum:
-          - email
-          - text
-          - other
-      required:
-      - delivered_at
-      - reason
-      - delivery_method
-    PatchAccountDetails:
-      type: object
-      description: Details for updating an account
-      properties:
-        product_name:
-          type: string
-          description: Partner's name for their product
-        credit:
-          $ref: '#/components/schemas/PatchAccountCredit'
-        adverse_action_notice:
-          $ref: '#/components/schemas/AdverseActionNotice'
-    Application:
-      type: object
-      description: An application object representing a credit application
-      readOnly: true
-      properties:
-        id:
-          $ref: '#/components/schemas/ApplicationID'
-        created_at:
-          type: string
-          format: date-time
-          description: Lead server-generated ISO 8601 timestamp when the application was created.
-        updated_at:
-          type: string
-          format: date-time
-          description: Lead server-generated ISO 8601 timestamp when the application was last updated.
-        status:
-          $ref: '#/components/schemas/ApplicationStatus'
-        entities:
-          $ref: '#/components/schemas/ApplicationEntities'
-        details:
-          $ref: '#/components/schemas/ApplicationDetails'
-        decision:
-          $ref: '#/components/schemas/ApplicationDecision'
-        documents:
-          type: array
-          description: Documents associated with the application
-          items:
-            $ref: '#/components/schemas/ApplicationComplianceDocument'
-        metadata:
-          type: object
-          description: Arbitrary metadata associated with the application
-          additionalProperties:
-            type: string
-    AccountDeactivateRequest:
-      type: object
-      description: Request body for deactivating an account
-      properties:
-        status_reason:
-          $ref: '#/components/schemas/AccountDeactivateStatusReason'
-      required:
-      - status_reason
-    CreateApplicationEntities:
-      type: object
-      description: 'Entity relationships for the application.
-
-        Maximum 20 entities per relationship type.
-
-        Authorized signers required for commercial account holders.
-
-        '
-      properties:
-        account_holders:
-          type: array
-          description: List of entity IDs that are account holders
-          items:
-            $ref: '#/components/schemas/EntityID'
-          minItems: 1
-          maxItems: 20
-        authorized_signers:
-          type: array
-          description: List of entity IDs that are authorized signers (required for commercial)
-          items:
-            $ref: '#/components/schemas/EntityID'
-          maxItems: 20
-        authorized_users:
-          type: array
-          description: List of entity IDs that are authorized users
-          items:
-            $ref: '#/components/schemas/EntityID'
-          maxItems: 20
-      required:
-      - account_holders
-    ApplicationAdverseActionNotice:
-      type: object
-      readOnly: true
-      description: Adverse action notice information (response, all properties optional)
-      properties:
-        delivered_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the adverse action notice was sent to the applicant.
-        reason:
-          type: string
-          description: The reason stated in the adverse action notice.
-        delivery_method:
-          type: string
-          description: 'How the notice was delivered to the applicant. Possible values: `email`, `text`, `other`.'
-          enum:
-          - email
-          - text
-          - other
-    Scra:
-      type: object
-      description: SCRA (Servicemembers Civil Relief Act) details
-      properties:
-        start_date:
-          type: string
-          format: date
-          description: Start date for SCRA protections
-        end_date:
-          type: string
-          format: date
-          description: End date for SCRA protections
-      required:
-      - start_date
-    AccountCloseStatusReason:
-      type: string
-      description: Valid reasons for closing an account
-      enum:
-      - entity_closed
-      - client_closed
-      - paid_off
-      - charged_off
-      - canceled
-    AccountStatus:
-      type: string
-      description: Current state of the account
-      enum:
-      - active
-      - inactive
-      - closed
-    CreateAccountDetails:
-      type: object
-      description: Details for creating an account
-      properties:
-        product_name:
-          type: string
-          description: Partner's name for their product
-        credit:
-          $ref: '#/components/schemas/CreateAccountCredit'
-        adverse_action_notice:
-          $ref: '#/components/schemas/AdverseActionNotice'
-      required:
-      - product_name
-    ApplicationDecision:
-      type: object
-      readOnly: true
-      description: Decision-related information (response, all properties optional)
-      properties:
-        decided_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the underwriting decision was made.
-        reason:
-          type: string
-          description: The reason for the decision.
-        exception_approval_reason:
-          type: string
-          description: This should only be provided if the decision was made as an exception to underwriting criteria. Reason for exception approval, if this decision was made as an exception to the traditional underwriting process.
-    CreateAccountRequest:
-      type: object
-      description: Request body for creating a new account
-      properties:
-        application_id:
-          $ref: '#/components/schemas/ApplicationID'
-        capabilities:
-          type: array
-          description: List of items that inform Lead how the Account will be used
-          items:
-            $ref: '#/components/schemas/AccountCapability'
-          minItems: 1
-        entities:
-          $ref: '#/components/schemas/CreateAccountEntities'
-        details:
-          $ref: '#/components/schemas/CreateAccountDetails'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-        documents:
-          type: array
-          description: Array of associated legal or informational documents
-          items:
-            $ref: '#/components/schemas/CreateComplianceDocument'
-      required:
-      - capabilities
-      - entities
-      - details
-      - documents
-    Account:
-      type: object
-      description: An account object
-      readOnly: true
-      properties:
-        id:
-          $ref: '#/components/schemas/AccountID'
-        created_at:
-          type: string
-          format: date-time
-          description: Creation timestamp
-          readOnly: true
-        updated_at:
-          type: string
-          format: date-time
-          description: Last update timestamp
-          readOnly: true
-        application_id:
-          $ref: '#/components/schemas/ApplicationID'
-        status:
-          $ref: '#/components/schemas/AccountStatus'
-        status_reason:
-          $ref: '#/components/schemas/AccountStatusReason'
-        capabilities:
-          type: array
-          description: List of items that inform Lead how the Account will be used
-          items:
-            $ref: '#/components/schemas/AccountCapability'
-        entities:
-          $ref: '#/components/schemas/AccountEntities'
-        details:
-          $ref: '#/components/schemas/AccountDetails'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-        documents:
-          type: array
-          description: Array of associated legal or informational documents
-          items:
-            $ref: '#/components/schemas/ComplianceDocument'
-        client_account_id:
-          type: string
-          description: 'Client-provided identifier for the account.
-
-            Only populated in GET /v0/accounts/{id} response.
-
-            '
-    CreditReport:
-      type: object
-      description: Credit report information (Application only)
-      required:
-      - score
-      - pulled_at
-      - source
-      properties:
-        score:
-          type: integer
-          description: Credit score returned by the bureau. Supported range is 300-850.
-          minimum: 300
-          maximum: 850
-        pulled_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the credit report was pulled.
-        source:
-          type: string
-          description: 'Credit bureau that issued the report. Possible values: `equifax`, `experian`, `transunion`.'
-          enum:
-          - equifax
-          - transunion
-          - experian
-    PatchApplicationDetails:
-      type: object
-      description: Details for updating an application (all fields optional)
-      properties:
-        product_name:
-          type: string
-          description: Your internal product name. This tells Lead's Due Diligence team which product this application, if approved, would open an account for.
-          example: Growth Business Credit Line
-        credit:
-          $ref: '#/components/schemas/PatchApplicationCredit'
-        adverse_action_notice:
-          $ref: '#/components/schemas/AdverseActionNotice'
-    CreateApplicationDetails:
-      type: object
-      description: Details for creating an application
-      properties:
-        product_name:
-          type: string
-          description: Your internal product name. This tells Lead's Due Diligence team which product this application, if approved, would open an account for.
-          example: Growth Business Credit Line
-        credit:
-          $ref: '#/components/schemas/CreateApplicationCredit'
-        adverse_action_notice:
-          $ref: '#/components/schemas/AdverseActionNotice'
-      required:
-      - product_name
-      - credit
-    AccountDeactivateStatusReason:
-      type: string
-      description: Valid reasons for deactivating an account
-      enum:
-      - dormant
-      - frozen
-      - other
-    ComplianceDocument:
-      type: object
-      description: Document reference associated with an application (response schema - all fields optional)
-      readOnly: true
-      properties:
-        document_id:
-          type: string
-          description: Unique identifier for the document being referenced. Please use the file name of the file delivered to Lead's `/documents` SFTP directory.
-          example: document_2N5Hk8xYmQpL9rBvC3jD
-        type:
-          $ref: '#/components/schemas/ComplianceDocumentType'
-        displayed_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the document was displayed to the applicant. Present on disclosure documents.
-        consented_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the applicant consented to the document. Present on consent documents.
-        version:
-          type: string
-          description: It is recommended to use this for static documents uploaded once and uploaded for many users. Uploads with a new version should have a different document_id as well.
-          example: v1
-    ApplicationCredit:
-      type: object
-      readOnly: true
-      description: Credit details for an application (response, all properties optional)
-      properties:
-        is_secured:
-          type: boolean
-          description: Indicates if this is a secured credit/deposit product. `true` if the product is secured (collateral attached); `false` otherwise.
-        is_mla:
-          type: boolean
-          description: '`true` if the applicant is subject to the Military Lending Act; `false` otherwise.'
-        currency:
-          $ref: '#/components/schemas/ComplianceCurrencyCode'
-        underwriting_grade:
-          type: string
-          description: Your internal underwriting grade for the applicant. Accepts any string mapped to your specific scoring framework.
-          example: '99'
-        limit:
-          type: integer
-          description: The credit limit assigned to the applicant, in minor units (e.g., cents).
-          minimum: 0
-          example: 5000000
-        max_limit:
-          type: integer
-          description: The maximum credit limit the applicant was approved for based on original underwriting, in minor units (e.g., cents).
-          minimum: 0
-          example: 10000000
-        report:
-          $ref: '#/components/schemas/ApplicationCreditReport'
-    AccountCredit:
-      type: object
-      description: Details specific to credit-based accounts
-      additionalProperties: false
-      properties:
-        is_secured:
-          type: boolean
-          description: Indicates if this is a secured credit/deposit product
-        is_mla:
-          type: boolean
-          description: Indicates if this account is considered a Military Lending Act account
-        underwriting_grade:
-          type: string
-          description: Grade given to the customer based on underwriting
-        currency:
-          type: string
-          description: The currency for the account (3-letter ISO code)
-          example: USD
-        available_credit:
-          type: integer
-          description: Available credit for the customer to draw (in minor units)
-        limit:
-          type: integer
-          description: Current credit limit (in minor units)
-        max_limit:
-          type: integer
-          description: Maximum credit limit approved in underwriting (in minor units)
-        scra:
-          $ref: '#/components/schemas/Scra'
-        report:
-          $ref: '#/components/schemas/CreditReport'
-    APIError:
-      type: object
-      properties:
-        code:
-          type: string
-          description: The error code.
-        title:
-          type: string
-          description: The error title.
-        detail:
-          type: string
-          description: A detailed error description.
-        status:
-          type: string
-          description: The HTTP status code.
-        invalid_parameters:
-          type: array
-          description: Invalid request parameters with reasons, if applicable.
-          items:
-            $ref: '#/components/schemas/InvalidParameterDetail'
-        instance:
-          type: string
-          description: The object causing this specific occurrence of the error, if applicable.
-    ApplicationComplianceDocument:
-      type: object
-      readOnly: true
-      description: Document reference associated with an application (response, all properties optional)
-      properties:
-        document_id:
-          type: string
-          description: Unique identifier for the document being referenced. Please use the file name of the file delivered to Lead's `/documents` SFTP directory.
-          example: document_2N5Hk8xYmQpL9rBvC3jD
-        type:
-          $ref: '#/components/schemas/ComplianceDocumentType'
-        displayed_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the document was displayed to the applicant. Present on disclosure documents.
-        consented_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the applicant consented to the document. Present on consent documents.
-        version:
-          type: string
-          description: It is recommended to use this for static documents uploaded once and uploaded for many users. Uploads with a new version should have a different document_id as well.
-          example: v1
-    EntityRelationshipType:
-      type: string
-      description: Indicates the type of Entity
-      enum:
-      - account_holder
-      - authorized_signer
-      - authorized_user
-    EntityRelationship:
-      type: object
-      description: Common fields for entity relationships
-      properties:
-        entity_id:
-          $ref: '#/components/schemas/EntityID'
-        relationship_type:
-          $ref: '#/components/schemas/EntityRelationshipType'
-      required:
-      - entity_id
-      - relationship_type
-    AccountStatusReason:
-      type: string
-      description: Machine-readable reason for the current status
-      enum:
-      - client_closed
-      - entity_closed
-      - frozen
-      - dormant
-      - active
-      - paid_off
-      - charged_off
-      - canceled
-      - other
-    ApplicationDetails:
-      type: object
-      readOnly: true
-      description: Application details (response, all properties optional)
-      properties:
-        product_name:
-          type: string
-          description: Your internal product name. This tells Lead's Due Diligence team which product this application, if approved, would open an account for.
-          example: Growth Business Credit Line
-        credit:
-          $ref: '#/components/schemas/ApplicationCredit'
-        adverse_action_notice:
-          $ref: '#/components/schemas/ApplicationAdverseActionNotice'
-    ApplicationID:
-      type: string
-      description: Unique identifier for the application. Prefixed with `application_`.
-      example: application_xyz123
-      pattern: ^application_\w+$
-    AccountEntities:
-      type: object
-      readOnly: true
-      description: Entity relationships associated with the account (response only)
-      properties:
-        account_holder_type:
-          type: string
-          description: Derived from the type of the entity referenced in account_holders
-          enum:
-          - consumer
-          - commercial
-    Metadata:
-      type: object
-      additionalProperties:
-        type: string
-      description: A set of key-value pairs that can be used to store additional information related to this object.
-    ApplicationCreditReport:
-      type: object
-      readOnly: true
-      description: Credit report information (response, all properties optional)
-      properties:
-        score:
-          type: integer
-          description: Credit score returned by the bureau. Supported range is 300-850.
-          minimum: 300
-          maximum: 850
-        pulled_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the credit report was pulled.
-        source:
-          type: string
-          description: 'Credit bureau that issued the report. Possible values: `equifax`, `experian`, `transunion`.'
-          enum:
-          - equifax
-          - transunion
-          - experian
-    PatchApplicationRequest:
-      type: object
-      description: Request body for updating an existing application
-      properties:
-        status:
-          $ref: '#/components/schemas/ApplicationStatus'
-        details:
-          $ref: '#/components/schemas/PatchApplicationDetails'
-        decision:
-          $ref: '#/components/schemas/Decision'
-        documents:
-          type: array
-          description: Documents associated with the application
-          items:
-            $ref: '#/components/schemas/CreateComplianceDocument'
-        metadata:
-          type: object
-          description: Arbitrary metadata associated with the application
-          additionalProperties:
-            type: string
-    AccountCapability:
-      type: string
-      description: Capability that informs Lead how the Account will be used
-      enum:
-      - deposit
-      - credit_with_underwriting
-      - credit_without_underwriting
-    PatchApplicationCredit:
-      type: object
-      description: Credit details for updating an application (all fields optional)
-      properties:
-        is_secured:
-          type: boolean
-          description: Indicates if this is a secured credit/deposit product. `true` if the product is secured (collateral attached); `false` otherwise.
-        is_mla:
-          type: boolean
-          description: '`true` if the applicant is subject to the Military Lending Act; `false` otherwise.'
-        currency:
-          $ref: '#/components/schemas/ComplianceCurrencyCode'
-        underwriting_grade:
-          type: string
-          description: Your internal underwriting grade for the applicant. Accepts any string mapped to your specific scoring framework.
-          example: '99'
-        limit:
-          type: integer
-          description: The credit limit assigned to the applicant, in minor units (e.g., cents).
-          minimum: 0
-          example: 5000000
-        max_limit:
-          type: integer
-          description: The maximum credit limit the applicant was approved for based on original underwriting, in minor units (e.g., cents).
-          minimum: 0
-          example: 10000000
-        report:
-          $ref: '#/components/schemas/CreditReport'
     CreateApplicationCredit:
       type: object
       description: Credit details for creating an application
@@ -2428,53 +3657,14 @@ components:
       - is_secured
       - is_mla
       - currency
-    InvalidParameterDetail:
+    PatchApplicationRequest:
       type: object
-      properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
-          type: string
-          description: Why the parameter is invalid.
-    PatchAccountRequest:
-      type: object
-      description: Request body for updating an existing account
-      properties:
-        application_id:
-          $ref: '#/components/schemas/ApplicationID'
-        capabilities:
-          type: array
-          description: List of items that inform Lead how the Account will be used
-          items:
-            $ref: '#/components/schemas/AccountCapability'
-        details:
-          $ref: '#/components/schemas/PatchAccountDetails'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-        documents:
-          type: array
-          description: Array of associated legal or informational documents
-          items:
-            $ref: '#/components/schemas/CreateComplianceDocument'
-    ApplicationStatus:
-      type: string
-      description: 'Terminal state of the application. Possible values: `approved`, `declined`, `canceled`.'
-      enum:
-      - approved
-      - declined
-      - canceled
-    CreateApplicationRequest:
-      type: object
-      description: Request body for creating a new application in terminal status
+      description: Request body for updating an existing application
       properties:
         status:
           $ref: '#/components/schemas/ApplicationStatus'
-        entities:
-          $ref: '#/components/schemas/CreateApplicationEntities'
         details:
-          $ref: '#/components/schemas/CreateApplicationDetails'
+          $ref: '#/components/schemas/PatchApplicationDetails'
         decision:
           $ref: '#/components/schemas/Decision'
         documents:
@@ -2487,12 +3677,6 @@ components:
           description: Arbitrary metadata associated with the application
           additionalProperties:
             type: string
-      required:
-      - status
-      - entities
-      - details
-      - decision
-      - documents
     BatchCreateEntityRelationshipsRequest:
       type: object
       description: Request body for batch creating entity relationships on an account.
@@ -2508,118 +3692,46 @@ components:
       required:
       - entity_ids
       - relationship_type
-    AccountCloseRequest:
-      type: object
-      description: Request body for closing an account
-      properties:
-        status_reason:
-          $ref: '#/components/schemas/AccountCloseStatusReason'
-      required:
-      - status_reason
-    ComplianceDocumentType:
+    CardStatus:
       type: string
-      description: Type of document associated with an application
+      description: 'Status is system-managed and cannot be set on create; status changes go through the status-transition endpoints.
+
+        '
       enum:
-      - aan
-      - loan_agreement
-      - loc_agreement
-      - truth_in_lending_document
-      - ach_authorization
-      - notice_of_incompleteness
-      - credit_score_notice
-      - offer_summary
-      - personal_guarantee
-      - consumer_credit_auth
-      - partner_privacy_policy
-      - lead_privacy_policy
-      - terms_of_use
-      - esign_agreement
-      - credit_pull_consent
-      - fcra_notice
-      - tcpa_consent
-      - patriot_act_notice
-      - mla_notice
-      - pre_approval_terms
-      - eft_authorization
-      - prohibited_industry_certification
-      - decision_maker_document
-      - bo_certification
-      - missed_payments_policy
-      - consent_to_link_account
-      - consent_to_link_hsa
-      - negative_option_consent
-      - lead_funds_transfer_agreement
-    CreateComplianceDocument:
+      - active
+      - inactive
+      - closed
+    CreditReport:
       type: object
-      description: "Document reference for creating applications and accounts.\n\nOne of `displayed_at` or `consented_at` is required depending on document type:\n- `displayed_at`: Required for aan, loan_agreement, loc_agreement, truth_in_lending_document,\n  ach_authorization, notice_of_incompleteness, credit_score_notice, offer_summary, personal_guarantee,\n  consumer_credit_auth, partner_privacy_policy, lead_privacy_policy, terms_of_use, fcra_notice,\n  tcpa_consent, patriot_act_notice, mla_notice, pre_approval_terms, eft_authorization,\n  prohibited_industry_certification, decision_maker_document, bo_certification, missed_payments_policy,\n  lead_funds_transfer_agreement\n- `consented_at`: Required for esign_agreement, credit_pull_consent, consent_to_link_account,\n  consent_to_link_hsa, negative_option_consent\n"
-      properties:
-        document_id:
-          type: string
-          description: Unique identifier for the document being referenced. Please use the file name of the file delivered to Lead's `/documents` SFTP directory.
-          example: document_2N5Hk8xYmQpL9rBvC3jD
-        type:
-          $ref: '#/components/schemas/ComplianceDocumentType'
-        displayed_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the document was displayed to the applicant. Present on disclosure documents.
-        consented_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the applicant consented to the document. Present on consent documents.
-        version:
-          type: string
-          description: It is recommended to use this for static documents uploaded once and uploaded for many users. Uploads with a new version should have a different document_id as well.
-          example: v1
+      description: 'Credit report information. Exactly one of `score` or `non_score_value` must be provided; `pulled_at` and `source` are always required when a credit report is supplied.
+
+        '
       required:
-      - document_id
-      - type
-      oneOf:
-      - title: Disclosure
-        description: Disclosure document — `displayed_at` is required.
-        properties:
-          type:
-            type: string
-            enum:
-            - aan
-            - loan_agreement
-            - loc_agreement
-            - truth_in_lending_document
-            - ach_authorization
-            - notice_of_incompleteness
-            - credit_score_notice
-            - offer_summary
-            - personal_guarantee
-            - consumer_credit_auth
-            - partner_privacy_policy
-            - lead_privacy_policy
-            - terms_of_use
-            - fcra_notice
-            - tcpa_consent
-            - patriot_act_notice
-            - mla_notice
-            - pre_approval_terms
-            - eft_authorization
-            - prohibited_industry_certification
-            - decision_maker_document
-            - bo_certification
-            - missed_payments_policy
-            - lead_funds_transfer_agreement
-        required:
-        - displayed_at
-      - title: Consent
-        description: Consent document — `consented_at` is required.
-        properties:
-          type:
-            type: string
-            enum:
-            - esign_agreement
-            - credit_pull_consent
-            - consent_to_link_account
-            - consent_to_link_hsa
-            - negative_option_consent
-        required:
-        - consented_at
+      - pulled_at
+      - source
+      properties:
+        score:
+          type: integer
+          description: Credit score returned by the bureau. Supported range is 300-850. Mutually exclusive with `non_score_value`.
+          minimum: 300
+          maximum: 850
+        non_score_value:
+          type: string
+          description: Indicates the state of a credit file when a numeric score is not available. Mutually exclusive with `score`.
+          enum:
+          - unestablished
+          - frozen
+        pulled_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the credit report was pulled.
+        source:
+          type: string
+          description: 'Credit bureau that issued the report. Possible values: `equifax`, `experian`, `transunion`.'
+          enum:
+          - equifax
+          - transunion
+          - experian
   securitySchemes:
     bearerAuth:
       type: http

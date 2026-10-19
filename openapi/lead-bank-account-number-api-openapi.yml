@@ -438,95 +438,6 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
-    CompanyId:
-      type: string
-      description: ACH Company Id
-      example: 1234567890
-      pattern: ^\d{10}$
-    AccountNumberID:
-      type: string
-      description: The ID of the Lead Bank Account Number object.
-      example: account_number_xyz123
-      pattern: ^account_number_\w+$
-    EntityID:
-      type: string
-      description: The ID of your entity.
-      example: entity_xyz123
-      pattern: ^entity_[^\s]{1,33}$
-    AccountID:
-      type: string
-      description: The ID of the Account object.
-      example: account_xyz123
-      pattern: ^account_\w+$
-    AccountNumberStatus:
-      type: string
-      description: Account Number Status
-      example: active
-      enum:
-      - active
-      - inactive
-      - canceled
-      - unassigned
-    AchControls:
-      type: object
-      description: ACH payment controls
-      properties:
-        originator_id:
-          $ref: '#/components/schemas/OriginatorID'
-        incoming:
-          $ref: '#/components/schemas/IncomingAch'
-        outgoing:
-          $ref: '#/components/schemas/OutgoingAch'
-    IncomingAch:
-      type: object
-      description: Incoming ACH payment controls
-      properties:
-        accept_credit:
-          type: boolean
-          description: Accept ACH credits
-        accept_debit:
-          type: boolean
-          description: Accept ACH debits
-        counterparty_filter:
-          $ref: '#/components/schemas/CounterpartyFilter'
-          default: accept_all
-        counterparty_company_ids_allowlist:
-          type: array
-          maxLength: 20
-          description: Allowed Company IDs when mode is allowlist_only
-          items:
-            $ref: '#/components/schemas/CompanyId'
-    CounterpartyFilter:
-      type: string
-      description: Control mode for counterparty filtering
-      example: accept_all
-      enum:
-      - accept_all
-      - reject_all
-      - allowlist_only
-    AllowedCounterpartyAccount:
-      type: object
-      required:
-      - type
-      - account_number
-      - routing_number
-      properties:
-        type:
-          type: string
-          enum:
-          - us_domestic
-        account_number:
-          type: string
-          example: 123412341234
-          maxLength: 17
-          minLength: 8
-          pattern: ^[a-zA-Z0-9]+$
-        routing_number:
-          type: string
-          example: 123412341234
-          minLength: 9
-          maxLength: 9
-          pattern: ^[0-9]+$
     IncomingInstantPayment:
       type: object
       description: Incoming Instant Payment controls
@@ -540,80 +451,6 @@ components:
           description: Allowed destinations when mode is allowlist_only
           items:
             $ref: '#/components/schemas/AllowedUsDomesticCounterpartyAccount'
-    IncomingInternalTransfer:
-      type: object
-      description: Controls for receiving internal transfers
-      properties:
-        counterparty_filter:
-          $ref: '#/components/schemas/CounterpartyFilter'
-          default: accept_all
-        counterparty_account_number_ids_allowlist:
-          type: array
-          maxLength: 20
-          description: Allowlist of account_number IDs that can send
-          items:
-            $ref: '#/components/schemas/AccountNumberID'
-    InstantPaymentControls:
-      type: object
-      description: Instant Payment controls
-      properties:
-        incoming:
-          $ref: '#/components/schemas/IncomingInstantPayment'
-        outgoing:
-          $ref: '#/components/schemas/OutgoingInstantPayment'
-    ListAccountNumber:
-      type: object
-      required:
-      - objects
-      - has_more
-      properties:
-        objects:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountNumber'
-        has_more:
-          type: boolean
-          description: Indicates if there are more account numbers to retrieve.
-    AllowedInternationalCounterpartyAccount:
-      type: object
-      required:
-      - business_identifier_code
-      - account_identifier
-      properties:
-        business_identifier_code:
-          type: string
-          description: BIC (Business Identifier Code / SWIFT code)
-          example: CHASUS33
-          pattern: ^[A-Za-z]{4}[A-Za-z]{2}[A-Za-z0-9]{2}([A-Za-z0-9]{3})?$
-        account_identifier:
-          type: object
-          description: Account identifier for the international account
-          required:
-          - type
-          - value
-          properties:
-            type:
-              type: string
-              description: Type of account identifier
-              enum:
-              - IBAN
-              - account_number
-            value:
-              type: string
-              description: The account identifier value
-              example: GB29NWBK60161331926819
-              minLength: 1
-              maxLength: 34
-    WireControls:
-      type: object
-      description: Wire payment controls
-      properties:
-        incoming:
-          $ref: '#/components/schemas/IncomingWire'
-        outgoing:
-          $ref: '#/components/schemas/OutgoingWire'
-        outgoing_international:
-          $ref: '#/components/schemas/OutgoingInternationalWire'
     APIError:
       type: object
       properties:
@@ -637,53 +474,38 @@ components:
         instance:
           type: string
           description: The object causing this specific occurrence of the error, if applicable.
-    IncomingWire:
+    IncomingAch:
       type: object
-      description: Incoming Wire payment controls
+      description: Incoming ACH payment controls
       properties:
+        accept_credit:
+          type: boolean
+          description: Accept ACH credits
+        accept_debit:
+          type: boolean
+          description: Accept ACH debits
         counterparty_filter:
           $ref: '#/components/schemas/CounterpartyFilter'
           default: accept_all
-        counterparty_account_numbers_allowlist:
+        counterparty_company_ids_allowlist:
           type: array
           maxLength: 20
-          description: Allowed destinations when mode is allowlist_only
+          description: Allowed Company IDs when mode is allowlist_only
           items:
-            $ref: '#/components/schemas/AllowedCounterpartyAccount'
-    AllowedUsDomesticCounterpartyAccount:
+            $ref: '#/components/schemas/CompanyId'
+    EntityID:
+      type: string
+      description: The ID of your entity.
+      example: entity_xyz123
+      pattern: ^entity_[^\s]{1,33}$
+    AccountID:
+      type: string
+      description: The ID of the Account object.
+      example: account_xyz123
+      pattern: ^account_\w+$
+    IncomingInternalTransfer:
       type: object
-      required:
-      - account_number
-      - routing_number
-      properties:
-        account_number:
-          type: string
-          example: 123412341234
-          maxLength: 17
-          minLength: 8
-          pattern: ^[a-zA-Z0-9]+$
-        routing_number:
-          type: string
-          example: 123412341234
-          minLength: 9
-          maxLength: 9
-          pattern: ^[0-9]+$
-    InternalTransferControls:
-      type: object
-      description: Internal Transfer controls
-      properties:
-        incoming:
-          $ref: '#/components/schemas/IncomingInternalTransfer'
-        outgoing:
-          $ref: '#/components/schemas/OutgoingInternalTransfer'
-    Metadata:
-      type: object
-      additionalProperties:
-        type: string
-      description: A set of key-value pairs that can be used to store additional information related to this object.
-    OutgoingInternalTransfer:
-      type: object
-      description: Controls for sending internal transfers
+      description: Controls for receiving internal transfers
       properties:
         counterparty_filter:
           $ref: '#/components/schemas/CounterpartyFilter'
@@ -691,7 +513,7 @@ components:
         counterparty_account_number_ids_allowlist:
           type: array
           maxLength: 20
-          description: Allowlist of account_number IDs to send to
+          description: Allowlist of account_number IDs that can send
           items:
             $ref: '#/components/schemas/AccountNumberID'
     OutgoingInternationalWire:
@@ -707,16 +529,27 @@ components:
           description: Allowed international destinations when mode is allowlist_only
           items:
             $ref: '#/components/schemas/AllowedInternationalCounterpartyAccount'
-    InvalidParameterDetail:
+    InternalTransferControls:
       type: object
+      description: Internal Transfer controls
       properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
-          type: string
-          description: Why the parameter is invalid.
+        incoming:
+          $ref: '#/components/schemas/IncomingInternalTransfer'
+        outgoing:
+          $ref: '#/components/schemas/OutgoingInternalTransfer'
+    OriginatorID:
+      type: string
+      description: The ID of the Originator object.
+      example: originator_xyz123
+      pattern: ^originator_[^\s]{1,33}$
+    CounterpartyFilter:
+      type: string
+      description: Control mode for counterparty filtering
+      example: accept_all
+      enum:
+      - accept_all
+      - reject_all
+      - allowlist_only
     AccountNumber:
       type: object
       properties:
@@ -764,19 +597,6 @@ components:
       description: The ID of your customer.
       example: <your_customer_id>
       maxLength: 64
-    OutgoingWire:
-      type: object
-      description: Outgoing Wire payment controls
-      properties:
-        counterparty_filter:
-          $ref: '#/components/schemas/CounterpartyFilter'
-          default: accept_all
-        counterparty_account_numbers_allowlist:
-          type: array
-          maxLength: 20
-          description: Allowed destinations when mode is allowlist_only
-          items:
-            $ref: '#/components/schemas/AllowedCounterpartyAccount'
     OutgoingAch:
       type: object
       description: Outgoing ACH payment controls
@@ -790,11 +610,113 @@ components:
           description: Allowed destinations when mode is allowlist_only
           items:
             $ref: '#/components/schemas/AllowedCounterpartyAccount'
-    OriginatorID:
+    OutgoingInternalTransfer:
+      type: object
+      description: Controls for sending internal transfers
+      properties:
+        counterparty_filter:
+          $ref: '#/components/schemas/CounterpartyFilter'
+          default: accept_all
+        counterparty_account_number_ids_allowlist:
+          type: array
+          maxLength: 20
+          description: Allowlist of account_number IDs to send to
+          items:
+            $ref: '#/components/schemas/AccountNumberID'
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
+    OutgoingWire:
+      type: object
+      description: Outgoing Wire payment controls
+      properties:
+        counterparty_filter:
+          $ref: '#/components/schemas/CounterpartyFilter'
+          default: accept_all
+        counterparty_account_numbers_allowlist:
+          type: array
+          maxLength: 20
+          description: Allowed destinations when mode is allowlist_only
+          items:
+            $ref: '#/components/schemas/AllowedCounterpartyAccount'
+    AchControls:
+      type: object
+      description: ACH payment controls
+      properties:
+        originator_id:
+          $ref: '#/components/schemas/OriginatorID'
+        incoming:
+          $ref: '#/components/schemas/IncomingAch'
+        outgoing:
+          $ref: '#/components/schemas/OutgoingAch'
+    CompanyId:
       type: string
-      description: The ID of the Originator object.
-      example: originator_xyz123
-      pattern: ^originator_[^\s]{1,33}$
+      description: ACH Company Id
+      example: 1234567890
+      pattern: ^\d{10}$
+    ListAccountNumber:
+      type: object
+      required:
+      - objects
+      - has_more
+      properties:
+        objects:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountNumber'
+        has_more:
+          type: boolean
+          description: Indicates if there are more account numbers to retrieve.
+    InstantPaymentControls:
+      type: object
+      description: Instant Payment controls
+      properties:
+        incoming:
+          $ref: '#/components/schemas/IncomingInstantPayment'
+        outgoing:
+          $ref: '#/components/schemas/OutgoingInstantPayment'
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    AllowedInternationalCounterpartyAccount:
+      type: object
+      required:
+      - business_identifier_code
+      - account_identifier
+      properties:
+        business_identifier_code:
+          type: string
+          description: BIC (Business Identifier Code / SWIFT code)
+          example: CHASUS33
+          pattern: ^[A-Za-z]{4}[A-Za-z]{2}[A-Za-z0-9]{2}([A-Za-z0-9]{3})?$
+        account_identifier:
+          type: object
+          description: Account identifier for the international account
+          required:
+          - type
+          - value
+          properties:
+            type:
+              type: string
+              description: Type of account identifier
+              enum:
+              - IBAN
+              - account_number
+            value:
+              type: string
+              description: The account identifier value
+              example: GB29NWBK60161331926819
+              minLength: 1
+              maxLength: 34
     OutgoingInstantPayment:
       type: object
       description: Outgoing Instant Payment controls
@@ -808,6 +730,84 @@ components:
           description: Allowed destinations when mode is allowlist_only
           items:
             $ref: '#/components/schemas/AllowedUsDomesticCounterpartyAccount'
+    AccountNumberStatus:
+      type: string
+      description: Account Number Status
+      example: active
+      enum:
+      - active
+      - inactive
+      - canceled
+      - unassigned
+    AccountNumberID:
+      type: string
+      description: The ID of the Lead Bank Account Number object.
+      example: account_number_xyz123
+      pattern: ^account_number_\w+$
+    WireControls:
+      type: object
+      description: Wire payment controls
+      properties:
+        incoming:
+          $ref: '#/components/schemas/IncomingWire'
+        outgoing:
+          $ref: '#/components/schemas/OutgoingWire'
+        outgoing_international:
+          $ref: '#/components/schemas/OutgoingInternationalWire'
+    AllowedUsDomesticCounterpartyAccount:
+      type: object
+      required:
+      - account_number
+      - routing_number
+      properties:
+        account_number:
+          type: string
+          example: 123412341234
+          maxLength: 17
+          minLength: 8
+          pattern: ^[a-zA-Z0-9]+$
+        routing_number:
+          type: string
+          example: 123412341234
+          minLength: 9
+          maxLength: 9
+          pattern: ^[0-9]+$
+    IncomingWire:
+      type: object
+      description: Incoming Wire payment controls
+      properties:
+        counterparty_filter:
+          $ref: '#/components/schemas/CounterpartyFilter'
+          default: accept_all
+        counterparty_account_numbers_allowlist:
+          type: array
+          maxLength: 20
+          description: Allowed destinations when mode is allowlist_only
+          items:
+            $ref: '#/components/schemas/AllowedCounterpartyAccount'
+    AllowedCounterpartyAccount:
+      type: object
+      required:
+      - type
+      - account_number
+      - routing_number
+      properties:
+        type:
+          type: string
+          enum:
+          - us_domestic
+        account_number:
+          type: string
+          example: 123412341234
+          maxLength: 17
+          minLength: 8
+          pattern: ^[a-zA-Z0-9]+$
+        routing_number:
+          type: string
+          example: 123412341234
+          minLength: 9
+          maxLength: 9
+          pattern: ^[0-9]+$
   securitySchemes:
     bearerAuth:
       type: http

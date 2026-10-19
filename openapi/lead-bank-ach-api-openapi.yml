@@ -328,6 +328,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ach'
+              examples:
+                canceled:
+                  summary: Canceled ACH
+                  value:
+                    id: ach_xyz001
+                    created_at: '2022-06-27T11:22:33Z'
+                    updated_at: '2022-06-27T11:22:33Z'
+                    status: canceled
+                    amount: 5000
+                    account_id: account_xyz123
+                    account_number_id: account_number_xyz123
+                    direction: outgoing
+                    delivery_type: same_business_day
+                    transaction_type: credit
+                    sec_code: WEB
+                    currency_code: USD
+                    statement_descriptor: P2P Credit
+                    counterparty:
+                      name: Lara Smikle
+                      account_number: '1032345678'
+                      routing_number: '021000021'
+                      account_type: checking
         '400':
           description: This operation cannot be done on this object.
           content:
@@ -444,6 +466,137 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+    IatReceiver:
+      type: object
+      description: Name, reference number, and address of the receiver of an IAT transaction.
+      properties:
+        name:
+          type: string
+          description: Name of the receiver or beneficiary of the transaction.
+          example: Lara Smikle
+          maxLength: 35
+          pattern: ^[\x20-\x7E]*$
+        reference_number:
+          type: string
+          description: Reference number assigned by the originator for tracking this receiver or payment.
+          example: RCV-2024-001
+          maxLength: 15
+          pattern: ^[\x20-\x7E]*$
+        street_address:
+          type: string
+          description: Physical street address of the receiver.
+          example: 456 Maple Avenue
+          maxLength: 35
+          pattern: ^[\x20-\x7E]*$
+        city_state_province:
+          type: string
+          description: City and state or province of the receiver. Max 35 characters.
+          example: Toronto*ON\
+          maxLength: 35
+          pattern: ^[\x20-\x7E]*$
+        country_postal_code:
+          type: string
+          description: Country code and postal code of the receiver. Country code is ISO 3166-1 alpha-2. Max 35 characters.
+          example: CA*M5H 2N2\
+          maxLength: 35
+          pattern: ^[\x20-\x7E]*$
+    SecCode:
+      type: string
+      description: 'Standard Entry Class (SEC) code to use for this ACH object.
+
+
+        Lead currently only supports `CCD`, `PPD`, `WEB`, and `TEL` for outgoing ACHes.'
+      example: WEB
+      enum:
+      - PPD
+      - CCD
+      - ARC
+      - BOC
+      - CIE
+      - CTX
+      - IAT
+      - POP
+      - POS
+      - RCK
+      - TEL
+      - WEB
+      - ADV
+      - DNE
+      - ENR
+      - MTE
+      - SHR
+      - TRC
+      - TRX
+      - COR
+    ReceiverName:
+      type: string
+      description: 'The name of the receiver of funds. _Note: This field is set by the counterparty and may or not be accurate._'
+      pattern: ^[\x20-\x7E]*$
+    Return:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the return record, determined by the respective return code.
+          example: return
+          enum:
+          - return
+          - dishonored_return
+          - contested_return
+        status:
+          $ref: '#/components/schemas/AchStatus'
+        return_code:
+          $ref: '#/components/schemas/ReturnCode'
+        return_reason:
+          type: string
+          description: Short description of the associated return code.
+        trace_number:
+          type: string
+          description: The unique number assigned to this ACH return by the ODFI, which identifies the entry within a specific ACH file.
+          example: '123456789012345'
+        additional_information:
+          type: string
+          description: Based on the associated return code, if the content is provided by the parties, the additional information field in the ACH addenda.
+    AccountID:
+      type: string
+      description: The ID of the Account object.
+      example: account_xyz123
+      pattern: ^account_\w+$
+    Direction:
+      type: string
+      description: 'Who is initiating the transaction.
+
+
+        outgoing: You are sending a transaction to a counterparty.
+
+        incoming: You are receiving a transaction from a counterparty.'
+      example: outgoing
+      enum:
+      - outgoing
+      - incoming
     IatDetails:
       type: object
       description: IAT (International ACH Transaction) specific details. Present only when sec_code is IAT.
@@ -493,11 +646,6 @@ components:
           maxItems: 5
           items:
             $ref: '#/components/schemas/IatFinancialInstitution'
-    AccountNumberID:
-      type: string
-      description: The ID of the Lead Bank Account Number object.
-      example: account_number_xyz123
-      pattern: ^account_number_\w+$
     Ach:
       type: object
       properties:
@@ -550,6 +698,7 @@ components:
 
                 - For incoming ACH, this value is what we receive from the sender.'
               example: Acme Inc.
+              pattern: ^[\x20-\x7E]*$
             company_id:
               type: string
               description: 'A 10-digit unique identifier used for identify companies collecting payments via ACH debit. If you would like to use a specific company ID when sending outgoing ACH, please contact us.
@@ -617,131 +766,19 @@ components:
           $ref: '#/components/schemas/Metadata'
         iat_details:
           $ref: '#/components/schemas/IatDetails'
-    Return:
-      type: object
-      properties:
-        type:
-          type: string
-          description: Type of the return record, determined by the respective return code.
-          example: return
-          enum:
-          - return
-          - dishonored_return
-          - contested_return
-        status:
-          $ref: '#/components/schemas/AchStatus'
-        return_code:
-          $ref: '#/components/schemas/ReturnCode'
-        return_reason:
-          type: string
-          description: Short description of the associated return code.
-        trace_number:
-          type: string
-          description: The unique number assigned to this ACH return by the ODFI, which identifies the entry within a specific ACH file.
-          example: '123456789012345'
-        additional_information:
-          type: string
-          description: Based on the associated return code, if the content is provided by the parties, the additional information field in the ACH addenda.
-    IatTransactionTypeCode:
-      type: string
-      description: Identifies the purpose of the IAT transaction.
-      example: business
-      enum:
-      - annuity
-      - business
-      - deposit
-      - loan
-      - miscellaneous
-      - mortgage
-      - pension
-      - rental_lease
-      - salary
-      - tax
-      - telephone
-      - internet
-      - accounts_receivable
-      - back_office_conversion
-      - point_of_purchase
-      - represented_check
-    IatParty:
-      type: object
-      description: Name and address of a party to an IAT transaction, in NACHA format.
-      properties:
-        name:
-          type: string
-          description: Name of the party.
-          example: Acme Inc.
-          maxLength: 35
-          pattern: ^[\x20-\x7E]*$
-        street_address:
-          type: string
-          description: Physical street address of the party.
-          example: 123 Main Street
-          maxLength: 35
-          pattern: ^[\x20-\x7E]*$
-        city_state_province:
-          type: string
-          description: City and state or province of the party. Max 35 characters
-          example: New York*NY\
-          maxLength: 35
-          pattern: ^[\x20-\x7E]*$
-        country_postal_code:
-          type: string
-          description: Country code and postal code of the party. Country code is ISO 3166-1 alpha-2. Max 35 characters.
-          example: US*10001\
-          maxLength: 35
-          pattern: ^[\x20-\x7E]*$
-    AccountID:
-      type: string
-      description: The ID of the Account object.
-      example: account_xyz123
-      pattern: ^account_\w+$
-    OutgoingSecCode:
-      type: string
-      description: 'The Standard Entry Class, SEC, to code the outgoing ACH.
-
-        Lead currently supports:
-
-        * `CCD`: Corporate payment
-
-        * `PPD`: Written authorization to initiate payment
-
-        * `TEL`: Telephone initiated payment
-
-        * `WEB`: Web initiated payment
-
-        * `CIE`: Customer initiated entry
-
-        '
-      example: WEB
-      enum:
-      - CCD
-      - PPD
-      - TEL
-      - WEB
-      - CIE
-    ReceiverName:
-      type: string
-      description: 'The name of the receiver of funds. _Note: This field is set by the counterparty and may or not be accurate._'
-      pattern: ^[\x20-\x7E]*$
-    AchStatus:
-      description: The current status of the ACH object.
-      type: string
-      example: submitted
-      enum:
-      - scheduled
-      - processing
-      - submitted
-      - posted
-      - canceled
-      - under_review
-      - approved
-      - rejected
-      - pending_return
-      - returned
     OutgoingReturnCode:
       type: string
-      description: The NACHA Return code you want to initiate this return under.
+      description: 'The NACHA Return code under which to initiate this return.
+
+        R0x–R5x initiate a standard return against the original ACH origination.
+
+        R61, R62, R67, R68, R69, R70 dishonor an existing return.
+
+        R71–R77 contest an existing dishonored return.
+
+        The return code must match the current state of the return chain.
+
+        '
       example: R02
       enum:
       - R01
@@ -760,35 +797,19 @@ components:
       - R22
       - R23
       - R29
-    TransactionCode:
-      type: string
-      example: checking_credit
-      description: Identifies the type of debit or credit Entry and the account type
-      enum:
-      - checking_credit
-      - checking_credit_prenote
-      - checking_debit
-      - checking_debit_prenote
-      - savings_credit
-      - savings_credit_prenote
-      - savings_debit
-      - savings_debit_prenote
-    RejectionReason:
-      type: object
-      properties:
-        reason:
-          type: string
-          description: The rejection code that indicates the type of rejection
-          example: account_number_status
-        details:
-          type: string
-          description: Additional info about the rejection
-          example: Account number account_123 is inactive.
-    IndividualId:
-      type: string
-      description: The name of the individual you are sending funds to. _Required for P2P payments._
-      maxLength: 15
-      pattern: ^[\x20-\x7E]*$
+      - R61
+      - R62
+      - R67
+      - R68
+      - R69
+      - R70
+      - R71
+      - R72
+      - R73
+      - R74
+      - R75
+      - R76
+      - R77
     IatFinancialInstitution:
       type: object
       description: Financial institution details for an IAT transaction.
@@ -820,26 +841,35 @@ components:
           minLength: 2
           maxLength: 2
           pattern: ^[A-Z]{2}$
-    AdditionalInformation:
+    OutgoingSecCode:
       type: string
-      description: Additional information for the ACH recipient. _Not all banks will share this message with their end customer._
-      maxLength: 80
+      description: 'The Standard Entry Class, SEC, to code the outgoing ACH.
+
+        Lead currently supports:
+
+        * `CCD`: Corporate payment
+
+        * `PPD`: Written authorization to initiate payment
+
+        * `TEL`: Telephone initiated payment
+
+        * `WEB`: Web initiated payment
+
+        * `CIE`: Customer initiated entry
+
+        '
+      example: WEB
+      enum:
+      - CCD
+      - PPD
+      - TEL
+      - WEB
+      - CIE
+    IndividualId:
+      type: string
+      description: The name of the individual you are sending funds to. _Required for P2P payments._
+      maxLength: 15
       pattern: ^[\x20-\x7E]*$
-    ReversalReason:
-      type: string
-      description: Reason you want to initiate a reversal.
-      enum:
-      - duplicate
-      - receiver_incorrect
-      - amount_incorrect
-      - debit_too_early
-      - credit_too_late
-    CurrencyCode:
-      description: A three-letter currency code as defined in ISO 4217.
-      type: string
-      example: USD
-      enum:
-      - USD
     Counterparty:
       type: object
       description: The details of the counterparty you are sending/receiving money from.
@@ -870,64 +900,52 @@ components:
           pattern: ^[0-9]+$
         account_type:
           $ref: '#/components/schemas/AccountType'
-    AccountType:
+    IatTransactionTypeCode:
       type: string
-      example: checking
-      description: The account type for the bank account. This should be one of checking or savings.
+      description: Identifies the purpose of the IAT transaction.
+      example: business
       enum:
-      - checking
-      - savings
-    APIError:
-      type: object
-      properties:
-        code:
-          type: string
-          description: The error code.
-        title:
-          type: string
-          description: The error title.
-        detail:
-          type: string
-          description: A detailed error description.
-        status:
-          type: string
-          description: The HTTP status code.
-        invalid_parameters:
-          type: array
-          description: Invalid request parameters with reasons, if applicable.
-          items:
-            $ref: '#/components/schemas/InvalidParameterDetail'
-        instance:
-          type: string
-          description: The object causing this specific occurrence of the error, if applicable.
-    AchCorrection:
-      type: object
-      description: The corrected `counterparty` details.
-      properties:
-        account_number:
-          type: string
-          description: The updated account number for the `counterparty`.
-          example: '1032345678'
-          maxLength: 17
-        routing_number:
-          type: string
-          description: The updated routing number for the `counterparty`.
-          example: '021000021'
-          minLength: 9
-          maxLength: 9
-        account_type:
-          type: string
-          description: The updated account type for the `counterparty`.
-          enum:
-          - checking
-          - savings
-    StatementDescriptor:
+      - annuity
+      - business
+      - deposit
+      - loan
+      - miscellaneous
+      - mortgage
+      - pension
+      - rental_lease
+      - salary
+      - tax
+      - telephone
+      - internet
+      - accounts_receivable
+      - back_office_conversion
+      - point_of_purchase
+      - represented_check
+    TransactionCode:
       type: string
-      description: The description you would like to appear on your customers’ statement. Maximum number of characters is 10.
-      example: P2P Credit
-      minLength: 1
-      maxLength: 10
-      pattern: ^(?!0+$)(?! +$)[\x20-\x7E]*$
+      example: checking_credit
+      description: Identifies the type of debit or credit Entry and the account type
+      enum:
+      - checking_credit
+      - checking_credit_prenote
+      - checking_debit
+      - checking_debit_prenote
+      - savings_credit
+      - savings_credit_prenote
+      - savings_debit
+      - savings_debit_prenote
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
+    Amount:
+      description: The amount of the transaction in cents.
+      type: integer
+      format: int64
+      example: 5000
+      minimum: 0
+      maximum: 9900000000
     ReturnCode:
       type: string
       description: NACHA Return codes.
@@ -1003,6 +1021,31 @@ components:
       - R83
       - R84
       - R85
+    RejectionReason:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: The rejection code that indicates the type of rejection
+          example: account_number_status
+        details:
+          type: string
+          description: Additional info about the rejection
+          example: Account number account_123 is inactive.
+    AccountType:
+      type: string
+      example: checking
+      description: The account type for the bank account. This should be one of checking or savings.
+      enum:
+      - checking
+      - savings
+    StatementDescriptor:
+      type: string
+      description: The description you would like to appear on your customers’ statement. Maximum number of characters is 10.
+      example: P2P Credit
+      minLength: 1
+      maxLength: 10
+      pattern: ^(?!0+$)(?! +$)[\x20-\x7E]*$
     DescriptiveDate:
       type: string
       description: 'The date you would like displayed to the counterparty.
@@ -1011,92 +1054,11 @@ components:
       example: '220627'
       maxLength: 6
       pattern: ^[\x20-\x7E]*$
-    TransactionType:
+    AdditionalInformation:
       type: string
-      description: ACH transaction type.
-      example: credit
-      enum:
-      - credit
-      - debit
-    Metadata:
-      type: object
-      additionalProperties:
-        type: string
-      description: A set of key-value pairs that can be used to store additional information related to this object.
-    Direction:
-      type: string
-      description: 'Who is initiating the transaction.
-
-
-        outgoing: You are sending a transaction to a counterparty.
-
-        incoming: You are receiving a transaction from a counterparty.'
-      example: outgoing
-      enum:
-      - outgoing
-      - incoming
-    SecCode:
-      type: string
-      description: 'Standard Entry Class (SEC) code to use for this ACH object.
-
-
-        Lead currently only supports `CCD`, `PPD`, `WEB`, and `TEL` for outgoing ACHes.'
-      example: WEB
-      enum:
-      - PPD
-      - CCD
-      - ARC
-      - BOC
-      - CIE
-      - CTX
-      - IAT
-      - POP
-      - POS
-      - RCK
-      - TEL
-      - WEB
-      - ADV
-      - DNE
-      - ENR
-      - MTE
-      - SHR
-      - TRC
-      - TRX
-      - COR
-    IatReceiver:
-      type: object
-      description: Name, reference number, and address of the receiver of an IAT transaction.
-      properties:
-        name:
-          type: string
-          description: Name of the receiver or beneficiary of the transaction.
-          example: Lara Smikle
-          maxLength: 35
-          pattern: ^[\x20-\x7E]*$
-        reference_number:
-          type: string
-          description: Reference number assigned by the originator for tracking this receiver or payment.
-          example: RCV-2024-001
-          maxLength: 15
-          pattern: ^[\x20-\x7E]*$
-        street_address:
-          type: string
-          description: Physical street address of the receiver.
-          example: 456 Maple Avenue
-          maxLength: 35
-          pattern: ^[\x20-\x7E]*$
-        city_state_province:
-          type: string
-          description: City and state or province of the receiver. Max 35 characters.
-          example: Toronto*ON\
-          maxLength: 35
-          pattern: ^[\x20-\x7E]*$
-        country_postal_code:
-          type: string
-          description: Country code and postal code of the receiver. Country code is ISO 3166-1 alpha-2. Max 35 characters.
-          example: CA*M5H 2N2\
-          maxLength: 35
-          pattern: ^[\x20-\x7E]*$
+      description: Additional information for the ACH recipient. _Not all banks will share this message with their end customer._
+      maxLength: 80
+      pattern: ^[\x20-\x7E]*$
     InvalidParameterDetail:
       type: object
       properties:
@@ -1107,6 +1069,101 @@ components:
         reason:
           type: string
           description: Why the parameter is invalid.
+    AchCorrection:
+      type: object
+      description: The corrected `counterparty` details.
+      properties:
+        account_number:
+          type: string
+          description: The updated account number for the `counterparty`.
+          example: '1032345678'
+          maxLength: 17
+        routing_number:
+          type: string
+          description: The updated routing number for the `counterparty`.
+          example: '021000021'
+          minLength: 9
+          maxLength: 9
+        account_type:
+          type: string
+          description: The updated account type for the `counterparty`.
+          enum:
+          - checking
+          - savings
+    IatParty:
+      type: object
+      description: Name and address of a party to an IAT transaction, in NACHA format.
+      properties:
+        name:
+          type: string
+          description: Name of the party.
+          example: Acme Inc.
+          maxLength: 35
+          pattern: ^[\x20-\x7E]*$
+        street_address:
+          type: string
+          description: Physical street address of the party.
+          example: 123 Main Street
+          maxLength: 35
+          pattern: ^[\x20-\x7E]*$
+        city_state_province:
+          type: string
+          description: City and state or province of the party. Max 35 characters
+          example: New York*NY\
+          maxLength: 35
+          pattern: ^[\x20-\x7E]*$
+        country_postal_code:
+          type: string
+          description: Country code and postal code of the party. Country code is ISO 3166-1 alpha-2. Max 35 characters.
+          example: US*10001\
+          maxLength: 35
+          pattern: ^[\x20-\x7E]*$
+    ReversalReason:
+      type: string
+      description: Reason you want to initiate a reversal.
+      enum:
+      - duplicate
+      - receiver_incorrect
+      - amount_incorrect
+      - debit_too_early
+      - credit_too_late
+    AccountNumberID:
+      type: string
+      description: The ID of the Lead Bank Account Number object.
+      example: account_number_xyz123
+      pattern: ^account_number_\w+$
+    AchStatus:
+      description: The current status of the ACH object.
+      type: string
+      example: submitted
+      enum:
+      - scheduled
+      - processing
+      - submitted
+      - posted
+      - canceled
+      - under_review
+      - approved
+      - rejected
+      - pending_return
+      - returned
+      - pending_dishonored_return
+      - return_dishonored
+      - pending_contested_return
+      - return_contested
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    TransactionType:
+      type: string
+      description: ACH transaction type.
+      example: credit
+      enum:
+      - credit
+      - debit
     DeliveryType:
       type: string
       example: same_business_day
@@ -1118,13 +1175,6 @@ components:
       enum:
       - same_business_day
       - next_business_day
-    Amount:
-      description: The amount of the transaction in cents.
-      type: integer
-      format: int64
-      example: 5000
-      minimum: 0
-      maximum: 9900000000
   securitySchemes:
     bearerAuth:
       type: http

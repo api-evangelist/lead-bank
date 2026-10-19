@@ -262,16 +262,461 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIError'
+  /v2/fundings:
+    post:
+      tags:
+      - Funding
+      operationId: create-a-funding-v2
+      summary: Create a Funding
+      description: 'Create a Funding to disburse principal from a User Credit Balance to an Account Number. The response returns the Funding with `status: processing`. See Funding Object for the checks Lead runs on create.'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+          minLength: 5
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: CreateFundingRequestV2
+              type: object
+              required:
+              - user_credit_balance_id
+              - account_number_id
+              - currency_code
+              - amount
+              properties:
+                user_credit_balance_id:
+                  type: string
+                  description: ID of the User Credit Balance this funding draws against. The balance must be `active`; if it has an `expected_maturity_date`, that date must not be in the past.
+                  maxLength: 64
+                  pattern: ^user_credit_balance_\w+$
+                  example: user_credit_balance_1HCpXwx2EK9oYluWbacgeCnFcLf
+                account_number_id:
+                  $ref: '#/components/schemas/AccountNumberID'
+                currency_code:
+                  $ref: '#/components/schemas/CurrencyCode'
+                amount:
+                  type: integer
+                  description: The total principal to disburse, in minor units. Must be greater than zero. For a `non_revolving` balance, the sum of this amount and all prior `processing` or `posted` fundings on the balance must not exceed its `max_funding_amount`.
+                  minimum: 1
+                  example: 1000000
+                metadata:
+                  type: object
+                  description: Additional metadata associated with the funding.
+                  additionalProperties: true
+                  example:
+                    loan_id: '201681646780571'
+      responses:
+        '200':
+          description: The Funding object was accepted for processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundingV2'
+              example:
+                id: funding_0o5Fs0EELR0fUjHjbCnEtdUwQe3
+                user_credit_balance_id: user_credit_balance_1HCpXwx2EK9oYluWbacgeCnFcLf
+                account_number_id: account_number_7Kq2Lm9PxR4sTvWyZaBcDeFgHiJk
+                currency_code: USD
+                amount: 1000000
+                metadata:
+                  loan_id: '201681646780571'
+                core_transaction_id: null
+                status: processing
+                rejection:
+                  reason: ''
+                  details: ''
+                created_at: '2026-09-17T11:01:36Z'
+                updated_at: '2026-09-17T11:01:36Z'
+        '400':
+          description: The request could not be parsed (`request_malformed`), or the `Idempotency-Key` header is missing (`idempotency_key_missing`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: payload_invalid
+                  message: The request body is not valid JSON.
+        '403':
+          description: 'Rejected before the request reached the Funding API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: The referenced User Credit Balance or Account Number does not exist or is not visible to this program. Whether body references surface as `404 object_not_found` or `422 related_object_invalid` is under review; integrate against both.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: A concurrent request with the same `Idempotency-Key` is still in flight.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: 'The request was parsed but cannot be processed. `code` is one of:
+
+            `parameters_invalid` (a field is missing, malformed, or out of range; all failures returned at once),
+
+            `related_object_invalid` (a referenced balance or account number does not exist or cannot be used),
+
+            `related_object_not_ready` (the balance or account number is not `active`),
+
+            `related_object_conflict` (`currency_code` does not match the balance),
+
+            `limit_exceeded` (the funding would exceed the balance''s `max_funding_amount`),
+
+            `operation_invalid` (the balance''s `expected_maturity_date` has passed),
+
+            `lead_control_restricted` (the destination is not permitted to receive fundings, or the program has no funding destination configured),
+
+            `idempotency_request_inconsistent` (this `Idempotency-Key` was used with a different request body).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: required
+                  message: account_number_id is required.
+                  parameters:
+                  - account_number_id
+                - code: out_of_range
+                  message: amount must be greater than 0.
+                  parameters:
+                  - amount
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '503':
+          description: The endpoint is temporarily disabled. Retry after the interval given in the `Retry-After` header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the interval given in the Retry-After header.
+        '504':
+          description: An upstream system did not respond in time. Nothing was persisted; retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system did not respond in time. Retry with backoff.
+  /v2/fundings/{funding_id}:
+    get:
+      tags:
+      - Funding
+      operationId: retrieve-a-funding-v2
+      summary: Retrieve a Funding
+      description: Retrieve a Funding by its ID. Fundings created through `/v0/fundings` are not visible on this endpoint.
+      parameters:
+      - name: funding_id
+        in: path
+        required: true
+        example: funding_0o5Fs0EELR0fUjHjbCnEtdUwQe3
+        schema:
+          type: string
+          maxLength: 64
+        description: The ID of the Funding object to retrieve.
+      responses:
+        '200':
+          description: A Funding object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundingV2'
+              example:
+                id: funding_0o5Fs0EELR0fUjHjbCnEtdUwQe3
+                user_credit_balance_id: user_credit_balance_1HCpXwx2EK9oYluWbacgeCnFcLf
+                account_number_id: account_number_7Kq2Lm9PxR4sTvWyZaBcDeFgHiJk
+                currency_code: USD
+                amount: 1000000
+                metadata:
+                  loan_id: '201681646780571'
+                core_transaction_id: core_transaction_5BIJT5QH8Qm2n1x~0
+                status: posted
+                rejection:
+                  reason: ''
+                  details: ''
+                created_at: '2026-09-17T11:01:36Z'
+                updated_at: '2026-09-17T11:05:00Z'
+        '400':
+          description: The request URL could not be parsed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: 'Rejected before the request reached the Funding API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: No v2 Funding with this ID exists, or it is not visible to this program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '422':
+          description: The Funding ID in the path is not a well-formed Funding ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: malformed
+                  message: id must match the format funding_*.
+                  parameters:
+                  - id
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system did not respond in time. Retry with backoff.
+  /v2/fundings/{funding_id}/advance:
+    post:
+      tags:
+      - Funding
+      operationId: advance-a-funding-v2
+      summary: Advance a Funding (Simulation)
+      description: Advance a Funding from `processing` to `posted`. Available in Sandbox only.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+          minLength: 5
+      - name: funding_id
+        in: path
+        required: true
+        example: funding_0o5Fs0EELR0fUjHjbCnEtdUwQe3
+        schema:
+          type: string
+          maxLength: 64
+        description: The ID of the Funding object to advance.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        '400':
+          description: The request could not be parsed (`request_malformed`), or the `Idempotency-Key` header is missing (`idempotency_key_missing`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_missing
+                message: The Idempotency-Key header is required on this endpoint.
+        '403':
+          description: 'Rejected before the request reached the Funding API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: No v2 Funding with this ID exists, it is not visible to this program, or this endpoint is not available in the current environment.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: A concurrent request with the same `Idempotency-Key` is still in flight.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: The Funding is not in `processing` status (`object_state_conflict`), the Funding ID is malformed (`parameters_invalid`), or this `Idempotency-Key` was used with a different request (`idempotency_request_inconsistent`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_state_conflict
+                message: The object is not in the state this request assumed. Fetch its current state before retrying.
+                errors:
+                - code: object_status_unchanged
+                  message: Funding funding_0o5Fs0EELR0fUjHjbCnEtdUwQe3 is already posted.
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
 components:
   schemas:
-    FundingStatus:
+    ErrorCode:
       type: string
-      description: The current status of the Funding object.
+      description: A snake_case code identifying the error family — the stable, machine-readable value partners branch on, together with the HTTP status.
+      example: parameters_invalid
       enum:
-      - processing
-      - posted
-      - rejected
-      example: processing
+      - request_malformed
+      - content_too_large
+      - idempotency_key_missing
+      - authentication_missing
+      - token_invalid
+      - source_ip_not_allowed
+      - url_invalid
+      - object_not_found
+      - method_not_allowed
+      - idempotency_key_in_use
+      - idempotency_request_inconsistent
+      - rate_limit_exceeded
+      - internal_server_error
+      - service_unavailable
+      - endpoint_disabled
+      - gateway_timeout
+      - unclassified
+      - parameters_invalid
+      - related_object_invalid
+      - related_object_not_ready
+      - related_object_conflict
+      - limit_exceeded
+      - client_control_restricted
+      - lead_control_restricted
+      - object_state_conflict
+      - object_modified_concurrently
+      - operation_invalid
     APIError:
       type: object
       properties:
@@ -295,32 +740,68 @@ components:
         instance:
           type: string
           description: The object causing this specific occurrence of the error, if applicable.
-    InvalidParameterDetail:
+    FundingV2:
       type: object
+      required:
+      - id
+      - user_credit_balance_id
+      - account_number_id
+      - currency_code
+      - amount
+      - core_transaction_id
+      - status
+      - rejection
+      - created_at
+      - updated_at
       properties:
-        parameter:
+        id:
           type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
+          description: Unique ID of the Funding object.
+          maxLength: 64
+          pattern: ^funding_\w+$
+          example: funding_0o5Fs0EELR0fUjHjbCnEtdUwQe3
+        user_credit_balance_id:
           type: string
-          description: Why the parameter is invalid.
-    FundingCurrencyCode:
-      type: string
-      description: A three-letter currency code as defined in ISO 4217. Must match the `currency_code` on the associated Subledger Balance object.
-      example: USD
-      enum:
-      - USD
-    FundingRejection:
-      type: object
-      description: Object containing information relevant for cases where the Funding object is in a rejected status. When the object is not in a rejected status, fields will still be present with empty strings.
-      properties:
-        reason:
-          $ref: '#/components/schemas/FundingRejectionReason'
-        details:
+          description: ID of the User Credit Balance this funding draws against.
+          maxLength: 64
+          pattern: ^user_credit_balance_\w+$
+          example: user_credit_balance_1HCpXwx2EK9oYluWbacgeCnFcLf
+        account_number_id:
+          $ref: '#/components/schemas/AccountNumberID'
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        amount:
+          type: integer
+          description: The total principal disbursed, in minor units.
+          minimum: 1
+          example: 1000000
+        metadata:
+          type: object
+          description: Additional metadata associated with the funding.
+          additionalProperties: true
+          example:
+            loan_id: '201681646780571'
+        core_transaction_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the Core Transaction that credited the destination balance. `null` until the funding is `posted`.
+          pattern: ^core_transaction_.+~\d+$
+          example: core_transaction_5BIJT5QH8Qm2n1x~0
+        status:
+          $ref: '#/components/schemas/FundingStatus'
+        rejection:
+          $ref: '#/components/schemas/FundingRejection'
+        created_at:
           type: string
-          description: Additional info about the rejection. Reserved for future use.
-          example: Funding object rejected due to an internal error.
+          format: date-time
+          description: The ISO-8601 timestamp at which the Funding object was created.
+          example: '2026-09-17T11:01:36Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: The ISO-8601 timestamp at which the Funding object was last updated.
+          example: '2026-09-17T11:05:00Z'
     FundingV0:
       type: object
       properties:
@@ -383,15 +864,92 @@ components:
           format: date-time
           description: The ISO-8601 timestamp at which the Funding object was last updated.
           example: '2025-09-02T11:05:00Z'
+    AccountNumberID:
+      type: string
+      description: The ID of the Lead Bank Account Number object.
+      example: account_number_xyz123
+      pattern: ^account_number_\w+$
     FundingRejectionReason:
       type: string
       description: The rejection code that indicates the type of rejection. Note that Lead may introduce additional enums in the future; partner integrations should be ready to handle them as non-breaking changes.
       enum:
       - internal_error
       example: internal_error
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+          description: A human-readable description of the error family. Identical for every occurrence of a given `code`; carries no request-specific detail.
+          example: One or more parameters are invalid.
+        errors:
+          type: array
+          description: Zero or more specific errors within this family. Always present for validation errors, one entry per failing field.
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+    FundingRejection:
+      type: object
+      description: Object containing information relevant for cases where the Funding object is in a rejected status. When the object is not in a rejected status, fields will still be present with empty strings.
+      properties:
+        reason:
+          $ref: '#/components/schemas/FundingRejectionReason'
+        details:
+          type: string
+          description: Additional info about the rejection. Reserved for future use.
+          example: Funding object rejected due to an internal error.
+    FundingStatus:
+      type: string
+      description: The current status of the Funding object.
+      enum:
+      - processing
+      - posted
+      - rejected
+      example: processing
     CurrencyCode:
       description: A three-letter currency code as defined in ISO 4217.
       type: string
+      example: USD
+      enum:
+      - USD
+    ErrorItem:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          description: A snake_case code naming the specific error or sub-category.
+          example: required
+        message:
+          type: string
+          description: A human-readable description of this specific error, with interpolated values where relevant.
+          example: account_number_id is required.
+        parameters:
+          type: array
+          description: The request fields this error implicates, in dot notation for nested fields. Present for validation errors.
+          items:
+            type: string
+          example:
+          - account_number_id
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    FundingCurrencyCode:
+      type: string
+      description: A three-letter currency code as defined in ISO 4217. Must match the `currency_code` on the associated Subledger Balance object.
       example: USD
       enum:
       - USD

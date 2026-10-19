@@ -1,0 +1,586 @@
+openapi: 3.2.0
+info:
+  title: Lead Bank Receivable API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: Receivable
+paths:
+  /v2/receivables:
+    get:
+      tags:
+      - Receivable
+      operationId: list-all-receivables-v2
+      summary: List all Receivables
+      description: List the Receivables for your program, most recently created first.
+      parameters:
+      - name: type
+        in: query
+        description: Return only receivables with this `type`.
+        schema:
+          $ref: '#/components/schemas/ReceivableType'
+      - name: receivable_sale_id
+        in: query
+        description: Return only receivables that are part of this receivable sale.
+        schema:
+          $ref: '#/components/schemas/ReceivableSaleID'
+        example: receivable_sale_7Kq2Lm9PxR4sTvWyZaBcDeFgHiJk
+      - name: request_date
+        description: A set of filters on the list using the object's field `receivable_sale_details.request_date`.
+        in: query
+        style: deepObject
+        explode: true
+        schema:
+          type: object
+          properties:
+            after:
+              type: string
+              format: date
+              description: Return only receivables whose `receivable_sale_details.request_date` is after this date.
+            on_or_after:
+              type: string
+              format: date
+              description: Return only receivables whose `receivable_sale_details.request_date` is the same as or after this date.
+            before:
+              type: string
+              format: date
+              description: Return only receivables whose `receivable_sale_details.request_date` is before this date.
+            on_or_before:
+              type: string
+              format: date
+              description: Return only receivables whose `receivable_sale_details.request_date` is the same as or before this date.
+      - name: limit
+        in: query
+        description: Maximum number of objects to be returned.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+      - name: starting_after
+        in: query
+        description: A cursor for use in pagination. Pass the ID of the last Receivable in the previous page to fetch the next page.
+        schema:
+          $ref: '#/components/schemas/ReceivableID'
+      - name: ending_before
+        in: query
+        description: A cursor for use in pagination. Pass the ID of the first Receivable in the current page to fetch the previous page.
+        schema:
+          $ref: '#/components/schemas/ReceivableID'
+      responses:
+        '200':
+          description: A list of Receivable objects.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - objects
+                - has_more
+                properties:
+                  objects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Receivable'
+                  has_more:
+                    type: boolean
+                    description: Whether more objects are available beyond this page.
+              example:
+                objects:
+                - id: receivable_2NfK8sLq4RtVwXyZ1aBcDeFgHiJ
+                  currency_code: USD
+                  type: card_network_settlement
+                  held_for: sale
+                  origination_date: '2026-06-01'
+                  amount: 250000
+                  amount_breakdown:
+                    principal: 250000
+                    interest: 0
+                    interest_rate: null
+                    fees: 0
+                  receivable_sale_details:
+                    receivable_sale_id: receivable_sale_7Kq2Lm9PxR4sTvWyZaBcDeFgHiJk
+                    request_date: '2026-06-03'
+                  card_network_settlement_details:
+                    settlement_reporting_id: '123456789'
+                    card_network: visa
+                    settlement_date: '2026-06-01'
+                  created_at: '2026-06-01T09:15:00Z'
+                  updated_at: '2026-06-03T10:00:00Z'
+                has_more: false
+        '400':
+          description: The request URL could not be parsed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: 'Rejected before the request reached the Receivable API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '422':
+          description: One or more query parameters are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: invalid_value
+                  message: type must be one of card_network_settlement, user_credit_balance.
+                  parameters:
+                  - type
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system did not respond in time. Retry with backoff.
+  /v2/receivables/{receivable_id}:
+    get:
+      tags:
+      - Receivable
+      operationId: retrieve-a-receivable-v2
+      summary: Retrieve a Receivable
+      description: Retrieve a Receivable by its ID.
+      parameters:
+      - name: receivable_id
+        in: path
+        required: true
+        example: receivable_2NfK8sLq4RtVwXyZ1aBcDeFgHiJ
+        schema:
+          type: string
+          maxLength: 64
+        description: The ID of the Receivable object to retrieve.
+      responses:
+        '200':
+          description: A Receivable object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receivable'
+              example:
+                id: receivable_9TbQ3wEr5YuIoPaSdFgHjKlZxCv
+                currency_code: USD
+                type: user_credit_balance
+                held_for: sale
+                origination_date: '2026-06-04'
+                amount: 251000
+                amount_breakdown:
+                  principal: 250000
+                  interest: 500
+                  interest_rate: 9.99
+                  fees: 500
+                receivable_sale_details:
+                  receivable_sale_id: null
+                  request_date: '2026-06-05'
+                user_credit_balance_details:
+                  user_credit_balance_id: user_credit_balance_1HCpXwx2EK9oYluWbacgeCnFcLf
+                  user_credit_transaction_id: user_credit_transaction_2JdQyVm8LpT4nWxZ7aBcEfGhKjR
+                created_at: '2026-06-04T08:05:00Z'
+                updated_at: '2026-06-04T08:05:00Z'
+        '400':
+          description: The request URL could not be parsed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: 'Rejected before the request reached the Receivable API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: No Receivable with this ID exists, or it is not visible to this program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '422':
+          description: The Receivable ID in the path is not a well-formed Receivable ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: malformed
+                  message: receivable_id must match the format receivable_*.
+                  parameters:
+                  - receivable_id
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system did not respond in time. Retry with backoff.
+components:
+  schemas:
+    ReceivableAmountBreakdown:
+      type: object
+      description: The principal, interest, and fees that make up the receivable's `amount`, in minor units, along with the interest rate applied.
+      required:
+      - principal
+      - interest
+      - interest_rate
+      - fees
+      properties:
+        principal:
+          type: integer
+          description: The principal amount, in minor units.
+          example: 250000
+        interest:
+          type: integer
+          description: The interest amount, in minor units. `0` when the receivable's source carries no interest.
+          example: 0
+        interest_rate:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The annual interest rate applied, as a decimal percent (for example, `9.99` means 9.99%). This is a rate, not an amount. Null when the receivable's source carries no rate, as with card network settlements.
+          example: 9.99
+        fees:
+          type: integer
+          description: The fee amount, in minor units. `0` when the receivable's source carries no fees.
+          example: 0
+    ReceivableHeldFor:
+      type: string
+      description: 'Whether the receivable is meant for sale or to stay on Lead''s balance sheet.
+
+
+        - `sale`: the receivable is held for sale.
+
+        - `investment`: the receivable is held for investment on Lead''s balance sheet. A receivable can move from `investment` to `sale`.'
+      enum:
+      - sale
+      example: sale
+    ReceivableUserCreditBalanceDetails:
+      type: object
+      description: Identifies the User Credit Balance and User Credit Transaction the receivable was created from.
+      required:
+      - user_credit_balance_id
+      - user_credit_transaction_id
+      properties:
+        user_credit_balance_id:
+          type: string
+          description: ID of the User Credit Balance the receivable is drawn from.
+          maxLength: 64
+          pattern: ^user_credit_balance_\w+$
+          example: user_credit_balance_1HCpXwx2EK9oYluWbacgeCnFcLf
+        user_credit_transaction_id:
+          type: string
+          description: ID of the User Credit Transaction that drew on the User Credit Balance and created the receivable.
+          maxLength: 64
+          pattern: ^user_credit_transaction_\w+$
+          example: user_credit_transaction_2JdQyVm8LpT4nWxZ7aBcEfGhKjR
+    ErrorCode:
+      type: string
+      description: A snake_case code identifying the error family — the stable, machine-readable value partners branch on, together with the HTTP status.
+      example: parameters_invalid
+      enum:
+      - request_malformed
+      - content_too_large
+      - idempotency_key_missing
+      - authentication_missing
+      - token_invalid
+      - source_ip_not_allowed
+      - url_invalid
+      - object_not_found
+      - method_not_allowed
+      - idempotency_key_in_use
+      - idempotency_request_inconsistent
+      - rate_limit_exceeded
+      - internal_server_error
+      - service_unavailable
+      - endpoint_disabled
+      - gateway_timeout
+      - unclassified
+      - parameters_invalid
+      - related_object_invalid
+      - related_object_not_ready
+      - related_object_conflict
+      - limit_exceeded
+      - client_control_restricted
+      - lead_control_restricted
+      - object_state_conflict
+      - object_modified_concurrently
+      - operation_invalid
+    ReceivableCardNetworkSettlementDetails:
+      type: object
+      description: Identifies the card network settlement the receivable was created from.
+      required:
+      - settlement_reporting_id
+      - card_network
+      - settlement_date
+      properties:
+        settlement_reporting_id:
+          type: string
+          description: The program's per-network reporting ID for the settlement.
+          example: '123456789'
+        card_network:
+          $ref: '#/components/schemas/ReceivableCardNetwork'
+        settlement_date:
+          type: string
+          format: date
+          description: The network settlement date.
+          example: '2026-06-01'
+    Receivable:
+      type: object
+      required:
+      - id
+      - currency_code
+      - type
+      - held_for
+      - amount
+      - amount_breakdown
+      - receivable_sale_details
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/ReceivableID'
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        type:
+          $ref: '#/components/schemas/ReceivableType'
+        held_for:
+          $ref: '#/components/schemas/ReceivableHeldFor'
+        origination_date:
+          type: string
+          format: date
+          description: The date the receivable originated. For a card network settlement this is the settlement date; for other sources it is the date the source object was created. When receivable data arrives late, this is the date the receivable should have originated on, while `created_at` is when the Receivable object was created. Omitted when the receivable is held for investment.
+          example: '2026-06-01'
+        amount:
+          type: integer
+          description: 'The overall amount of the receivable, in minor units. Equal to the sum of `amount_breakdown.principal`, `amount_breakdown.interest`, and `amount_breakdown.fees`.
+
+
+            - For receivables held for sale, the amount is locked at the loan amount to be sold when the receivable is reclassified for sale.
+
+            - For receivables held for investment, the amount is live: it grows with originations and decreases with payments and charge-offs.'
+          example: 250000
+        amount_breakdown:
+          $ref: '#/components/schemas/ReceivableAmountBreakdown'
+        receivable_sale_details:
+          $ref: '#/components/schemas/ReceivableSaleDetails'
+        card_network_settlement_details:
+          allOf:
+          - $ref: '#/components/schemas/ReceivableCardNetworkSettlementDetails'
+          description: Present when `type` is `card_network_settlement`; omitted otherwise.
+        user_credit_balance_details:
+          allOf:
+          - $ref: '#/components/schemas/ReceivableUserCreditBalanceDetails'
+          description: Present when `type` is `user_credit_balance`; omitted otherwise.
+        created_at:
+          type: string
+          format: date-time
+          description: The ISO-8601 timestamp at which the Receivable object was created.
+          example: '2026-06-01T09:15:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: The ISO-8601 timestamp at which any field on the Receivable object was last updated.
+          example: '2026-06-03T10:00:00Z'
+    ReceivableID:
+      type: string
+      description: Unique ID of the Receivable object.
+      maxLength: 64
+      pattern: ^receivable_\w+$
+      example: receivable_2NfK8sLq4RtVwXyZ1aBcDeFgHiJ
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+          description: A human-readable description of the error family. Identical for every occurrence of a given `code`; carries no request-specific detail.
+          example: One or more parameters are invalid.
+        errors:
+          type: array
+          description: Zero or more specific errors within this family. Always present for validation errors, one entry per failing field.
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    ErrorItem:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          description: A snake_case code naming the specific error or sub-category.
+          example: required
+        message:
+          type: string
+          description: A human-readable description of this specific error, with interpolated values where relevant.
+          example: account_number_id is required.
+        parameters:
+          type: array
+          description: The request fields this error implicates, in dot notation for nested fields. Present for validation errors.
+          items:
+            type: string
+          example:
+          - account_number_id
+    ReceivableSaleDetails:
+      type: object
+      description: The sale this receivable is part of. Each field is set at a different point in the receivable's lifecycle, so either may be null.
+      required:
+      - receivable_sale_id
+      - request_date
+      properties:
+        receivable_sale_id:
+          allOf:
+          - $ref: '#/components/schemas/ReceivableSaleID'
+          description: ID of the receivable sale this receivable belongs to. Null until the sale is created.
+        request_date:
+          type:
+          - string
+          - 'null'
+          format: date
+          description: The business day the receivable is requested for sale. Once the receivable is grouped into a sale, this is the sale's `request_date`. Null until it is set.
+          example: '2026-06-03'
+    ReceivableType:
+      type: string
+      description: 'The origin of the event that created the receivable. This value does not change after the receivable is created.
+
+
+        - `card_network_settlement`: the receivable was created from a card network settlement. `card_network_settlement_details` is present.
+
+        - `user_credit_balance`: the receivable was created from a User Credit Transaction drawn on a User Credit Balance. `user_credit_balance_details` is present.'
+      enum:
+      - card_network_settlement
+      - user_credit_balance
+      example: card_network_settlement
+    ReceivableSaleID:
+      type: string
+      description: Unique ID of the Receivable Sale object.
+      maxLength: 64
+      pattern: ^receivable_sale_\w+$
+      example: receivable_sale_3f9a1c7e5b2d4a6f8e0c1b3d5f7a9c2e
+    ReceivableCardNetwork:
+      type: string
+      description: The card network the settlement came from.
+      enum:
+      - visa
+      - mastercard
+      - pulse
+      - accel
+      - maestro
+      - tabapay
+      - amex
+      - star
+      - interlink
+      example: visa
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

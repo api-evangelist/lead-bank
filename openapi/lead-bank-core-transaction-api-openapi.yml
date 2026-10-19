@@ -1,0 +1,428 @@
+openapi: 3.2.0
+info:
+  title: Lead Bank Core Transaction API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: Core Transaction
+paths:
+  /v2/core_transactions:
+    get:
+      tags:
+      - Core Transaction
+      operationId: list-all-core-transactions
+      summary: List all Core Transactions
+      parameters:
+      - name: core_balance_id
+        description: Required. The core balance to list transactions for.
+        in: query
+        required: true
+        schema:
+          $ref: '#/components/schemas/CoreBalanceID'
+      - name: type
+        description: Filter by payment rail or source mechanism.
+        in: query
+        schema:
+          $ref: '#/components/schemas/CoreTransactionType'
+      - name: created_at
+        description: A set of filters on the list using the object's field `created_at`.
+        in: query
+        style: deepObject
+        explode: true
+        schema:
+          type: object
+          properties:
+            after:
+              type: string
+              format: date-time
+              description: Return objects where the `created_at` timestamp is after the entered timestamp.
+            on_or_after:
+              type: string
+              format: date-time
+              description: Return objects where the `created_at` timestamp is the same as or after the entered timestamp.
+            before:
+              type: string
+              format: date-time
+              description: Return objects where the `created_at` timestamp is before the entered timestamp.
+            on_or_before:
+              type: string
+              format: date-time
+              description: Return objects where the `created_at` timestamp is the same as or before the entered timestamp.
+      - name: limit
+        description: Maximum number of objects to be returned.
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+      - name: starting_after
+        description: A cursor for use in pagination; this is an ID that defines your place in the list.
+        in: query
+        schema:
+          type: string
+          pattern: ^core_transaction_.+~\d+$
+      - name: ending_before
+        description: A cursor for use in pagination; this is an ID that defines your place in the list.
+        in: query
+        schema:
+          type: string
+          pattern: ^core_transaction_.+~\d+$
+      responses:
+        '200':
+          description: A list of Core Transaction objects.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - objects
+                - has_more
+                properties:
+                  objects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CoreTransaction'
+                  has_more:
+                    type: boolean
+        '400':
+          description: The request could not be parsed (e.g. a malformed query string).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The query string could not be parsed.
+        '401':
+          description: No valid authentication was supplied. `code` is `authentication_missing` when no credentials are present and `token_invalid` when the bearer token is missing, expired, or malformed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: No authentication credentials were provided.
+        '403':
+          description: The caller's source IP is not on Lead's allowlist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: source_ip_not_allowed
+                message: The client making the request is not on Lead's IP allowlist.
+        '422':
+          description: One or more query parameters failed validation. All failures are returned at once. The required `core_balance_id` filter being absent surfaces here as `required`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: required
+                  message: core_balance_id is required.
+                  parameters:
+                  - core_balance_id
+                - code: not_in_allowed_set
+                  message: type is not a valid Core Transaction type.
+                  parameters:
+                  - type
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry after the limit resets.
+        '500':
+          description: Something went wrong on Lead's side.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The endpoint is temporarily disabled (e.g. a migration cutover). Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the indicated delay.
+        '504':
+          description: An upstream system (the core) timed out. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/core_transactions/{id}:
+    get:
+      tags:
+      - Core Transaction
+      operationId: retrieve-a-core-transaction
+      summary: Retrieve a Core Transaction
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/CoreTransactionID'
+        example: core_transaction_xyz123
+      responses:
+        '200':
+          description: A Core Transaction object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoreTransaction'
+        '400':
+          description: The request could not be parsed (e.g. a malformed URL).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '401':
+          description: No valid authentication was supplied. `code` is `authentication_missing` when no credentials are present and `token_invalid` when the bearer token is missing, expired, or malformed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: No authentication credentials were provided.
+        '403':
+          description: The caller's source IP is not on Lead's allowlist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: source_ip_not_allowed
+                message: The client making the request is not on Lead's IP allowlist.
+        '404':
+          description: No Core Transaction with this ID exists, or it is not visible to this caller.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: The requested object does not exist or is not visible to this caller.
+        '422':
+          description: The Core Transaction ID in the path is well-formed as a string but not a valid Core Transaction ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: malformed
+                  message: id must match the format core_transaction_*.
+                  parameters:
+                  - id
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry after the limit resets.
+        '500':
+          description: Something went wrong on Lead's side.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The endpoint is temporarily disabled (e.g. a migration cutover). Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the indicated delay.
+        '504':
+          description: An upstream system (the core) timed out. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+components:
+  schemas:
+    ErrorCode:
+      type: string
+      description: A snake_case code identifying the error family — the stable, machine-readable value partners branch on, together with the HTTP status.
+      example: parameters_invalid
+      enum:
+      - request_malformed
+      - content_too_large
+      - idempotency_key_missing
+      - authentication_missing
+      - token_invalid
+      - source_ip_not_allowed
+      - url_invalid
+      - object_not_found
+      - method_not_allowed
+      - idempotency_key_in_use
+      - idempotency_request_inconsistent
+      - rate_limit_exceeded
+      - internal_server_error
+      - service_unavailable
+      - endpoint_disabled
+      - gateway_timeout
+      - unclassified
+      - parameters_invalid
+      - related_object_invalid
+      - related_object_not_ready
+      - related_object_conflict
+      - limit_exceeded
+      - client_control_restricted
+      - lead_control_restricted
+      - object_state_conflict
+      - object_modified_concurrently
+      - operation_invalid
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+          description: A human-readable description of the error family. Identical for every occurrence of a given `code`; carries no request-specific detail.
+          example: One or more parameters are invalid.
+        errors:
+          type: array
+          description: Zero or more specific errors within this family. Always present for validation errors, one entry per failing field.
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+    ErrorItem:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          description: A snake_case code naming the specific error or sub-category.
+          example: required
+        message:
+          type: string
+          description: A human-readable description of this specific error, with interpolated values where relevant.
+          example: account_number_id is required.
+        parameters:
+          type: array
+          description: The request fields this error implicates, in dot notation for nested fields. Present for validation errors.
+          items:
+            type: string
+          example:
+          - account_number_id
+    CoreTransaction:
+      type: object
+      required:
+      - id
+      - core_balance_id
+      - type
+      - description
+      - amount
+      - currency_code
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/CoreTransactionID'
+        core_balance_id:
+          $ref: '#/components/schemas/CoreBalanceID'
+        type:
+          $ref: '#/components/schemas/CoreTransactionType'
+        description:
+          type: string
+          description: Human-readable description.
+          maxLength: 120
+          example: ACH settlement — Payroll deposit
+        amount:
+          type: integer
+          description: Signed value in minor units. Positive = credit, negative = debit.
+          example: 150000
+        currency_code:
+          type: string
+          description: Currency of the transaction (ISO 4217).
+          example: USD
+        created_at:
+          type: string
+          format: date-time
+          description: When this transaction was created and affected the balance.
+          example: '2026-04-01T09:00:05Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp.
+          example: '2026-04-01T09:00:05Z'
+    CoreTransactionID:
+      type: string
+      example: core_transaction_xyz123
+      pattern: ^core_transaction_.+~\d+$
+    CoreTransactionType:
+      type: string
+      enum:
+      - ach
+      - checks
+      - domestic_wires
+      - international_wires
+      - instant_payments
+      - blockchain_payments
+      - internal_transfers
+      - fundings
+      - receivable_sales
+      - interest
+      - fees
+      - sweeps
+      - lead_generated
+      - legacy_banking
+    CoreBalanceID:
+      type: string
+      example: core_balance_xyz123
+      pattern: ^core_balance_\w+$
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

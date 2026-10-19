@@ -1,0 +1,436 @@
+openapi: 3.2.0
+info:
+  title: Lead Bank Core Balance API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: Core Balance
+paths:
+  /v2/core_balances:
+    get:
+      tags:
+      - Core Balance
+      operationId: list-all-core-balances
+      summary: List all Core Balances
+      parameters:
+      - name: core_account_id
+        in: query
+        schema:
+          $ref: '#/components/schemas/CoreAccountID'
+      - name: limit
+        in: query
+        example: 10
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+      - name: starting_after
+        in: query
+        example: core_balance_xyz123
+        schema:
+          type: string
+          pattern: ^core_balance_\w+$
+      - name: ending_before
+        in: query
+        example: core_balance_xyz456
+        schema:
+          type: string
+          pattern: ^core_balance_\w+$
+      responses:
+        '200':
+          description: A list of Core Balance objects.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - objects
+                - has_more
+                properties:
+                  objects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CoreAccountBalance'
+                  has_more:
+                    type: boolean
+        '400':
+          description: The request could not be parsed (e.g. a malformed query string).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The query string could not be parsed.
+        '401':
+          description: No valid authentication was supplied. `code` is `authentication_missing` when no credentials are present and `token_invalid` when the bearer token is missing, expired, or malformed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: No authentication credentials were provided.
+        '403':
+          description: The caller's source IP is not on Lead's allowlist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: source_ip_not_allowed
+                message: The client making the request is not on Lead's IP allowlist.
+        '422':
+          description: One or more query parameters failed validation. All failures are returned at once.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: malformed
+                  message: core_account_id must match the format core_account_*.
+                  parameters:
+                  - core_account_id
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry after the limit resets.
+        '500':
+          description: Something went wrong on Lead's side.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The endpoint is temporarily disabled (e.g. a migration cutover). Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the indicated delay.
+        '504':
+          description: An upstream system (the core) timed out. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/core_balances/{id}:
+    get:
+      tags:
+      - Core Balance
+      operationId: retrieve-a-core-balance
+      summary: Retrieve a Core Balance
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/CoreBalanceID'
+        example: core_balance_xyz123
+      responses:
+        '200':
+          description: A Core Balance object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoreAccountBalance'
+        '400':
+          description: The request could not be parsed (e.g. a malformed URL).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '401':
+          description: No valid authentication was supplied. `code` is `authentication_missing` when no credentials are present and `token_invalid` when the bearer token is missing, expired, or malformed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: No authentication credentials were provided.
+        '403':
+          description: The caller's source IP is not on Lead's allowlist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: source_ip_not_allowed
+                message: The client making the request is not on Lead's IP allowlist.
+        '404':
+          description: No Core Balance with this ID exists, or it is not visible to this caller.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: The requested object does not exist or is not visible to this caller.
+        '422':
+          description: The Core Balance ID in the path is well-formed as a string but not a valid Core Balance ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: malformed
+                  message: id must match the format core_balance_*.
+                  parameters:
+                  - id
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry after the limit resets.
+        '500':
+          description: Something went wrong on Lead's side.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The endpoint is temporarily disabled (e.g. a migration cutover). Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the indicated delay.
+        '504':
+          description: An upstream system (the core) timed out. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+components:
+  schemas:
+    ErrorCode:
+      type: string
+      description: A snake_case code identifying the error family — the stable, machine-readable value partners branch on, together with the HTTP status.
+      example: parameters_invalid
+      enum:
+      - request_malformed
+      - content_too_large
+      - idempotency_key_missing
+      - authentication_missing
+      - token_invalid
+      - source_ip_not_allowed
+      - url_invalid
+      - object_not_found
+      - method_not_allowed
+      - idempotency_key_in_use
+      - idempotency_request_inconsistent
+      - rate_limit_exceeded
+      - internal_server_error
+      - service_unavailable
+      - endpoint_disabled
+      - gateway_timeout
+      - unclassified
+      - parameters_invalid
+      - related_object_invalid
+      - related_object_not_ready
+      - related_object_conflict
+      - limit_exceeded
+      - client_control_restricted
+      - lead_control_restricted
+      - object_state_conflict
+      - object_modified_concurrently
+      - operation_invalid
+    CoreBalanceAmounts:
+      type: object
+      properties:
+        spendable:
+          type: integer
+          format: int64
+          example: 65095000
+        cash_available:
+          type: integer
+          format: int64
+          example: 24995000
+        posted:
+          type: integer
+          format: int64
+          example: 25000000
+        sweeps:
+          type: integer
+          format: int64
+          example: 40000000
+        holds:
+          type: integer
+          format: int64
+          example: 5000
+    CoreAccountBalance:
+      type: object
+      readOnly: true
+      properties:
+        id:
+          $ref: '#/components/schemas/CoreBalanceID'
+        core_account_id:
+          $ref: '#/components/schemas/CoreAccountID'
+        name:
+          type: string
+          example: Consumer FBO
+        status:
+          $ref: '#/components/schemas/CoreBalanceStatus'
+        type:
+          $ref: '#/components/schemas/CoreBalanceType'
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        amounts:
+          $ref: '#/components/schemas/CoreBalanceAmounts'
+        overdraft:
+          $ref: '#/components/schemas/CoreBalanceOverdraft'
+        interest:
+          $ref: '#/components/schemas/CoreBalanceInterest'
+        created_at:
+          type: string
+          format: date-time
+          example: '2025-09-01T00:00:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2026-03-21T12:00:00Z'
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+          description: A human-readable description of the error family. Identical for every occurrence of a given `code`; carries no request-specific detail.
+          example: One or more parameters are invalid.
+        errors:
+          type: array
+          description: Zero or more specific errors within this family. Always present for validation errors, one entry per failing field.
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+    CoreBalanceType:
+      type: string
+      example: deposit
+      enum:
+      - deposit
+    CoreBalanceInterest:
+      type: object
+      properties:
+        rate:
+          type:
+          - string
+          - 'null'
+          example: '1.000000'
+        accrued:
+          type: integer
+          format: int64
+          example: 12450
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    ErrorItem:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          description: A snake_case code naming the specific error or sub-category.
+          example: required
+        message:
+          type: string
+          description: A human-readable description of this specific error, with interpolated values where relevant.
+          example: account_number_id is required.
+        parameters:
+          type: array
+          description: The request fields this error implicates, in dot notation for nested fields. Present for validation errors.
+          items:
+            type: string
+          example:
+          - account_number_id
+    CoreBalanceID:
+      type: string
+      example: core_balance_xyz123
+      pattern: ^core_balance_\w+$
+    CoreBalanceOverdraft:
+      type: object
+      properties:
+        limit:
+          type: integer
+          format: int64
+          example: 100000
+        used:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          example: 0
+        unused:
+          type: integer
+          format: int64
+          example: 100000
+    CoreBalanceStatus:
+      type: string
+      example: active
+      enum:
+      - active
+      - inactive
+      - closed
+    CoreAccountID:
+      type: string
+      example: core_account_xyz123
+      pattern: ^core_account_\w+$
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

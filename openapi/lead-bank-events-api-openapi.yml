@@ -100,7 +100,7 @@ paths:
         description: Filter events by the ID of the associated object (e.g., wire_12345). If the object_id doesn't match the event filter's object type, returns empty results.
         schema:
           type: string
-          pattern: ^(ach|wire|account_number|internal_transfer|disbursement|instant_payment)_\w+$
+          pattern: ^(ach|wire|account_number|internal_transfer|disbursement|instant_payment|blockchain_payment)_\w+$
           example: wire_12345
       responses:
         '200':
@@ -133,20 +133,71 @@ paths:
                 status: '422'
 components:
   schemas:
-    Event:
+    InvalidParameterDetail:
       type: object
       properties:
-        id:
+        parameter:
           type: string
-          description: ID of the Event object.
-        event:
-          $ref: '#/components/schemas/EventType'
-        created_at:
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
           type: string
-          description: Timestamp at which the Event object was created.
-        object:
-          type: object
-          description: The object associated with this event.
+          description: Why the parameter is invalid.
+    EventType:
+      type: string
+      description: The type of event.
+      enum:
+      - ach.processing
+      - ach.submitted
+      - ach.posted
+      - ach.under_review
+      - ach.approved
+      - ach.rejected
+      - ach.pending_return
+      - ach.returned
+      - ach.corrected
+      - ach.canceled
+      - ach.scheduled
+      - ach.return_dishonored
+      - ach.return_contested
+      - account_number.created
+      - account_number.activated
+      - account_number.deactivated
+      - account_number.canceled
+      - internal_transfer.succeeded
+      - internal_transfer.failed
+      - internal_transfer.posted
+      - internal_transfer.rejected
+      - lending.disbursement.processing
+      - lending.disbursement.succeeded
+      - lending.disbursement.failed
+      - lending.disbursement.ach_correction
+      - wire.created
+      - wire.under_review
+      - wire.scheduled
+      - wire.processing
+      - wire.posted
+      - wire.rejected
+      - wire.canceled
+      - wire.cancel_pending
+      - instant_payment.posted
+      - instant_payment.rejected
+      - instant_payment.under_review
+      - instant_payment.counterparty_status_updated
+      - instant_payment.return_request_response_needed
+      - instant_payment.return_request_status_updated
+      - funding.posted
+      - funding.rejected
+      - receivable_sale.created
+      - receivable_sale.no_receivables_for_sale
+      - receivable_sale.settled
+      - receivable_sale.failed
+      - blockchain_payment.payment_created
+      - blockchain_payment.payment_under_review
+      - blockchain_payment.payment_submitted
+      - blockchain_payment.payment_posted
+      - blockchain_payment.payment_rejected
+      - blockchain_payment.payment_canceled
     APIError:
       type: object
       properties:
@@ -170,59 +221,23 @@ components:
         instance:
           type: string
           description: The object causing this specific occurrence of the error, if applicable.
-    EventType:
-      type: string
-      description: The type of event.
-      enum:
-      - ach.processing
-      - ach.submitted
-      - ach.posted
-      - ach.under_review
-      - ach.approved
-      - ach.rejected
-      - ach.pending_return
-      - ach.returned
-      - ach.corrected
-      - ach.canceled
-      - ach.scheduled
-      - ach.return_dishonored
-      - ach.return_contested
-      - account_number.created
-      - internal_transfer.succeeded
-      - internal_transfer.failed
-      - internal_transfer.posted
-      - internal_transfer.rejected
-      - lending.disbursement.processing
-      - lending.disbursement.succeeded
-      - lending.disbursement.failed
-      - lending.disbursement.ach_correction
-      - wire.created
-      - wire.under_review
-      - wire.scheduled
-      - wire.processing
-      - wire.posted
-      - wire.rejected
-      - wire.canceled
-      - wire.cancel_pending
-      - wire.return_request.received
-      - instant_payment.posted
-      - instant_payment.rejected
-      - instant_payment.under_review
-      - instant_payment.counterparty_status_updated
-      - instant_payment.return_request_response_needed
-      - instant_payment.return_request_status_updated
-      - funding.posted
-      - funding.rejected
-    InvalidParameterDetail:
+    Event:
       type: object
       properties:
-        parameter:
+        id:
           type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
+          description: ID of the Event object.
+        event:
+          $ref: '#/components/schemas/EventType'
+        created_at:
           type: string
-          description: Why the parameter is invalid.
+          description: Timestamp at which the Event object was created.
+        object_version:
+          type: string
+          description: Version of the resource object included in the event.
+        object:
+          type: object
+          description: The object associated with this event.
   securitySchemes:
     bearerAuth:
       type: http

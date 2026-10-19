@@ -43,6 +43,7 @@ paths:
                 company_name:
                   example: Company, Inc.
                   type: string
+                  pattern: ^[\x20-\x7E]*$
                 ach:
                   $ref: '#/components/schemas/AchOriginatorParameters'
                 metadata:
@@ -215,6 +216,7 @@ paths:
                   $ref: '#/components/schemas/AchOriginatorUpdateParameters'
                 company_name:
                   type: string
+                  pattern: ^[\x20-\x7E]*$
                 metadata:
                   $ref: '#/components/schemas/Metadata'
       responses:
@@ -561,29 +563,36 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
-    CompanyId:
-      type: string
-      description: ACH Company Id
-      example: 1234567890
-      pattern: ^\d{10}$
-    Metadata:
+    AchOriginatorUpdateLimits:
       type: object
-      additionalProperties:
-        type: string
-      description: A set of key-value pairs that can be used to store additional information related to this object.
-    ListOriginator:
-      type: object
-      required:
-      - objects
-      - has_more
       properties:
-        objects:
+        calendar_day_maximum_amount:
+          $ref: '#/components/schemas/AchCalendarDayMaximumAmount'
+          description: Maximum amount per calendar day.
+        rolling_30_calendar_day_maximum_amount:
+          $ref: '#/components/schemas/AchRolling30CalendarDayMaximumAmount'
+          description: Maximum amount per rolling 30 calendar days.
+    AchOriginatorParameters:
+      type: object
+      description: ACH controls for originators.
+      required:
+      - limits
+      - allowed_sec_codes
+      properties:
+        allowed_sec_codes:
           type: array
+          description: List of allowed SEC codes for ACH transactions.
           items:
-            $ref: '#/components/schemas/Originator'
-        has_more:
-          type: boolean
-          description: Indicates if there are more originators to retrieve.
+            $ref: '#/components/schemas/OutgoingSecCode'
+        nested_third_parties:
+          type: array
+          description: List of nested third-party entity IDs.
+          items:
+            $ref: '#/components/schemas/EntityID'
+          maxItems: 5
+        limits:
+          $ref: '#/components/schemas/AchOriginatorLimits'
+          description: The ACH limits for the originator.
     APIError:
       type: object
       properties:
@@ -607,83 +616,6 @@ components:
         instance:
           type: string
           description: The object causing this specific occurrence of the error, if applicable.
-    OriginatorStatus:
-      type: string
-      description: Originator Status
-      example: active
-      enum:
-      - pending
-      - active
-      - inactive
-      - rejected
-      - canceled
-      - suspended
-    AchOriginatorParameters:
-      type: object
-      description: ACH controls for originators.
-      required:
-      - limits
-      - allowed_sec_codes
-      properties:
-        allowed_sec_codes:
-          type: array
-          description: List of allowed SEC codes for ACH transactions.
-          items:
-            $ref: '#/components/schemas/OutgoingSecCode'
-        nested_third_parties:
-          type: array
-          description: List of nested third-party entity IDs.
-          items:
-            $ref: '#/components/schemas/EntityID'
-          maxItems: 5
-        limits:
-          $ref: '#/components/schemas/AchOriginatorLimits'
-          description: The ACH limits for the originator.
-    InvalidParameterDetail:
-      type: object
-      properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
-          type: string
-          description: Why the parameter is invalid.
-    AchOriginatorLimits:
-      type: object
-      required:
-      - calendar_day_maximum_amount
-      - rolling_30_calendar_day_maximum_amount
-      properties:
-        calendar_day_maximum_amount:
-          $ref: '#/components/schemas/AchCalendarDayMaximumAmount'
-          description: Maximum amount per calendar day.
-        rolling_30_calendar_day_maximum_amount:
-          $ref: '#/components/schemas/AchRolling30CalendarDayMaximumAmount'
-          description: Maximum amount per rolling 30 calendar days.
-    EntityID:
-      type: string
-      description: The ID of your entity.
-      example: entity_xyz123
-      pattern: ^entity_[^\s]{1,33}$
-    AchCalendarDayMaximumAmount:
-      type: object
-      required:
-      - credit
-      - debit
-      properties:
-        credit:
-          type: integer
-          format: int64
-          description: Credit limit per transaction in cents.
-          minimum: 0
-          maximum: 990000000000
-        debit:
-          type: integer
-          format: int64
-          description: Debit limit per transaction in cents.
-          minimum: 0
-          maximum: 990000000000
     Originator:
       type: object
       properties:
@@ -716,29 +648,6 @@ components:
           type: string
           format: date-time
           example: '2022-06-27T11:22:33Z'
-    AccountID:
-      type: string
-      description: The ID of the Account object.
-      example: account_xyz123
-      pattern: ^account_\w+$
-    AchOriginatorUpdateParameters:
-      type: object
-      description: ACH controls for updating originators.
-      properties:
-        allowed_sec_codes:
-          type: array
-          description: List of allowed SEC codes for ACH transactions.
-          items:
-            $ref: '#/components/schemas/OutgoingSecCode'
-        nested_third_parties:
-          type: array
-          description: List of nested third-party entity IDs.
-          maxItems: 5
-          items:
-            $ref: '#/components/schemas/EntityID'
-        limits:
-          $ref: '#/components/schemas/AchOriginatorUpdateLimits'
-          description: The ACH limits for the originator.
     OutgoingSecCode:
       type: string
       description: 'The Standard Entry Class, SEC, to code the outgoing ACH.
@@ -781,8 +690,16 @@ components:
           description: Debit limit per transaction in cents.
           minimum: 0
           maximum: 990000000000
-    AchOriginatorUpdateLimits:
+    EntityID:
+      type: string
+      description: The ID of your entity.
+      example: entity_xyz123
+      pattern: ^entity_[^\s]{1,33}$
+    AchOriginatorLimits:
       type: object
+      required:
+      - calendar_day_maximum_amount
+      - rolling_30_calendar_day_maximum_amount
       properties:
         calendar_day_maximum_amount:
           $ref: '#/components/schemas/AchCalendarDayMaximumAmount'
@@ -790,6 +707,91 @@ components:
         rolling_30_calendar_day_maximum_amount:
           $ref: '#/components/schemas/AchRolling30CalendarDayMaximumAmount'
           description: Maximum amount per rolling 30 calendar days.
+    AchOriginatorUpdateParameters:
+      type: object
+      description: ACH controls for updating originators.
+      properties:
+        allowed_sec_codes:
+          type: array
+          description: List of allowed SEC codes for ACH transactions.
+          items:
+            $ref: '#/components/schemas/OutgoingSecCode'
+        nested_third_parties:
+          type: array
+          description: List of nested third-party entity IDs.
+          maxItems: 5
+          items:
+            $ref: '#/components/schemas/EntityID'
+        limits:
+          $ref: '#/components/schemas/AchOriginatorUpdateLimits'
+          description: The ACH limits for the originator.
+    ListOriginator:
+      type: object
+      required:
+      - objects
+      - has_more
+      properties:
+        objects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Originator'
+        has_more:
+          type: boolean
+          description: Indicates if there are more originators to retrieve.
+    CompanyId:
+      type: string
+      description: ACH Company Id
+      example: 1234567890
+      pattern: ^\d{10}$
+    AccountID:
+      type: string
+      description: The ID of the Account object.
+      example: account_xyz123
+      pattern: ^account_\w+$
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    AchCalendarDayMaximumAmount:
+      type: object
+      required:
+      - credit
+      - debit
+      properties:
+        credit:
+          type: integer
+          format: int64
+          description: Credit limit per transaction in cents.
+          minimum: 0
+          maximum: 990000000000
+        debit:
+          type: integer
+          format: int64
+          description: Debit limit per transaction in cents.
+          minimum: 0
+          maximum: 990000000000
+    OriginatorStatus:
+      type: string
+      description: Originator Status
+      example: active
+      enum:
+      - pending
+      - active
+      - inactive
+      - rejected
+      - canceled
+      - suspended
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
   securitySchemes:
     bearerAuth:
       type: http

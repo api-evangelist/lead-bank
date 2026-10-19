@@ -209,56 +209,6 @@ paths:
                 $ref: '#/components/schemas/APIError'
 components:
   schemas:
-    BlockchainPaymentCreditorAgent:
-      type: object
-      description: Details of the receiving financial institution. Required when payment_rail is not a blockchain network.
-      required:
-      - bank_name
-      - country_code
-      properties:
-        bank_name:
-          type: string
-          description: Name of the receiving bank.
-          example: Banco Nacional de Mexico
-        country_code:
-          type: string
-          description: ISO 3166-1 alpha-2 country code of the receiving bank.
-          example: MX
-          minLength: 2
-          maxLength: 2
-          pattern: ^[A-Z]{2}$
-        address:
-          $ref: '#/components/schemas/BlockchainPaymentAddress'
-    BlockchainPaymentDebtorFundingInstructions:
-      type: object
-      description: Instructions for funding the transfer. Present only when the debtor's account_identifier type is wallet_address.
-      required:
-      - from_wallet_address
-      - chain
-      - amount
-      - currency_code
-      - to_wallet_address
-      properties:
-        from_wallet_address:
-          type: string
-          description: The wallet address to send funds from.
-          example: '0xabc123def456'
-        chain:
-          type: string
-          description: The blockchain network for the funding transaction.
-          example: ethereum
-        amount:
-          type: string
-          description: The amount to fund.
-          example: '100.00'
-        currency_code:
-          type: string
-          description: The currency code for the funding amount.
-          example: USDC
-        to_wallet_address:
-          type: string
-          description: The wallet address to send funds to.
-          example: '0xdef456abc789'
     BlockchainPaymentCreditorIban:
       type: object
       description: IBAN payment details.
@@ -268,22 +218,258 @@ components:
       properties:
         account_number:
           type: string
-          description: The IBAN account number.
+          description: 'The IBAN account number. Validated for the country''s IBAN length and
+
+            the ISO 7064 MOD-97 check digits; a malformed or bad-checksum IBAN is
+
+            rejected.
+
+            '
           example: DE89370400440532013000
         country:
           type: string
-          description: ISO 3166-1 alpha-2 country code.
+          description: 'ISO 3166-1 alpha-2 country code. Must be a real, assigned country code
+
+            (unassigned or grouping codes such as `EU`/`ZZ` are rejected — stricter
+
+            than the `^[A-Z]{2}$` pattern). Sanctioned countries are not accepted.
+
+            '
           example: DE
           minLength: 2
           maxLength: 2
           pattern: ^[A-Z]{2}$
         business_identifier_code:
           type: string
-          description: The BIC/SWIFT code (optional).
+          description: 'The BIC/SWIFT code (optional). When provided, must be a valid ISO 9362
+
+            BIC (8 or 11 characters).
+
+            '
           example: COBADEFFXXX
+    BlockchainPaymentStatusReasonCode:
+      description: "Machine-readable code explaining why a blockchain payment was rejected.\nPresent only when `status` is `rejected`.\n\nClosed enum; new values may be added as non-breaking changes, so\nintegrations should tolerate unknown values. Each value is either\n**terminal** (resubmitting the same payment cannot succeed) or **retryable**\n(the same payment may be resubmitted once the transient condition clears):\n\n- `payment_could_not_be_processed` — **terminal**. Generic reason used when\n  no more specific customer-safe code applies.\n- `name_mismatch` — **terminal**. The creditor name did not match the legal\n  name on the validated receiving account. Correct the creditor name before\n  resubmitting.\n- `name_not_validated` — **retryable**. The receiving account's name was not\n  validated in time. Resubmit the same payment; it reuses the held account\n  and succeeds once validation completes.\n- `account_closed` — **terminal**. The receiving account is closed and a\n  resubmit cannot succeed.\n- `account_number_incorrect` — **terminal**. The receiving account number\n  is incorrect.\n"
+      type: string
+      example: name_mismatch
+      enum:
+      - payment_could_not_be_processed
+      - name_mismatch
+      - name_not_validated
+      - account_closed
+      - account_number_incorrect
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+    BlockchainPaymentCreditorAchWire:
+      type: object
+      deprecated: true
+      description: 'Deprecated: use `ach` or `wire` instead. ACH/Wire payment details.'
+      required:
+      - account_number
+      - routing_number
+      properties:
+        account_number:
+          type: string
+          minLength: 1
+          maxLength: 17
+          pattern: ^[0-9A-Za-z]+$
+          description: The bank account number. 1–17 alphanumeric characters.
+          example: '123456789'
+        routing_number:
+          type: string
+          description: 'The routing number. For US-address creditors it is checked against the
+
+            FedACH directory when that directory is available; a well-formed but
+
+            unknown routing number is rejected.
+
+            '
+          example: '021000021'
+    BlockchainPaymentAccountIdentifier:
+      type: object
+      description: Identifies an account.
+      required:
+      - type
+      - value
+      properties:
+        type:
+          $ref: '#/components/schemas/BlockchainPaymentAccountIdentifierType'
+        value:
+          type: string
+          description: The account identifier value.
+          example: account_number_xyz123
+    BlockchainPaymentSwiftRole:
+      description: The role of the creditor in a SWIFT transfer.
+      type: string
+      example: client
+      enum:
+      - client
+      - parent_company
+      - subsidiary
+      - supplier
+    BlockchainPaymentCreditorWireVariant:
+      allOf:
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorBase'
+      - type: object
+        required:
+        - wire
+        properties:
+          payment_rail:
+            type: string
+            enum:
+            - wire
+    BlockchainPaymentCreditorWalletVariant:
+      allOf:
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorBase'
+      - type: object
+        required:
+        - wallet
+        properties:
+          payment_rail:
+            type: string
+            enum:
+            - solana
+            - base
+            - ethereum
+    BlockchainPaymentCreditorAchWireVariant:
+      deprecated: true
+      allOf:
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorBase'
+      - type: object
+        required:
+        - ach_wire
+        properties:
+          payment_rail:
+            type: string
+            enum:
+            - ach_wire
+    BlockchainPaymentInstructedCurrencyCode:
+      description: 'The currency code for the instructed amount. The debtor is always a fiat
+
+        account, so `USD` is the only accepted value.
+
+        '
+      type: string
+      example: USD
+      enum:
+      - USD
+    BlockchainPaymentDebtorResponse:
+      type: object
+      description: The source of funds for the transfer, with enriched entity data.
+      properties:
+        account_identifier:
+          $ref: '#/components/schemas/BlockchainPaymentAccountIdentifier'
+        entity_id:
+          type: string
+          description: The entity ID associated with the debtor.
+          example: entity_xyz123
+    BlockchainPaymentCreditorPixBrCode:
+      type: object
+      description: PIX BR Code payment details.
+      required:
+      - br_code
+      properties:
+        br_code:
+          type: string
+          description: PIX BR Code (EMV QR Code payload). Must be a dynamic code — static codes (Point of Initiation Method = 11) are rejected. The payload's CRC-16 checksum is validated; a bad-checksum code is rejected.
+          example: 00020126580014br.gov.bcb.pix...
+        document_number:
+          type:
+          - string
+          - 'null'
+          description: Optional payer/payee tax document (CPF or CNPJ), digits only. Forwarded to the PIX network; not validated by this API.
+          example: '12345678901'
+    BlockchainPaymentCreditorAch:
+      type: object
+      description: ACH payment details.
+      required:
+      - account_number
+      - routing_number
+      properties:
+        account_number:
+          type: string
+          minLength: 1
+          maxLength: 17
+          pattern: ^[0-9A-Za-z]+$
+          description: The bank account number. 1–17 alphanumeric characters.
+          example: '123456789'
+        routing_number:
+          type: string
+          description: 'The routing number. For US-address creditors it is checked against the
+
+            FedACH directory when that directory is available; a well-formed but
+
+            unknown routing number is rejected.
+
+            '
+          example: '021000021'
+    BlockchainPaymentCreditorIbanVariant:
+      allOf:
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorBase'
+      - type: object
+        required:
+        - iban
+        properties:
+          payment_rail:
+            type: string
+            enum:
+            - sepa
+    BlockchainPaymentPurposeResponse:
+      type: object
+      description: The purpose of the transfer.
+      required:
+      - type
+      properties:
+        type:
+          $ref: '#/components/schemas/BlockchainPaymentPurposeTypeResponse'
+        other_details:
+          type: string
+          description: Additional details when purpose type is 'other'.
+          example: Monthly vendor payment
     CreateBlockchainPaymentRequest:
       type: object
       title: CreateBlockchainPaymentRequest
+      description: 'Creates a payment to a fiat or cross-border creditor.
+
+
+        The blockchain creditor rails (`solana`, `base`, `ethereum`) are advertised
+
+        in the `payment_rail` enum but rejected at creation; only fiat and
+
+        cross-border creditor rails are currently accepted.
+
+
+        The debtor''s available balance is checked at creation: insufficient funds
+
+        are normally rejected synchronously with HTTP `400` and no payment is
+
+        created. When the balance service is temporarily unavailable the check is
+
+        deferred to asynchronous processing, so a successful create response is not
+
+        an absolute guarantee of settlement.
+
+        '
       required:
       - debtor
       - creditor
@@ -299,11 +485,239 @@ components:
         amounts:
           $ref: '#/components/schemas/BlockchainPaymentAmounts'
         payment_purpose:
-          $ref: '#/components/schemas/BlockchainPaymentPurpose'
+          $ref: '#/components/schemas/BlockchainPaymentPurposeRequest'
         reference:
           type: string
-          description: An optional reference message for the transfer.
-          example: INV-2024-001
+          description: "An optional reference message for the transfer, passed on to the\nrecipient on rails that carry a reference.\n\nFormatting requirements depend on `creditor.payment_rail`. The reference\nis stored and delivered exactly as submitted — it is never shortened,\nstripped, or otherwise altered. A reference that does not meet its\nrail's requirements is rejected when the payment is created, with HTTP\n`422` and an `invalid_parameters` entry for `reference`.\n\n| `payment_rail` | Length | Allowed characters |\n| --- | --- | --- |\n| `ach` | 1–10 | letters, digits, spaces |\n| `wire` | 1–140 | any character (line-formatted, see below) |\n| `sepa` | 6–140 | letters, digits, spaces, and `& - . /` |\n| `spei` | 1–40 | letters, digits, spaces |\n| `swift` | 1–190 | letters, digits, spaces, and `/ - ? : ( ) . , ' +` (line-formatted, see below) |\n| `pix` | 1–100 | letters, digits, spaces |\n| `faster_payments` | 1–18 | letters, digits, spaces |\n\nAdditional rules:\n\n- **`wire` and `swift`** references are formatted into at most 4 lines of\n  35 characters. Words are kept whole and wrapped at spaces; include your\n  own line breaks (`\\n`) to control the layout. A single word longer than\n  35 characters, or text that cannot fit within 4 lines, is rejected.\n- **`sepa`** requires a minimum of 6 characters. If you omit the\n  reference on a `sepa` payment, one is generated for you and returned\n  on the created payment object.\n- **`bre_b`, `co_bank_transfer`, `ethereum`, `base`, and `solana`** do not\n  carry a reference; supplying one is rejected.\n- Omitting the field, or sending an empty string, is allowed on every\n  rail except `sepa` and results in no reference being sent.\n"
+          example: INV2024001
+    BlockchainPaymentPaymentRail:
+      description: 'The payment rail used for the creditor payout.
+
+        '
+      type: string
+      example: wire
+      enum:
+      - ach
+      - wire
+      - sepa
+      - spei
+      - pix
+      - faster_payments
+      - bre_b
+      - swift
+      - co_bank_transfer
+      - solana
+      - base
+      - ethereum
+    BlockchainPaymentCreditorPixKey:
+      type: object
+      description: PIX key payment details.
+      required:
+      - pix_key
+      properties:
+        pix_key:
+          type: string
+          description: PIX key. For CPF (11 digits) and CNPJ (14 digits), send digits only — strip periods and hyphens (e.g. "12345678909", not "123.456.789-09"). Phone keys use E.164 (+55, a 2-digit area code, then an 8- or 9-digit number), email keys are plain addresses, EVP/random keys are lowercase UUID v4. CPF and CNPJ keys are validated for their check digits; a bad-checksum document is rejected.
+          example: '12345678909'
+        document_number:
+          type:
+          - string
+          - 'null'
+          description: Optional payer/payee tax document (CPF or CNPJ), digits only. Forwarded to the PIX network; not validated by this API.
+          example: '12345678901'
+    BlockchainPaymentCreditorSwiftVariant:
+      allOf:
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorBase'
+      - type: object
+        required:
+        - swift
+        properties:
+          payment_rail:
+            type: string
+            enum:
+            - swift
+    BlockchainPaymentCreditorBusiness:
+      type: object
+      description: Business creditor details.
+      required:
+      - business_name
+      properties:
+        business_name:
+          type: string
+          description: 'Name of the business. On payment rails where the receiving account is
+
+            validated (currently `pix` and `spei`), the business name must closely
+
+            match the legal name or DBA registered on the receiving account (an
+
+            approximate match). If the names do not match, the payment is rejected
+
+            with `rejection_reason: "name_mismatch"`.
+
+            On other rails the creditor name is not matched against the account.
+
+            '
+          example: Acme International LLC
+    BlockchainPaymentDebtor:
+      type: object
+      description: The source of funds for the transfer.
+      required:
+      - account_identifier
+      properties:
+        account_identifier:
+          $ref: '#/components/schemas/BlockchainPaymentAccountIdentifier'
+        entity_id:
+          type: string
+          description: 'The entity ID associated with the debtor. Ignored on create — the entity
+
+            is resolved from the referenced account record, which must belong to your
+
+            authorized program and client — and the resolved value is returned on
+
+            the created payment.
+
+            '
+          example: entity_xyz123
+    BlockchainPaymentCreditorCoBankTransferVariant:
+      allOf:
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorBase'
+      - type: object
+        required:
+        - co_bank_transfer
+        properties:
+          payment_rail:
+            type: string
+            enum:
+            - co_bank_transfer
+    BlockchainPaymentSettlementCurrencyCode:
+      description: 'The currency code for the settlement amount. The value must match the
+
+        currency the `creditor.payment_rail` settles in, otherwise the payment is
+
+        rejected at creation:
+
+
+        | Rail | Settlement currency |
+
+        | --- | --- |
+
+        | `ach`, `wire`, `swift` | `USD` |
+
+        | `sepa` | `EUR` |
+
+        | `spei` | `MXN` |
+
+        | `pix` | `BRL` |
+
+        | `faster_payments` | `GBP` |
+
+        | `bre_b`, `co_bank_transfer` | `COP` |
+
+
+        `USDB` is additionally not available when the creditor or creditor agent is
+
+        located in an EEA country.
+
+        '
+      type: string
+      example: MXN
+      enum:
+      - BRL
+      - COP
+      - EUR
+      - GBP
+      - MXN
+      - USD
+      - USDC
+      - USDB
+    BlockchainPaymentID:
+      type: string
+      description: The ID of the Blockchain Payment object.
+      example: blockchain_payment_xyz123
+      pattern: ^blockchain_payment_\w+$
+    BlockchainPaymentStatus:
+      description: The current status of the blockchain payment.
+      type: string
+      example: created
+      enum:
+      - created
+      - under_review
+      - submitted
+      - posted
+      - rejected
+      - canceled
+    BlockchainPaymentAccountIdentifierType:
+      description: The type of account identifier.
+      type: string
+      example: account_number_id
+      enum:
+      - account_number_id
+    BlockchainPaymentCreditorClabeVariant:
+      allOf:
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorBase'
+      - type: object
+        required:
+        - clabe
+        properties:
+          payment_rail:
+            type: string
+            enum:
+            - spei
+    BlockchainPaymentCreditorFpsVariant:
+      allOf:
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorBase'
+      - type: object
+        required:
+        - fps
+        properties:
+          payment_rail:
+            type: string
+            enum:
+            - faster_payments
+    BlockchainPaymentCreditorIndividual:
+      type: object
+      description: Individual creditor details.
+      required:
+      - first_name
+      - last_name
+      properties:
+        first_name:
+          type: string
+          description: 'First name of the individual. On payment rails where the receiving
+
+            account is validated (currently `pix` and `spei`), the creditor''s
+
+            first and last name together must closely match the legal name
+
+            registered on the receiving account (an approximate match). If the
+
+            names do not match, the payment is rejected with
+
+            `rejection_reason: "name_mismatch"`.
+
+            On other rails the creditor name is not matched against the account.
+
+            '
+          example: Maria
+        last_name:
+          type: string
+          description: 'Last name of the individual. See `first_name` for the name-matching
+
+            requirement that applies on account-validated rails (`pix`, `spei`).
+
+            '
+          example: Garcia
+    BlockchainPaymentCreditorAchVariant:
+      allOf:
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorBase'
+      - type: object
+        required:
+        - ach
+        properties:
+          payment_rail:
+            type: string
+            enum:
+            - ach
     BlockchainPayment:
       type: object
       description: A blockchain payment object representing a fiat or cross-border payment.
@@ -319,21 +733,61 @@ components:
         amounts:
           $ref: '#/components/schemas/BlockchainPaymentResponseAmounts'
         payment_purpose:
-          $ref: '#/components/schemas/BlockchainPaymentPurpose'
+          $ref: '#/components/schemas/BlockchainPaymentPurposeResponse'
         reference:
           type: string
-          description: An optional reference message for the transfer.
-          example: INV-2024-001
+          description: 'The reference message for the transfer. For `sepa` payments created
+
+            without a reference, this is a value generated automatically at
+
+            creation, of the form `Payment via Lead <payment id>` (the payment''s
+
+            public ID with underscores replaced by hyphens, e.g.
+
+            `Payment via Lead blockchain-payment-2x7abc...`). See `reference` on the
+
+            create request for the per-rail formatting rules.
+
+            '
+          example: INV2024001
         status:
           $ref: '#/components/schemas/BlockchainPaymentStatus'
         rejection_reason:
-          type: string
-          description: Reason the transfer was rejected. Present only if status is rejected.
-          example: Insufficient funds
+          description: 'Reason the transfer was rejected, as a closed machine-readable code
+
+            (`BlockchainPaymentStatusReasonCode`). Present only when `status` is
+
+            `rejected`. See that enum for the per-value **terminal**-vs-**retryable**
+
+            semantics you need to build the right resubmit logic.
+
+            '
+          allOf:
+          - $ref: '#/components/schemas/BlockchainPaymentStatusReasonCode'
         cancelation_reason:
           type: string
           description: Reason the transfer was canceled. Present only if status is canceled.
           example: Requested by customer
+        return:
+          description: 'Details of the return on this payment. Present only when the payment
+
+            was returned after being sent.
+
+            '
+          allOf:
+          - $ref: '#/components/schemas/BlockchainPaymentReturn'
+        related_blockchain_payments:
+          description: 'Other blockchain payments linked to this one. On a payment that was
+
+            returned, this holds the IDs of the return payments sending the funds
+
+            back. On a return payment, it holds the ID of the original payment
+
+            being returned. Absent when the payment has no related payments.
+
+            '
+          allOf:
+          - $ref: '#/components/schemas/BlockchainPaymentRelatedPayments'
         created_at:
           type: string
           format: date-time
@@ -344,60 +798,51 @@ components:
           format: date-time
           description: ISO 8601 format timestamp representing when the blockchain payment was last updated.
           example: '2024-06-27T11:22:33Z'
-    BlockchainPaymentCreditorType:
-      description: Whether the creditor is an individual or a business.
+    BlockchainPaymentCreditorBreBVariant:
+      allOf:
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorBase'
+      - type: object
+        required:
+        - bre_b
+        properties:
+          payment_rail:
+            type: string
+            enum:
+            - bre_b
+    BlockchainPaymentPurposeTypeResponse:
+      description: The purpose of the transfer.
       type: string
-      example: individual
+      example: invoice_payment
       enum:
-      - individual
-      - business
-    BlockchainPaymentStatus:
-      description: The current status of the blockchain payment.
-      type: string
-      example: created
-      enum:
-      - created
-      - under_review
-      - awaiting_funds
-      - submitted
-      - posted
-      - rejected
-      - canceled
-    BlockchainPaymentAccountIdentifier:
-      type: object
-      description: Identifies the debtor's account.
-      required:
-      - type
-      - value
-      properties:
-        type:
-          $ref: '#/components/schemas/BlockchainPaymentAccountIdentifierType'
-        value:
-          type: string
-          description: The account identifier value.
-          example: account_number_xyz123
-    BlockchainPaymentAmounts:
-      type: object
-      description: The transfer amounts and currency codes.
-      required:
-      - instructed_amount
-      - instructed_currency_code
-      - settlement_currency_code
-      properties:
-        instructed_amount:
-          type: integer
-          format: int64
-          description: The transfer amount represented in cents.
-          example: 100000
-        instructed_currency_code:
-          $ref: '#/components/schemas/BlockchainPaymentInstructedCurrencyCode'
-        settlement_currency_code:
-          $ref: '#/components/schemas/BlockchainPaymentSettlementCurrencyCode'
-    BlockchainPaymentID:
-      type: string
-      description: The ID of the Blockchain Payment object.
-      example: blockchain_payment_xyz123
-      pattern: ^blockchain_payment_\w+$
+      - salary_payment
+      - invoice_payment
+      - gift
+      - payment_for_goods
+      - payment_for_services
+      - insurance_premium_payment
+      - interest_payment
+      - loan
+      - loan_repayment
+      - account_management
+      - cash_management_transfer
+      - other
+      - tax_payment
+      - government_payment
+      - benefits_payment
+      - pension_payment
+      - rent_payment
+      - utilities_payment
+      - education_payment
+      - healthcare_payment
+      - charitable_payment
+      - refund
+      - fee_payment
+      - intercompany_transfer
+      - investment_payment
+      - fx_or_treasury
+      - derivatives_payment
+      - card_network_settlement
+      - return
     BlockchainPaymentSwiftPurposeOfFunds:
       description: The purpose of funds for a SWIFT transfer.
       type: string
@@ -405,67 +850,42 @@ components:
       enum:
       - intra_group_transfer
       - invoice_for_goods_and_services
-    BlockchainPaymentChain:
-      description: The blockchain network.
-      type: string
-      example: ethereum
-      enum:
-      - ethereum
-      - solana
-      - base
-    BlockchainPaymentAccountIdentifierType:
-      description: The type of account identifier used for the debtor.
-      type: string
-      example: account_number_id
-      enum:
-      - account_number_id
-      - wallet_address
-    BlockchainPaymentPaymentRail:
-      description: 'The payment rail used for the creditor payout.
+    BlockchainPaymentReturn:
+      type: object
+      description: 'Details of the return of a Blockchain Payment, set when funds are sent back rather than
 
-        `ach_wire` is deprecated — use `ach` or `wire` instead.
+        delivered to the creditor. Absent for payments that were never returned.
 
         '
-      type: string
-      example: wire
-      enum:
-      - ach_wire
-      - ach
-      - wire
-      - bre_b
-      - fps
-      - iban
-      - swift
-      - clabe
-      - pix_key
-      - pix_br_code
-      - solana
-      - base
-      - ethereum
-    BlockchainPaymentCreditorClabe:
-      type: object
-      description: CLABE payment details.
-      required:
-      - account_number
       properties:
-        account_number:
+        code:
           type: string
-          description: The CLABE account number.
-          example: 032180000118359719
-    BlockchainPaymentSettlementCurrencyCode:
-      description: The currency code for the settlement amount.
-      type: string
-      example: MXN
-      enum:
-      - BRL
-      - COP
-      - EUR
-      - GBP
-      - MXN
-      - USD
-      - USDC
-      - USDB
-    BlockchainPaymentPurposeType:
+          description: "Machine-readable code for why the payment was returned.\n\nClosed set; new values may be added as non-breaking changes, so\nintegrations should tolerate unknown values. Every value is\n**terminal** — the returned payment settles at `posted` with the funds\nback in the debtor account, and resubmitting the same payment\nunchanged returns it again:\n\n- `account_closed` — The receiving account is closed. Correct the\n  creditor details before you send the payment again.\n- `account_number_incorrect` — The destination account number is\n  incorrect.\n- `payment_returned` — The receiving institution returned the payment\n  for a reason with no more specific customer-safe code. Contact the\n  creditor to confirm the account details before you send the payment\n  again.\n"
+          example: account_closed
+        reason:
+          type: string
+          description: 'Human-readable description of the return, paired one-to-one with
+
+            `code`. Read `code` to make integration decisions and use `reason` for
+
+            display.
+
+            '
+          example: The destination account has been closed.
+          maxLength: 500
+    BlockchainPaymentPurposeRequest:
+      type: object
+      description: The purpose of the transfer.
+      required:
+      - type
+      properties:
+        type:
+          $ref: '#/components/schemas/BlockchainPaymentPurposeTypeRequest'
+        other_details:
+          type: string
+          description: Additional details when purpose type is 'other'.
+          example: Monthly vendor payment
+    BlockchainPaymentPurposeTypeRequest:
       description: The purpose of the transfer.
       type: string
       example: invoice_payment
@@ -520,19 +940,54 @@ components:
           example: San Francisco
         country:
           type: string
-          description: ISO 3166-1 alpha-2 country code.
+          description: 'ISO 3166-1 alpha-2 country code. On the creditor address, the IBAN and
+
+            SWIFT country, and the creditor agent `country_code`, the value must be
+
+            a real, assigned country code — unassigned or grouping codes such as
+
+            `EU`/`ZZ` are rejected (stricter than the `^[A-Z]{2}$` pattern).
+
+            Sanctioned countries are not accepted.
+
+            '
           example: US
           minLength: 2
           maxLength: 2
           pattern: ^[A-Z]{2}$
         state:
           type: string
-          description: State or province (optional).
+          description: State or province. Required for US ach, wire, and swift addresses; optional otherwise.
           example: CA
         postal_code:
           type: string
-          description: Postal or zip code (optional).
+          description: Postal or zip code. Required for ach, wire, and swift payments to countries that use postal codes; optional for other rails.
           example: '94105'
+    BlockchainPaymentCreditorFps:
+      type: object
+      description: Faster Payments Service (FPS) payment details.
+      required:
+      - account_number
+      - sort_code
+      properties:
+        account_number:
+          type: string
+          description: The bank account number.
+          example: '12345678'
+        sort_code:
+          type: string
+          description: The sort code.
+          example: '123456'
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
     BlockchainPaymentCreditorSwift:
       type: object
       description: SWIFT payment details.
@@ -550,14 +1005,20 @@ components:
           example: '123456789'
         country:
           type: string
-          description: ISO 3166-1 alpha-2 country code.
+          description: 'ISO 3166-1 alpha-2 country code. Must be a real, assigned country code
+
+            (unassigned or grouping codes such as `EU`/`ZZ` are rejected — stricter
+
+            than the `^[A-Z]{2}$` pattern). Sanctioned countries are not accepted.
+
+            '
           example: GB
           minLength: 2
           maxLength: 2
           pattern: ^[A-Z]{2}$
         business_identifier_code:
           type: string
-          description: The BIC/SWIFT code.
+          description: The BIC/SWIFT code. Must be a valid ISO 9362 BIC (8 or 11 characters).
           example: BARCGB22XXX
         role:
           $ref: '#/components/schemas/BlockchainPaymentSwiftRole'
@@ -567,134 +1028,17 @@ components:
           type: string
           description: A short description of the business.
           example: Software development services
-    BlockchainPaymentCreditorBreB:
+    BlockchainPaymentCreditorBase:
       type: object
-      description: BRE-B payment details.
-      required:
-      - bre_b_key
-      properties:
-        bre_b_key:
-          type: string
-          description: The BRE-B key.
-          example: '1234567890'
-    BlockchainPaymentCreditorWallet:
-      type: object
-      description: Blockchain wallet payment details.
-      required:
-      - wallet_address
-      properties:
-        wallet_address:
-          type: string
-          description: The destination wallet address.
-          example: '0xdef456abc789'
-    BlockchainPaymentResponseAmounts:
-      type: object
-      description: The transfer amounts, currency codes, and settlement details.
-      properties:
-        instructed_amount:
-          type: integer
-          format: int64
-          description: The transfer amount represented in cents.
-          example: 100000
-        instructed_currency_code:
-          $ref: '#/components/schemas/BlockchainPaymentInstructedCurrencyCode'
-        settlement_currency_code:
-          $ref: '#/components/schemas/BlockchainPaymentSettlementCurrencyCode'
-        settlement_amount:
-          type: integer
-          format: int64
-          description: The settlement amount represented in cents.
-          example: 100000
-        settlement_exchange_rate:
-          type: string
-          description: The settlement exchange rate.
-          example: '1.00'
-    BlockchainPaymentCreditorAchWire:
-      type: object
-      deprecated: true
-      description: 'Deprecated: use `ach` or `wire` instead. ACH/Wire payment details.'
-      required:
-      - account_number
-      - routing_number
-      properties:
-        account_number:
-          type: string
-          description: The bank account number.
-          example: '123456789'
-        routing_number:
-          type: string
-          description: The routing number.
-          example: '021000021'
-    APIError:
-      type: object
-      properties:
-        code:
-          type: string
-          description: The error code.
-        title:
-          type: string
-          description: The error title.
-        detail:
-          type: string
-          description: A detailed error description.
-        status:
-          type: string
-          description: The HTTP status code.
-        invalid_parameters:
-          type: array
-          description: Invalid request parameters with reasons, if applicable.
-          items:
-            $ref: '#/components/schemas/InvalidParameterDetail'
-        instance:
-          type: string
-          description: The object causing this specific occurrence of the error, if applicable.
-    BlockchainPaymentInstructedCurrencyCode:
-      description: The currency code for the instructed amount.
-      type: string
-      example: USD
-      enum:
-      - USD
-      - USDC
-      - USDB
-    BlockchainPaymentDebtorResponse:
-      type: object
-      description: The source of funds for the transfer, with enriched entity data.
-      properties:
-        account_identifier:
-          $ref: '#/components/schemas/BlockchainPaymentAccountIdentifier'
-        chain:
-          $ref: '#/components/schemas/BlockchainPaymentChain'
-        refund_wallet_address:
-          type: string
-          description: Wallet address for refunds.
-          example: '0xabc123def456'
-        funding_instructions:
-          $ref: '#/components/schemas/BlockchainPaymentDebtorFundingInstructions'
-        entity_id:
-          type: string
-          description: The entity ID associated with the debtor.
-          example: entity_xyz123
-    BlockchainPaymentDebtor:
-      type: object
-      description: The source of funds for the transfer.
-      required:
-      - account_identifier
-      properties:
-        account_identifier:
-          $ref: '#/components/schemas/BlockchainPaymentAccountIdentifier'
-        chain:
-          $ref: '#/components/schemas/BlockchainPaymentChain'
-        refund_wallet_address:
-          type: string
-          description: Wallet address for refunds. Required if account identifier type is wallet_address.
-          example: '0xabc123def456'
-        entity_id:
-          type: string
-          description: The entity ID associated with the debtor. Required if account identifier type is wallet_address.
-          example: entity_xyz123
-    BlockchainPaymentCreditor:
-      type: object
-      description: The destination of the transfer, including payment rail details and recipient information.
+      description: 'Common creditor fields shared by every payment rail. This is the base of
+
+        the rail-specific creditor variants; integrations reference
+
+        `BlockchainPaymentCreditor`, which selects the correct variant from
+
+        `payment_rail`.
+
+        '
       required:
       - payment_rail
       - type
@@ -723,6 +1067,8 @@ components:
           $ref: '#/components/schemas/BlockchainPaymentCreditorPixKey'
         pix_br_code:
           $ref: '#/components/schemas/BlockchainPaymentCreditorPixBrCode'
+        co_bank_transfer:
+          $ref: '#/components/schemas/BlockchainPaymentCreditorCoBankTransfer'
         wallet:
           $ref: '#/components/schemas/BlockchainPaymentCreditorWallet'
         type:
@@ -733,108 +1079,217 @@ components:
           $ref: '#/components/schemas/BlockchainPaymentCreditorBusiness'
         address:
           $ref: '#/components/schemas/BlockchainPaymentAddress'
-    BlockchainPaymentCreditorBusiness:
+    BlockchainPaymentCreditorBreB:
       type: object
-      description: Business creditor details.
+      description: BRE-B payment details.
       required:
-      - business_name
+      - bre_b_key
       properties:
-        business_name:
+        bre_b_key:
           type: string
-          description: Name of the business.
-          example: Acme International LLC
-    BlockchainPaymentSwiftRole:
-      description: The role of the creditor in a SWIFT transfer.
+          description: The BRE-B key.
+          example: '1234567890'
+    BlockchainPaymentCreditorPixVariant:
+      allOf:
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorBase'
+      - type: object
+        description: Exactly one of `pix_key` or `pix_br_code` must be provided.
+        oneOf:
+        - required:
+          - pix_key
+        - required:
+          - pix_br_code
+        properties:
+          payment_rail:
+            type: string
+            enum:
+            - pix
+    BlockchainPaymentCreditorWallet:
+      type: object
+      description: Blockchain wallet payment details.
+      required:
+      - wallet_address
+      properties:
+        wallet_address:
+          type: string
+          description: The destination wallet address.
+          example: '0xdef456abc789'
+    BlockchainPaymentAmounts:
+      type: object
+      description: The transfer amounts and currency codes.
+      required:
+      - instructed_amount
+      - instructed_currency_code
+      - settlement_currency_code
+      properties:
+        instructed_amount:
+          type: integer
+          format: int64
+          minimum: 300
+          description: 'The transfer amount represented in the currency''s minor units (e.g.
+
+            cents). The minimum accepted amount is `300` minor units on every
+
+            supported rail; smaller amounts are rejected at creation.
+
+            '
+          example: 100000
+        instructed_currency_code:
+          $ref: '#/components/schemas/BlockchainPaymentInstructedCurrencyCode'
+        settlement_currency_code:
+          $ref: '#/components/schemas/BlockchainPaymentSettlementCurrencyCode'
+    BlockchainPaymentCreditorCoBankTransfer:
+      type: object
+      description: 'Colombian COP bank-transfer payment details. For this rail the creditor
+
+        address country and the creditor agent `country_code` must both be `CO`.
+
+        '
+      required:
+      - account_number
+      - bank_code
+      - account_type
+      - document_type
+      - document_number
+      - phone_number
+      properties:
+        account_number:
+          type: string
+          description: The bank account number.
+          example: '1234567890'
+        bank_code:
+          type: string
+          description: The receiving bank code (Colombian financial-institution code).
+          example: '1007'
+          enum:
+          - '1001'
+          - '1002'
+          - '1006'
+          - '1007'
+          - '1009'
+          - '1012'
+          - '1013'
+          - '1019'
+          - '1023'
+          - '1032'
+          - '1040'
+          - '1047'
+          - '1051'
+          - '1052'
+          - '1053'
+          - '1059'
+          - '1060'
+          - '1061'
+          - '1062'
+          - '1063'
+          - '1065'
+          - '1066'
+          - '1067'
+          - '1069'
+          - '1070'
+          - '1071'
+          - '1097'
+          - '1121'
+          - '1283'
+          - '1286'
+          - '1289'
+          - '1292'
+          - '1303'
+          - '1370'
+          - '1507'
+          - '1551'
+          - '1558'
+          - '1637'
+          - '1801'
+          - '1802'
+          - '1803'
+          - '1804'
+          - '1805'
+          - '1808'
+          - '1809'
+          - '1811'
+          - '1812'
+          - '1814'
+          - '1815'
+          - '1816'
+        account_type:
+          type: string
+          description: The type of bank account.
+          example: savings
+          enum:
+          - savings
+          - checking
+          - electronic_deposit
+        document_type:
+          type: string
+          description: The recipient's identification document type.
+          example: cc
+          enum:
+          - cc
+          - ce
+          - nit
+          - rut
+          - pa
+          - ppt
+          - ti
+          - rc
+          - te
+          - die
+          - nd
+        document_number:
+          type: string
+          description: The recipient's identification document number.
+          example: '12345678901'
+        phone_number:
+          type: string
+          description: The recipient's phone number in E.164 format.
+          example: '+573001234567'
+          pattern: ^\+[1-9]\d{1,14}$
+    BlockchainPaymentCreditorType:
+      description: Whether the creditor is an individual or a business.
       type: string
-      example: client
+      example: individual
       enum:
-      - client
-      - parent_company
-      - subsidiary
-      - supplier
-    BlockchainPaymentCreditorPixKey:
+      - individual
+      - business
+    BlockchainPaymentCreditorClabe:
       type: object
-      description: PIX key payment details.
-      required:
-      - pix_key
-      properties:
-        pix_key:
-          type: string
-          description: The PIX key.
-          example: email@example.com
-        document_number:
-          type: string
-          description: Document number (optional).
-          example: '12345678901'
-    InvalidParameterDetail:
-      type: object
-      properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
-          type: string
-          description: Why the parameter is invalid.
-    BlockchainPaymentCreditorAch:
-      type: object
-      description: ACH payment details.
+      description: CLABE payment details.
       required:
       - account_number
-      - routing_number
       properties:
         account_number:
           type: string
-          description: The bank account number.
-          example: '123456789'
-        routing_number:
-          type: string
-          description: The routing number.
-          example: '021000021'
-    BlockchainPaymentCreditorPixBrCode:
+          description: 'The CLABE account number (18 digits). Validated for length and the
+
+            Banco de México control-digit checksum; a bad-checksum CLABE is
+
+            rejected.
+
+            '
+          example: 032180000118359719
+    BlockchainPaymentResponseAmounts:
       type: object
-      description: PIX BR Code payment details.
-      required:
-      - br_code
+      description: The transfer amounts, currency codes, and settlement details.
       properties:
-        br_code:
+        instructed_amount:
+          type: integer
+          format: int64
+          description: The transfer amount represented in cents.
+          example: 100000
+        instructed_currency_code:
+          $ref: '#/components/schemas/BlockchainPaymentInstructedCurrencyCode'
+        settlement_currency_code:
+          $ref: '#/components/schemas/BlockchainPaymentSettlementCurrencyCode'
+        settlement_amount:
+          type: integer
+          format: int64
+          description: The settlement amount represented in cents.
+          example: 100000
+        settlement_exchange_rate:
           type: string
-          description: The BR Code.
-          example: 00020126580014br.gov.bcb.pix...
-        document_number:
-          type: string
-          description: Document number (optional).
-          example: '12345678901'
-    BlockchainPaymentCreditorFps:
-      type: object
-      description: Faster Payments Service (FPS) payment details.
-      required:
-      - account_number
-      - sort_code
-      properties:
-        account_number:
-          type: string
-          description: The bank account number.
-          example: '12345678'
-        sort_code:
-          type: string
-          description: The sort code.
-          example: '123456'
-    BlockchainPaymentCreditorIndividual:
-      type: object
-      description: Individual creditor details.
-      required:
-      - first_name
-      - last_name
-      properties:
-        first_name:
-          type: string
-          description: First name of the individual.
-          example: Maria
-        last_name:
-          type: string
-          description: Last name of the individual.
-          example: Garcia
+          description: The settlement exchange rate.
+          example: '1.00'
     BlockchainPaymentCreditorWire:
       type: object
       description: Wire payment details.
@@ -844,24 +1299,177 @@ components:
       properties:
         account_number:
           type: string
-          description: The bank account number.
+          minLength: 1
+          maxLength: 17
+          pattern: ^[0-9A-Za-z]+$
+          description: The bank account number. 1–17 alphanumeric characters.
           example: '123456789'
         routing_number:
           type: string
-          description: The routing number.
+          description: 'The routing number. For US-address creditors it is checked against the
+
+            FedACH directory when that directory is available; a well-formed but
+
+            unknown routing number is rejected.
+
+            '
           example: '021000021'
-    BlockchainPaymentPurpose:
+    BlockchainPaymentRelatedPayments:
       type: object
-      description: The purpose of the transfer.
-      required:
-      - type
+      description: 'Other Blockchain Payments linked to this one. Absent when the payment has no
+
+        related payments.
+
+        '
       properties:
-        type:
-          $ref: '#/components/schemas/BlockchainPaymentPurposeType'
-        other_details:
+        original_blockchain_payment_id:
+          description: 'The Blockchain Payment this one returns funds for. Set only on a return
+
+            payment.
+
+            '
+          example: blockchain_payment_2x7abc123def456ghi789jkl
+          allOf:
+          - $ref: '#/components/schemas/BlockchainPaymentID'
+        return_blockchain_payment_ids:
+          type: array
+          description: 'The Blockchain Payments sending funds back for this payment. Set only on
+
+            a payment that was returned.
+
+            '
+          example:
+          - blockchain_payment_9y4mno321pqr654stu987vwx
+          items:
+            $ref: '#/components/schemas/BlockchainPaymentID'
+    BlockchainPaymentCreditor:
+      type: object
+      description: 'The destination of the transfer, including payment rail details and
+
+        recipient information.
+
+
+        The required detail object depends on `payment_rail`. Each rail requires
+
+        its matching object and rejects detail objects that belong to a different
+
+        rail:
+
+
+        | `payment_rail` | Required detail object |
+
+        | --- | --- |
+
+        | `ach` | `ach` |
+
+        | `wire` | `wire` |
+
+        | `sepa` | `iban` |
+
+        | `spei` | `clabe` |
+
+        | `pix` | exactly one of `pix_key` or `pix_br_code` |
+
+        | `faster_payments` | `fps` |
+
+        | `bre_b` | `bre_b` |
+
+        | `swift` | `swift` |
+
+        | `co_bank_transfer` | `co_bank_transfer` |
+
+        | `solana`, `base`, `ethereum` | `wallet` |
+
+
+        Provide `individual` when `type` is `individual`, and `business` when
+
+        `type` is `business`.
+
+
+        On payment rails where the receiving account is validated (currently
+
+        `pix` and `spei`), the creditor name provided here must closely match the
+
+        legal name registered on the receiving account — for individuals, an
+
+        approximate match on first + last name; for businesses, on the legal name
+
+        or DBA. If the names do not match, the payment is rejected with
+
+        `rejection_reason: "name_mismatch"`. On
+
+        other rails the creditor name is not matched against the account.
+
+        '
+      oneOf:
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorAchVariant'
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorWireVariant'
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorIbanVariant'
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorClabeVariant'
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorPixVariant'
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorFpsVariant'
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorBreBVariant'
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorSwiftVariant'
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorCoBankTransferVariant'
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorWalletVariant'
+      - $ref: '#/components/schemas/BlockchainPaymentCreditorAchWireVariant'
+      discriminator:
+        propertyName: payment_rail
+        mapping:
+          ach: '#/components/schemas/BlockchainPaymentCreditorAchVariant'
+          wire: '#/components/schemas/BlockchainPaymentCreditorWireVariant'
+          sepa: '#/components/schemas/BlockchainPaymentCreditorIbanVariant'
+          iban: '#/components/schemas/BlockchainPaymentCreditorIbanVariant'
+          spei: '#/components/schemas/BlockchainPaymentCreditorClabeVariant'
+          clabe: '#/components/schemas/BlockchainPaymentCreditorClabeVariant'
+          pix: '#/components/schemas/BlockchainPaymentCreditorPixVariant'
+          pix_key: '#/components/schemas/BlockchainPaymentCreditorPixVariant'
+          pix_br_code: '#/components/schemas/BlockchainPaymentCreditorPixVariant'
+          faster_payments: '#/components/schemas/BlockchainPaymentCreditorFpsVariant'
+          fps: '#/components/schemas/BlockchainPaymentCreditorFpsVariant'
+          bre_b: '#/components/schemas/BlockchainPaymentCreditorBreBVariant'
+          swift: '#/components/schemas/BlockchainPaymentCreditorSwiftVariant'
+          co_bank_transfer: '#/components/schemas/BlockchainPaymentCreditorCoBankTransferVariant'
+          solana: '#/components/schemas/BlockchainPaymentCreditorWalletVariant'
+          base: '#/components/schemas/BlockchainPaymentCreditorWalletVariant'
+          ethereum: '#/components/schemas/BlockchainPaymentCreditorWalletVariant'
+          ach_wire: '#/components/schemas/BlockchainPaymentCreditorAchWireVariant'
+    BlockchainPaymentCreditorAgent:
+      type: object
+      description: 'Details of the receiving financial institution. Required when
+
+        `creditor.payment_rail` is not a blockchain network (`solana`, `base`,
+
+        `ethereum`). When `creditor.payment_rail` is `swift`, `address` is also
+
+        required.
+
+        '
+      required:
+      - bank_name
+      - country_code
+      properties:
+        bank_name:
           type: string
-          description: Additional details when purpose type is 'other'.
-          example: Monthly vendor payment
+          description: Name of the receiving bank.
+          example: Banco Nacional de Mexico
+        country_code:
+          type: string
+          description: 'ISO 3166-1 alpha-2 country code of the receiving bank. Must be a real,
+
+            assigned country code (unassigned or grouping codes such as `EU`/`ZZ`
+
+            are rejected — stricter than the `^[A-Z]{2}$` pattern). Sanctioned
+
+            countries are not accepted.
+
+            '
+          example: MX
+          minLength: 2
+          maxLength: 2
+          pattern: ^[A-Z]{2}$
+        address:
+          $ref: '#/components/schemas/BlockchainPaymentAddress'
   securitySchemes:
     bearerAuth:
       type: http

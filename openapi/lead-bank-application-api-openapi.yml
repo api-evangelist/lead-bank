@@ -1,0 +1,1616 @@
+openapi: 3.2.0
+info:
+  title: Lead Bank Application API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: Application
+paths:
+  /v2/applications:
+    post:
+      tags:
+      - Application
+      operationId: create-an-application-v2
+      summary: Create an application
+      description: 'Report a final underwriting decision. The Application is created in its final status, `approved`, `declined`, or `canceled`, and the status cannot change afterward.
+
+
+        Each `documents` entry references a File you uploaded with `POST /v2/files`. Lead checks that each File exists, belongs to your program, and has a compliance document type. Send `[]` when you have no documents yet.'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: A unique key for this request, up to 255 characters. Retrying with the same key and body returns the original response without creating a second application. See [Idempotency](https://docs.lead.bank/api-reference/using-the-api/idempotency-v2).
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+        example: 3f1c9a52-7d4e-4b8a-9c21-6e0f5d2a8b14
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApplicationRequestBodyV2'
+            examples:
+              approved_commercial:
+                summary: Approved commercial application
+                value:
+                  status: approved
+                  product_name: Growth Business Credit Line
+                  entities:
+                    account_holders:
+                    - entity_9f3cKq2Lm8Nw4Rx7Tz1Ba5Ce0D
+                    authorized_signers:
+                    - entity_4dP7Hs2Jk9Lm3Qw8Ex6Rt1Yu5I
+                  details:
+                    underwriting:
+                      is_secured: false
+                      is_mla: false
+                      currency_code: USD
+                      underwriting_grade: A2
+                      limit: 5000000
+                      max_limit: 10000000
+                      report:
+                        score: 712
+                        pulled_at: '2026-05-14T15:58:40Z'
+                        source: transunion
+                  decision:
+                    decided_at: '2026-05-14T15:59:12Z'
+                    reason: Meets program underwriting criteria
+                  documents:
+                  - file_id: file_2N5Hk8xYmQpL9rBvC3jD
+                    timestamp: '2026-05-14T15:58:05Z'
+                    version: v1
+                  - file_id: file_7Qw2Rt5YuI9oP3aS6dF1
+                    timestamp: '2026-05-14T15:57:20Z'
+                  metadata: {}
+              declined_consumer:
+                summary: Declined consumer application
+                value:
+                  status: declined
+                  product_name: Everyday Card
+                  entities:
+                    account_holders:
+                    - entity_2bM5Np8Qr1St4Uv7Wx0Yz3Ab6C
+                  details:
+                    underwriting:
+                      is_secured: false
+                      is_mla: false
+                      currency_code: USD
+                      underwriting_grade: D1
+                    adverse_action_notice:
+                      delivered_at: '2026-05-15T10:17:00Z'
+                      reason: Delinquent past credit obligations.
+                      delivery_method: email
+                  decision:
+                    decided_at: '2026-05-15T10:00:00Z'
+                    reason: Does not meet program underwriting criteria
+                  documents: []
+      responses:
+        '200':
+          description: Application created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationV2'
+        '400':
+          description: The request could not be parsed (`request_malformed`), or the `Idempotency-Key` header is missing (`idempotency_key_missing`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_missing
+                message: This endpoint requires an Idempotency-Key header. Add one and resend the request.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `application/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '409':
+          description: A concurrent request with the same `Idempotency-Key` is still in flight.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '413':
+          description: The request body is over this endpoint's size limit, for example because `metadata` is too large (`content_too_large`; `errors[].code` is `body_too_large`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: content_too_large
+                message: The request is over a size limit for this endpoint. Make it smaller and resend it.
+                errors:
+                - code: body_too_large
+                  message: metadata is over this endpoint's size limit.
+                  parameters:
+                  - metadata
+        '422':
+          description: 'The request was parsed but cannot be processed. `code` is one of:
+
+            `parameters_invalid` (a field is missing or invalid; a status-dependent field is missing, like `details.adverse_action_notice` on `declined` (`dependent_parameter_required`); the adverse action notice or credit report is incomplete (`parameter_group_incomplete`); the credit report has neither `score` nor `non_score_value` (`parameter_group_empty`) or both (`parameters_mutually_exclusive`); `limit` exceeds `max_limit` (`parameter_bound_exceeded`); a `documents[].file_id` appears twice, or an entity appears twice in one relationship type (`parameter_duplicated`); a `documents[].timestamp` is more than five minutes in the future (`future_date_not_permitted`); or a commercial `approved` application has no authorized signer. All failures are returned at once),
+
+            `related_object_invalid` (an entity or a `documents[].file_id` does not exist, or the file belongs to another program; `errors[].code` is `reference_not_found`, with the path in `parameters`),
+
+            `related_object_not_ready` (on an `approved` application, an entity is not eligible for its relationship type (`entity_role_missing`) or lacks credit data your program requires (`related_object_incomplete`), with the entity''s path in `parameters`; update the entity, then retry the request unchanged),
+
+            `related_object_conflict` (the account holders mix consumer and commercial entities (`account_holder_types_mismatched`), or an account holder is a lead or partner entity, or a `documents[].file_id` references a file whose type is not a compliance document type (`reference_type_mismatched`)),
+
+            `lead_control_restricted` (your program is not enabled for Applications v2; `errors[].code` is `feature_not_enabled`),
+
+            `idempotency_request_inconsistent` (this `Idempotency-Key` was used with a different request body).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: parameter_bound_exceeded
+                  message: details.underwriting.limit (10000000) cannot exceed details.underwriting.max_limit (5000000).
+                  parameters:
+                  - details.underwriting.limit
+                - code: dependent_parameter_required
+                  message: details.adverse_action_notice is required when status is declined.
+                  parameters:
+                  - details.adverse_action_notice
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error. Retry with the same `Idempotency-Key`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+    get:
+      tags:
+      - Application
+      operationId: list-applications-v2
+      summary: List applications
+      description: 'List Applications, filtered by the `client_application_id` you assigned in an Application file: `GET /v2/applications?client_application_id=...`. Use it to find the `id` of Applications you reported through files when you move to the API. Each entry in `objects` is the same as `GET /v2/applications/{id}`. A `client_application_id` matches at most one Application, so `objects` has zero or one entry and `has_more` is `false`.'
+      parameters:
+      - name: client_application_id
+        in: query
+        required: true
+        description: The `client_application_id` you assigned in an Application file.
+        schema:
+          type: string
+        example: APP-2024-001
+      responses:
+        '200':
+          description: A page of applications matching the filter. `objects` is empty if none match.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListApplicationsSuccessResponseV2'
+        '400':
+          description: The request could not be parsed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `application/read` or `application/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '422':
+          description: '`code` is one of:
+
+            `parameters_invalid` (`client_application_id` is missing; `errors[].code` is `schema_violation`),
+
+            `lead_control_restricted` (your program is not enabled for Applications v2; `errors[].code` is `feature_not_enabled`).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: schema_violation
+                  message: client_application_id is required.
+                  parameters:
+                  - client_application_id
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/applications/{id}:
+    get:
+      tags:
+      - Application
+      operationId: retrieve-an-application-v2
+      summary: Retrieve an application
+      description: Retrieve an Application by its ID. Applications created on v0 are returned in this shape.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Application ID, prefixed `application_`.
+        schema:
+          $ref: '#/components/schemas/ApplicationID'
+      responses:
+        '200':
+          description: An application object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationV2'
+        '400':
+          description: The request could not be parsed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `application/read` or `application/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '404':
+          description: No application exists with this ID, or it is not visible to your program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '422':
+          description: Your program is not enabled for Applications v2 (`lead_control_restricted`; `errors[].code` is `feature_not_enabled`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: lead_control_restricted
+                message: A Lead-configured control blocks this request. Contact Lead with the Lead-Request-ID.
+                errors:
+                - code: feature_not_enabled
+                  message: Applications v2 isn't enabled for your program. Contact Lead to enable it.
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+    patch:
+      tags:
+      - Application
+      operationId: update-an-application-v2
+      summary: Update an application
+      description: Update the product name, details, decision, documents, or metadata on an Application. See Create and update for how `PATCH` handles each field.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Application ID, prefixed `application_`.
+        schema:
+          $ref: '#/components/schemas/ApplicationID'
+      - name: Idempotency-Key
+        in: header
+        description: A unique key for this request, up to 255 characters. Retrying with the same key and body returns the original response without applying the update twice. See [Idempotency](https://docs.lead.bank/api-reference/using-the-api/idempotency-v2).
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+        example: 3f1c9a52-7d4e-4b8a-9c21-6e0f5d2a8b14
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateApplicationRequestBodyV2'
+            examples:
+              update_limit:
+                summary: Update the credit limit
+                value:
+                  details:
+                    underwriting:
+                      limit: 7500000
+              replace_documents:
+                summary: Replace the documents array
+                value:
+                  documents:
+                  - file_id: file_2N5Hk8xYmQpL9rBvC3jD
+                    timestamp: '2026-05-14T15:58:05Z'
+                    version: v1
+                  - file_id: file_9Kd4Lm7Np2Qr5St8Uv1W
+                    timestamp: '2026-06-02T09:12:44Z'
+                    version: v2
+              update_metadata:
+                summary: Update metadata
+                value:
+                  metadata:
+                    external_id: APP-2024-001
+      responses:
+        '200':
+          description: Application updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationV2'
+        '400':
+          description: The request could not be parsed (`request_malformed`), or the `Idempotency-Key` header is missing (`idempotency_key_missing`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: body_malformed
+                  message: The request body is missing or isn't a JSON object.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `application/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '404':
+          description: No application exists with this ID, or it is not visible to your program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: '`code` is one of:
+
+            `idempotency_key_in_use` (a concurrent request with the same `Idempotency-Key` is still in flight),
+
+            `object_modified_concurrently` (another request changed the application while this one was processing; fetch it and retry).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '413':
+          description: The request body is over this endpoint's size limit, for example because `metadata` is too large (`content_too_large`; `errors[].code` is `body_too_large`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: content_too_large
+                message: The request is over a size limit for this endpoint. Make it smaller and resend it.
+                errors:
+                - code: body_too_large
+                  message: metadata is over this endpoint's size limit.
+                  parameters:
+                  - metadata
+        '422':
+          description: 'The request was parsed but cannot be processed. `code` is one of:
+
+            `parameters_invalid` (a field is invalid; a status-dependent field is missing (`dependent_parameter_required`); the adverse action notice or credit report is incomplete (`parameter_group_incomplete`); the credit report has neither `score` nor `non_score_value` (`parameter_group_empty`) or both (`parameters_mutually_exclusive`); the updated `limit` exceeds `max_limit` (`parameter_bound_exceeded`); a `documents[].file_id` appears twice (`parameter_duplicated`); or a `documents[].timestamp` is more than five minutes in the future (`future_date_not_permitted`). All failures are returned at once),
+
+            `related_object_invalid` (a `documents[].file_id` does not exist or belongs to another program; `errors[].code` is `reference_not_found`, with the path in `parameters`),
+
+            `related_object_not_ready` (on an `approved` application, an entity is no longer eligible for its relationship type (`entity_role_missing`) or lacks credit data your program requires (`related_object_incomplete`), with the entity''s path in `parameters`; update the entity, then retry the request unchanged),
+
+            `related_object_conflict` (a `documents[].file_id` references a file whose type is not a compliance document type; `errors[].code` is `reference_type_mismatched`),
+
+            `lead_control_restricted` (your program is not enabled for Applications v2; `errors[].code` is `feature_not_enabled`),
+
+            `idempotency_request_inconsistent` (this `Idempotency-Key` was used with a different request body).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: parameter_bound_exceeded
+                  message: details.underwriting.limit (12000000) cannot exceed details.underwriting.max_limit (10000000).
+                  parameters:
+                  - details.underwriting.limit
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error. Retry with the same `Idempotency-Key`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/applications/{id}/entity_relationships:
+    get:
+      tags:
+      - Application
+      operationId: list-application-entity-relationships-v2
+      summary: List application entity relationships
+      description: List the account holders, authorized signers, and authorized users on an Application, with their relationship type. Read-only; Entities cannot change after creation.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Application ID, prefixed `application_`.
+        schema:
+          $ref: '#/components/schemas/ApplicationID'
+      - name: limit
+        in: query
+        required: false
+        description: Maximum number of results to return. Defaults to 25, maximum 100.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 25
+      - name: starting_after
+        in: query
+        required: false
+        description: The `cursor` from the previous page. Returns results after it.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: A page of entity relationships.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListApplicationEntityRelationshipsSuccessResponseV2'
+        '400':
+          description: The request could not be parsed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `application/read` or `application/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '404':
+          description: No application exists with this ID, or it is not visible to your program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '422':
+          description: '`code` is one of:
+
+            `parameters_invalid` (`limit` is outside 1 to 100 (`schema_violation`), or the `starting_after` cursor cannot be decoded (`value_malformed`)),
+
+            `lead_control_restricted` (your program is not enabled for Applications v2; `errors[].code` is `feature_not_enabled`).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: schema_violation
+                  message: limit must be between 1 and 100.
+                  parameters:
+                  - limit
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+components:
+  schemas:
+    ErrorCode:
+      type: string
+      description: A snake_case code identifying the error family — the stable, machine-readable value partners branch on, together with the HTTP status.
+      example: parameters_invalid
+      enum:
+      - request_malformed
+      - content_too_large
+      - idempotency_key_missing
+      - authentication_missing
+      - token_invalid
+      - source_ip_not_allowed
+      - url_invalid
+      - object_not_found
+      - method_not_allowed
+      - idempotency_key_in_use
+      - idempotency_request_inconsistent
+      - rate_limit_exceeded
+      - internal_server_error
+      - service_unavailable
+      - endpoint_disabled
+      - gateway_timeout
+      - unclassified
+      - parameters_invalid
+      - related_object_invalid
+      - related_object_not_ready
+      - related_object_conflict
+      - limit_exceeded
+      - client_control_restricted
+      - lead_control_restricted
+      - object_state_conflict
+      - object_modified_concurrently
+      - operation_invalid
+    ApplicationV2:
+      type: object
+      description: An application, your report of an underwriting decision. Applications created on v0 are returned in this shape.
+      properties:
+        id:
+          $ref: '#/components/schemas/ApplicationID'
+        client_application_id:
+          type: string
+          readOnly: true
+          description: Your ID for applications you reported in an Application file. Lead omits it for applications created through the API.
+          example: APP-2024-001
+        status:
+          $ref: '#/components/schemas/ApplicationStatusV2'
+        product_name:
+          type: string
+          description: Your internal product name.
+          example: Growth Business Credit Line
+        entities:
+          $ref: '#/components/schemas/ApplicationEntitiesV2'
+        details:
+          $ref: '#/components/schemas/ApplicationDetailsV2'
+        decision:
+          $ref: '#/components/schemas/ApplicationDecisionV2'
+        documents:
+          type: array
+          description: Compliance documents linked on v2, each referencing an uploaded file. Always an array.
+          items:
+            $ref: '#/components/schemas/FileDocument'
+        legacy_documents:
+          type: array
+          readOnly: true
+          description: 'Document entries created on v0 Applications, returned exactly as sent. Read only: ignored if included on a POST or PATCH.'
+          items:
+            $ref: '#/components/schemas/LegacyApplicationDocumentV2'
+        metadata:
+          type: object
+          description: Key-value pairs for your own use.
+          additionalProperties:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+          description: When the application was created. RFC 3339, UTC.
+          example: '2026-05-14T15:59:30Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: When the application was last updated. RFC 3339, UTC.
+          example: '2026-05-14T15:59:30Z'
+      required:
+      - id
+      - status
+      - product_name
+      - entities
+      - details
+      - documents
+      - created_at
+      - updated_at
+    ComplianceDocumentType:
+      type: string
+      description: Type of document associated with an application
+      enum:
+      - aan
+      - loan_agreement
+      - loc_agreement
+      - truth_in_lending_document
+      - ach_authorization
+      - notice_of_incompleteness
+      - credit_score_notice
+      - offer_summary
+      - personal_guarantee
+      - consumer_credit_auth
+      - partner_privacy_policy
+      - lead_privacy_policy
+      - terms_of_use
+      - esign_agreement
+      - credit_pull_consent
+      - fcra_notice
+      - tcpa_consent
+      - patriot_act_notice
+      - mla_notice
+      - pre_approval_terms
+      - eft_authorization
+      - prohibited_industry_certification
+      - decision_maker_document
+      - bo_certification
+      - missed_payments_policy
+      - consent_to_link_account
+      - consent_to_link_hsa
+      - negative_option_consent
+      - lead_funds_transfer_agreement
+      - deposit_agreement
+      - cardholder_agreement
+      - periodic_statement
+      - autopay_authorization
+    ApplicationCreditReportV2:
+      type: object
+      description: Credit bureau data, when you sent it. Exactly one of `score` or `non_score_value` is present.
+      properties:
+        score:
+          type: integer
+          description: The bureau score, from 300 to 850.
+        non_score_value:
+          type: string
+          description: Present when the bureau returned no numeric score.
+          enum:
+          - unestablished
+          - frozen
+        pulled_at:
+          type: string
+          format: date-time
+          description: When you pulled the report.
+        source:
+          type: string
+          description: The credit bureau.
+          enum:
+          - equifax
+          - experian
+          - transunion
+    DecisionV2:
+      type: object
+      description: When and why the underwriting decision was made.
+      properties:
+        decided_at:
+          type: string
+          format: date-time
+          description: When you made the underwriting decision.
+        reason:
+          type: string
+          description: The reason for the decision.
+        exception_approval_reason:
+          type: string
+          description: Send only when the decision was an exception to your underwriting criteria. The reason for approving outside your standard process.
+      required:
+      - decided_at
+      - reason
+    EntityID:
+      type: string
+      description: The ID of your entity.
+      example: entity_xyz123
+      pattern: ^entity_[^\s]{1,33}$
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+          description: A human-readable description of the error family. Identical for every occurrence of a given `code`; carries no request-specific detail.
+          example: One or more parameters are invalid.
+        errors:
+          type: array
+          description: Zero or more specific errors within this family. Always present for validation errors, one entry per failing field.
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+    UpdateAdverseActionNoticeV2:
+      type: object
+      description: Adverse action notice fields to change. Fields you send replace the stored values; omitted fields are unchanged. On a `declined` application the resulting notice must still have all three fields.
+      properties:
+        delivered_at:
+          type: string
+          format: date-time
+          description: When you sent the notice to the applicant.
+        reason:
+          type: string
+          description: The reason stated in the notice.
+        delivery_method:
+          type: string
+          description: How you delivered the notice.
+          enum:
+          - email
+          - text
+          - other
+    CreateApplicationDetailsV2:
+      type: object
+      description: Underwriting and adverse action notice details.
+      properties:
+        underwriting:
+          $ref: '#/components/schemas/CreateApplicationUnderwritingV2'
+        adverse_action_notice:
+          $ref: '#/components/schemas/AdverseActionNoticeV2'
+      required:
+      - underwriting
+    ApplicationEntitiesV2:
+      type: object
+      description: The entities on the application. Authorized users are not returned here; list them with `GET /v2/applications/{id}/entity_relationships`.
+      properties:
+        account_holder_type:
+          type: string
+          description: Derived by Lead. `consumer` if every account holder is an individual, `commercial` if every account holder is a business or sole proprietorship.
+          enum:
+          - consumer
+          - commercial
+          example: commercial
+        account_holders:
+          type: array
+          description: Entity IDs of the applicants.
+          items:
+            $ref: '#/components/schemas/EntityID'
+        authorized_signers:
+          type: array
+          description: Entity IDs of authorized signers.
+          items:
+            $ref: '#/components/schemas/EntityID'
+    CreateApplicationRequestBodyV2:
+      type: object
+      description: 'Request body for `POST /v2/applications`. The application is created in its final status.
+
+
+        `client_application_id` and `legacy_documents` are read only. Lead ignores them, and any other field this endpoint does not define, if sent.'
+      properties:
+        status:
+          $ref: '#/components/schemas/ApplicationStatus'
+        product_name:
+          type: string
+          description: Your internal product name. It tells Lead which product the application opens a user account for if approved. Use a stable name.
+          example: Growth Business Credit Line
+        entities:
+          $ref: '#/components/schemas/CreateApplicationEntitiesV2'
+        details:
+          $ref: '#/components/schemas/CreateApplicationDetailsV2'
+        decision:
+          $ref: '#/components/schemas/DecisionV2'
+        documents:
+          type: array
+          description: 'Compliance documents, each referencing a file you uploaded with `POST /v2/files`. Lead takes the document type from the file, which must be a [compliance document type](https://docs.lead.bank/v2/products/files/file-object#the-type-enum). Send `[]` when you have no documents yet.
+
+            - Each `file_id` must exist, belong to your program, and appear at most once.
+
+            - One file can back many applications.'
+          items:
+            $ref: '#/components/schemas/FileDocument'
+        metadata:
+          type: object
+          description: Key-value pairs for your own use.
+          additionalProperties:
+            type: string
+      required:
+      - status
+      - product_name
+      - entities
+      - details
+      - decision
+      - documents
+    CreateApplicationUnderwritingV2:
+      type: object
+      description: Underwriting inputs and outcomes.
+      properties:
+        is_secured:
+          type: boolean
+          description: '`true` if collateral secures the product.'
+        is_mla:
+          type: boolean
+          description: '`true` if the applicant is covered by the Military Lending Act.'
+        currency_code:
+          $ref: '#/components/schemas/ComplianceCurrencyCode'
+        underwriting_grade:
+          type: string
+          description: Your internal underwriting grade. Any string. Required when `status` is `approved` or `declined`.
+          example: A2
+        limit:
+          type: integer
+          description: The credit limit assigned, in minor units. Required when `status` is `approved`. Cannot exceed `max_limit`.
+          minimum: 0
+          example: 5000000
+        max_limit:
+          type: integer
+          description: The highest limit the applicant was approved for in original underwriting, in minor units. Required when `status` is `approved`.
+          minimum: 0
+          example: 10000000
+        report:
+          $ref: '#/components/schemas/CreditReportV2'
+      required:
+      - is_secured
+      - is_mla
+      - currency_code
+    CreateApplicationEntitiesV2:
+      type: object
+      description: 'The entities on the application. Each must already exist. Each relationship type takes up to 20 entities, and no entity can appear twice in one type. The account holders must be all consumer (individuals) or all commercial (businesses or sole proprietorships).
+
+
+        On `approved` applications only, each entity must be eligible for its relationship type, and a commercial application needs at least one authorized signer. Your program can also require credit data on each account holder''s and authorized signer''s entity for approved applications; your Technical Account Manager can tell you whether yours does.
+
+
+        `account_holder_type` is derived by Lead and response only, so Lead ignores it if sent. Entities cannot change after creation.'
+      properties:
+        account_holders:
+          type: array
+          description: Entity IDs of the applicants. At least one.
+          minItems: 1
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/EntityID'
+        authorized_signers:
+          type: array
+          description: Entity IDs of authorized signers. An `approved` commercial application needs at least one.
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/EntityID'
+        authorized_users:
+          type: array
+          description: Entity IDs of authorized users. Lead accepts them on create but does not return them on the application. List them with `GET /v2/applications/{id}/entity_relationships`.
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/EntityID'
+      required:
+      - account_holders
+    UpdateCreditReportV2:
+      type: object
+      description: Credit report fields to change. Fields you send replace the stored values; omitted fields are unchanged. The resulting report must still have `pulled_at`, `source`, and exactly one of `score` or `non_score_value`.
+      properties:
+        score:
+          type: integer
+          description: The bureau score, from 300 to 850.
+          minimum: 300
+          maximum: 850
+        non_score_value:
+          type: string
+          description: Sent when the bureau returned no numeric score.
+          enum:
+          - unestablished
+          - frozen
+        pulled_at:
+          type: string
+          format: date-time
+          description: When you pulled the report.
+        source:
+          type: string
+          description: The credit bureau.
+          enum:
+          - equifax
+          - experian
+          - transunion
+    ApplicationAdverseActionNoticeV2:
+      type: object
+      description: The adverse action notice you sent the applicant. Present on `declined` applications.
+      properties:
+        delivered_at:
+          type: string
+          format: date-time
+          description: When you sent the notice to the applicant.
+        reason:
+          type: string
+          description: The reason stated in the notice.
+        delivery_method:
+          type: string
+          description: How you delivered the notice.
+          enum:
+          - email
+          - text
+          - other
+    FileDocument:
+      type: object
+      description: 'A document entry in a v2 Application or User Account `documents` array: a
+
+        reference to an uploaded file plus the moment the end user saw or agreed
+
+        to it. The file''s `type` is not repeated here; retrieve it via
+
+        `GET /v2/files/{id}`. Entity document entries have their own shape and are
+
+        specified with the v2 Entity operations.'
+      required:
+      - file_id
+      - timestamp
+      properties:
+        file_id:
+          $ref: '#/components/schemas/FileID'
+        timestamp:
+          type: string
+          format: date-time
+          description: 'When the end-user was shown or agreed to the document, per the file
+
+            type. Partner-supplied; records an exchange between the partner and
+
+            end-user, never upload time. ISO 8601, UTC.'
+          example: '2026-09-14T14:20:11Z'
+        version:
+          type: string
+          description: 'Partner-supplied label used for static documents so that two entries of
+
+            the same type on one object can be ordered (e.g. terms of use v1 and v2).'
+          example: v2
+    CreditReportV2:
+      type: object
+      description: Credit bureau data. Optional unless your program requires it. When you send a report, `pulled_at` and `source` are required, and you send exactly one of `score` or `non_score_value`.
+      properties:
+        score:
+          type: integer
+          description: The bureau score, from 300 to 850. Cannot be sent with `non_score_value`.
+          minimum: 300
+          maximum: 850
+        non_score_value:
+          type: string
+          description: Sent when the bureau returned no numeric score. Cannot be sent with `score`.
+          enum:
+          - unestablished
+          - frozen
+        pulled_at:
+          type: string
+          format: date-time
+          description: When you pulled the report.
+        source:
+          type: string
+          description: The credit bureau.
+          enum:
+          - equifax
+          - experian
+          - transunion
+      required:
+      - pulled_at
+      - source
+    ApplicationID:
+      type: string
+      description: Unique identifier for the application. Prefixed with `application_`.
+      example: application_xyz123
+      pattern: ^application_\w+$
+    AdverseActionNoticeV2:
+      type: object
+      description: The adverse action notice you sent the applicant. Required when `status` is `declined`. All three fields are required when the object is present.
+      properties:
+        delivered_at:
+          type: string
+          format: date-time
+          description: When you sent the notice to the applicant.
+        reason:
+          type: string
+          description: The reason stated in the notice.
+        delivery_method:
+          type: string
+          description: How you delivered the notice.
+          enum:
+          - email
+          - text
+          - other
+      required:
+      - delivered_at
+      - reason
+      - delivery_method
+    UpdateApplicationDetailsV2:
+      type: object
+      description: Details to change. Nested objects merge; omitted fields are unchanged.
+      properties:
+        underwriting:
+          $ref: '#/components/schemas/UpdateApplicationUnderwritingV2'
+        adverse_action_notice:
+          $ref: '#/components/schemas/UpdateAdverseActionNoticeV2'
+    ApplicationEntityRelationshipV2:
+      type: object
+      description: One entity on the application and its relationship type.
+      properties:
+        entity_id:
+          $ref: '#/components/schemas/EntityID'
+        relationship_type:
+          type: string
+          description: How the entity relates to the application.
+          enum:
+          - account_holder
+          - authorized_signer
+          - authorized_user
+          example: account_holder
+      required:
+      - entity_id
+      - relationship_type
+    ErrorItem:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          description: A snake_case code naming the specific error or sub-category.
+          example: required
+        message:
+          type: string
+          description: A human-readable description of this specific error, with interpolated values where relevant.
+          example: account_number_id is required.
+        parameters:
+          type: array
+          description: The request fields this error implicates, in dot notation for nested fields. Present for validation errors.
+          items:
+            type: string
+          example:
+          - account_number_id
+    UpdateApplicationRequestBodyV2:
+      type: object
+      description: 'Request body for `PATCH /v2/applications/{id}`. Omitted fields are unchanged, and nested objects merge. `null` is not accepted, so a field cannot be cleared once set.
+
+
+        `status` is accepted and ignored: status cannot change after creation, so a `PATCH` that includes `status` returns `200` and leaves the status unchanged. `entities` cannot change after creation. Lead ignores `entities`, `client_application_id`, `legacy_documents`, and any other field this endpoint does not define, if sent.'
+      properties:
+        status:
+          $ref: '#/components/schemas/ApplicationStatusV2'
+        product_name:
+          type: string
+          description: Your internal product name.
+          example: Growth Business Credit Line
+        details:
+          $ref: '#/components/schemas/UpdateApplicationDetailsV2'
+        decision:
+          $ref: '#/components/schemas/UpdateDecisionV2'
+        documents:
+          type: array
+          description: The full intended array of compliance documents. A supplied array replaces the whole array, and Lead re-checks every `file_id`. To add a document, send every existing entry plus the new one.
+          items:
+            $ref: '#/components/schemas/FileDocument'
+        metadata:
+          type: object
+          description: Key-value pairs for your own use.
+          additionalProperties:
+            type: string
+    ListApplicationEntityRelationshipsSuccessResponseV2:
+      type: object
+      description: A page of the entities on an application, with their relationship type.
+      properties:
+        has_more:
+          type: boolean
+          description: Whether more results are available after this page.
+        cursor:
+          type: string
+          description: Pass as `starting_after` to get the next page. Present only when `has_more` is `true`.
+        objects:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationEntityRelationshipV2'
+      required:
+      - has_more
+      - objects
+    ApplicationDecisionV2:
+      type: object
+      description: When and why the underwriting decision was made. Absent when `status` is `submitted` or `under_review`.
+      properties:
+        decided_at:
+          type: string
+          format: date-time
+          description: When you made the underwriting decision.
+        reason:
+          type: string
+          description: The reason for the decision.
+        exception_approval_reason:
+          type: string
+          description: The reason for approving outside your standard underwriting process. Present only when you sent it.
+    LegacyApplicationDocumentV2:
+      type: object
+      description: A document entry sent through the v0 Applications API, returned exactly as sent. Read only.
+      properties:
+        document_id:
+          type: string
+          description: The SFTP filename sent on v0 as the document reference. Lead did not check that the file arrived.
+          example: loan_agreement_01_2026.pdf
+        type:
+          $ref: '#/components/schemas/ComplianceDocumentType'
+        displayed_at:
+          type: string
+          format: date-time
+          description: When the document was shown to the applicant, as sent on v0. Present on disclosure documents.
+        consented_at:
+          type: string
+          format: date-time
+          description: When the applicant consented to the document, as sent on v0. Present on consent documents.
+        version:
+          type: string
+          description: The version label sent on v0.
+          example: v1
+    ApplicationStatusV2:
+      type: string
+      description: 'The application''s status. Applications created through the API are always `approved`, `declined`, or `canceled`, the statuses `POST` accepts.
+
+
+        `submitted` and `under_review` appear only on applications you reported in an Application file before a decision was made. They are read only: `POST` does not accept them, and a `PATCH` that includes `status` leaves it unchanged.'
+      enum:
+      - approved
+      - declined
+      - canceled
+      - submitted
+      - under_review
+      example: approved
+    ListApplicationsSuccessResponseV2:
+      type: object
+      description: A page of applications matching the query filters.
+      properties:
+        has_more:
+          type: boolean
+          description: Whether more results are available after this page.
+        objects:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationV2'
+      required:
+      - has_more
+      - objects
+    ApplicationUnderwritingV2:
+      type: object
+      description: Underwriting inputs and outcomes.
+      properties:
+        is_secured:
+          type: boolean
+          description: '`true` if collateral secures the product.'
+        is_mla:
+          type: boolean
+          description: '`true` if the applicant is covered by the Military Lending Act.'
+        currency_code:
+          $ref: '#/components/schemas/ComplianceCurrencyCode'
+        underwriting_grade:
+          type: string
+          description: Your internal underwriting grade.
+          example: A2
+        limit:
+          type: integer
+          description: The credit limit assigned, in minor units.
+          example: 5000000
+        max_limit:
+          type: integer
+          description: The highest limit the applicant was approved for in original underwriting, in minor units.
+          example: 10000000
+        report:
+          $ref: '#/components/schemas/ApplicationCreditReportV2'
+    FileID:
+      type: string
+      description: Lead-issued identifier of the file, from `POST /v2/files`.
+      example: file_7RwQ2mK9pL4xT1vN8jS5
+      pattern: ^file_\w+$
+    ComplianceCurrencyCode:
+      type: string
+      description: A three-letter currency code as defined in ISO 4217
+      enum:
+      - AED
+      - AFN
+      - ALL
+      - AMD
+      - AOA
+      - ARS
+      - AUD
+      - AWG
+      - AZN
+      - BAM
+      - BBD
+      - BDT
+      - BGN
+      - BHD
+      - BIF
+      - BMD
+      - BND
+      - BOB
+      - BRL
+      - BSD
+      - BTN
+      - BWP
+      - BYN
+      - BZD
+      - CAD
+      - CDF
+      - CHF
+      - CLP
+      - CNH
+      - CNY
+      - COP
+      - CRC
+      - CUC
+      - CUP
+      - CVE
+      - CZK
+      - DJF
+      - DKK
+      - DOP
+      - DZD
+      - EGP
+      - ERN
+      - ETB
+      - EUR
+      - FJD
+      - FKP
+      - GBP
+      - GEL
+      - GGP
+      - GHS
+      - GIP
+      - GMD
+      - GNF
+      - GTQ
+      - GYD
+      - HKD
+      - HNL
+      - HTG
+      - HUF
+      - IDR
+      - ILS
+      - IMP
+      - INR
+      - IQD
+      - IRR
+      - ISK
+      - JEP
+      - JMD
+      - JOD
+      - JPY
+      - KES
+      - KGS
+      - KHR
+      - KMF
+      - KPW
+      - KRW
+      - KWD
+      - KYD
+      - KZT
+      - LAK
+      - LBP
+      - LKR
+      - LRD
+      - LSL
+      - LYD
+      - MAD
+      - MDL
+      - MGA
+      - MKD
+      - MMK
+      - MNT
+      - MOP
+      - MRU
+      - MUR
+      - MVR
+      - MWK
+      - MXN
+      - MYR
+      - MZN
+      - NAD
+      - NGN
+      - NIO
+      - NOK
+      - NPR
+      - NZD
+      - OMR
+      - PAB
+      - PEN
+      - PGK
+      - PHP
+      - PKR
+      - PLN
+      - PYG
+      - QAR
+      - RON
+      - RSD
+      - RUB
+      - RWF
+      - SAR
+      - SBD
+      - SCR
+      - SDG
+      - SEK
+      - SGD
+      - SHP
+      - SLE
+      - SOS
+      - SRD
+      - SSP
+      - STD
+      - STN
+      - SVC
+      - SYP
+      - SZL
+      - THB
+      - TJS
+      - TMT
+      - TND
+      - TOP
+      - TRY
+      - TTD
+      - TWD
+      - TZS
+      - UAH
+      - UGX
+      - USD
+      - UYU
+      - UYW
+      - UZS
+      - VES
+      - VND
+      - VUV
+      - WST
+      - XAF
+      - XCD
+      - XCG
+      - XMW
+      - XOF
+      - XPF
+      - YER
+      - ZAR
+      - ZMW
+      - ZWG
+    ApplicationDetailsV2:
+      type: object
+      description: Underwriting and adverse action notice details.
+      properties:
+        underwriting:
+          $ref: '#/components/schemas/ApplicationUnderwritingV2'
+        adverse_action_notice:
+          $ref: '#/components/schemas/ApplicationAdverseActionNoticeV2'
+    ApplicationStatus:
+      type: string
+      description: 'Terminal state of the application. Possible values: `approved`, `declined`, `canceled`.'
+      enum:
+      - approved
+      - declined
+      - canceled
+    UpdateApplicationUnderwritingV2:
+      type: object
+      description: Underwriting fields to change. Omitted fields are unchanged.
+      properties:
+        is_secured:
+          type: boolean
+          description: '`true` if collateral secures the product.'
+        is_mla:
+          type: boolean
+          description: '`true` if the applicant is covered by the Military Lending Act.'
+        currency_code:
+          $ref: '#/components/schemas/ComplianceCurrencyCode'
+        underwriting_grade:
+          type: string
+          description: Your internal underwriting grade. Any string.
+          example: A2
+        limit:
+          type: integer
+          description: The credit limit assigned, in minor units. Cannot exceed `max_limit`.
+          minimum: 0
+          example: 5000000
+        max_limit:
+          type: integer
+          description: The highest limit the applicant was approved for in original underwriting, in minor units.
+          minimum: 0
+          example: 10000000
+        report:
+          $ref: '#/components/schemas/UpdateCreditReportV2'
+    UpdateDecisionV2:
+      type: object
+      description: Decision fields to change. Fields you send replace the stored values; omitted fields are unchanged.
+      properties:
+        decided_at:
+          type: string
+          format: date-time
+          description: When you made the underwriting decision.
+        reason:
+          type: string
+          description: The reason for the decision.
+        exception_approval_reason:
+          type: string
+          description: The reason for approving outside your standard underwriting process.
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,1535 @@
+openapi: 3.2.0
+info:
+  title: Lead Bank User Credit Balance API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: User Credit Balance
+paths:
+  /v2/user_accounts/{user_account_id}/user_credit_balances:
+    post:
+      tags:
+      - User Credit Balance
+      operationId: create-a-user-credit-balance
+      summary: Create a Credit Balance
+      description: 'Create a User Credit Balance under an existing User Account. `user_account_id` comes from the URL path, not the request body. New User Credit Balances have `status: active`.'
+      parameters:
+      - name: user_account_id
+        in: path
+        required: true
+        description: The parent User Account's ID
+        schema:
+          type: string
+          pattern: ^user_account_\w+$
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserCreditBalanceRequest'
+      responses:
+        '200':
+          description: Credit Balance created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreditBalance'
+        '400':
+          description: The request could not be parsed, or a required header is missing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: payload_invalid
+                  message: The request body is not valid JSON.
+        '403':
+          description: 'Rejected before the request reached the User Credit Balance API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: The parent User Account ID passed in is not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: A concurrent request with the same `Idempotency-Key` is still in flight.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: required
+                  message: name is required.
+                  parameters:
+                  - name
+        '429':
+          description: You've reached the rate limit for this call.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '503':
+          description: The endpoint is temporarily disabled. Retry after the interval given in the `Retry-After` header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the interval given in the Retry-After header.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/user_credit_balances/{user_credit_balance_id}:
+    get:
+      tags:
+      - User Credit Balance
+      operationId: retrieve-a-user-credit-balance
+      summary: Retrieve a Credit Balance
+      description: Retrieve a User Credit Balance by its ID.
+      parameters:
+      - name: user_credit_balance_id
+        in: path
+        required: true
+        description: The Credit Balance's ID
+        schema:
+          type: string
+          pattern: ^user_credit_balance_\w+$
+      responses:
+        '200':
+          description: A single Credit Balance object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreditBalance'
+        '400':
+          description: The request URL could not be parsed (`request_malformed`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: 'Rejected before the request reached the User Credit Balance API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: id passed in is not a valid Credit Balance object, or does not belong to the caller's program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '422':
+          description: 'The request was parsed but cannot be processed. `code` is one of:
+
+            `parameters_invalid` (the User Credit Balance ID is malformed).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: value_malformed
+                  message: user_credit_balance_id is not a valid ID.
+                  parameters:
+                  - user_credit_balance_id
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '503':
+          description: The endpoint is temporarily disabled. Retry after the interval given in the `Retry-After` header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the interval given in the Retry-After header.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+    patch:
+      tags:
+      - User Credit Balance
+      operationId: update-a-user-credit-balance
+      summary: Update a Credit Balance
+      description: Update a User Credit Balance. Amounts (`amount`, `amount_breakdown`, `rewards`, `dispute`, `charge_off`) change only through User Credit Transactions, not `PATCH`.
+      parameters:
+      - name: user_credit_balance_id
+        in: path
+        required: true
+        description: The Credit Balance's ID
+        schema:
+          type: string
+          pattern: ^user_credit_balance_\w+$
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchUserCreditBalanceRequest'
+      responses:
+        '200':
+          description: Credit Balance updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreditBalance'
+        '400':
+          description: The request could not be parsed, or a required header is missing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: payload_invalid
+                  message: The request body is not valid JSON.
+        '403':
+          description: 'Rejected before the request reached the User Credit Balance API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: id passed in is not a valid Credit Balance object, or does not belong to the caller's program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: '`code` is one of:
+
+            `idempotency_key_in_use` (a concurrent request with the same `Idempotency-Key` is still in flight),
+
+            `object_modified_concurrently` (another request changed the balance while this one was processing; fetch it and retry).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: Your request parameters did not validate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: parameter_immutable
+                  message: currency_code cannot be changed after creation.
+                  parameters:
+                  - currency_code
+        '429':
+          description: You've reached the rate limit for this call.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '503':
+          description: The endpoint is temporarily disabled. Retry after the interval given in the `Retry-After` header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the interval given in the Retry-After header.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/user_credit_balances/{user_credit_balance_id}/activate:
+    post:
+      tags:
+      - User Credit Balance
+      operationId: activate-a-user-credit-balance
+      summary: Activate a Credit Balance
+      description: Activate an `inactive` User Credit Balance. Calling this on an `active` User Credit Balance returns `200` with its current state. A `closed` User Credit Balance cannot be reactivated.
+      parameters:
+      - name: user_credit_balance_id
+        in: path
+        required: true
+        description: The Credit Balance's ID
+        schema:
+          type: string
+          pattern: ^user_credit_balance_\w+$
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+      responses:
+        '200':
+          description: Credit Balance activated successfully (or already active)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreditBalance'
+        '400':
+          description: The request could not be parsed, or a required header is missing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_missing
+                message: The Idempotency-Key header is required on this endpoint.
+        '403':
+          description: 'Rejected before the request reached the User Credit Balance API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: id passed in is not a valid Credit Balance object, or does not belong to the caller's program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: '`code` is one of:
+
+            `idempotency_key_in_use` (a concurrent request with the same `Idempotency-Key` is still in flight),
+
+            `object_modified_concurrently` (another request changed the balance while this one was processing; fetch it and retry).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: This balance is closed and cannot be reactivated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: operation_invalid
+                message: The request is not allowed for this object in its current state.
+                errors:
+                - code: object_status_terminal
+                  message: User Credit Balance user_credit_balance_xyz123 is closed and can't be activated.
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '503':
+          description: The endpoint is temporarily disabled. Retry after the interval given in the `Retry-After` header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the interval given in the Retry-After header.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/user_credit_balances/{user_credit_balance_id}/deactivate:
+    post:
+      tags:
+      - User Credit Balance
+      operationId: deactivate-a-user-credit-balance
+      summary: Deactivate a Credit Balance
+      description: Deactivate an `active` User Credit Balance. Calling this on an `inactive` User Credit Balance returns `200` with its current state.
+      parameters:
+      - name: user_credit_balance_id
+        in: path
+        required: true
+        description: The Credit Balance's ID
+        schema:
+          type: string
+          pattern: ^user_credit_balance_\w+$
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeactivateUserCreditBalanceRequest'
+      responses:
+        '200':
+          description: Credit Balance deactivated successfully (or already inactive)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreditBalance'
+        '400':
+          description: The request could not be parsed, or a required header is missing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_missing
+                message: The Idempotency-Key header is required on this endpoint.
+        '403':
+          description: 'Rejected before the request reached the User Credit Balance API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: id passed in is not a valid Credit Balance object, or does not belong to the caller's program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: '`code` is one of:
+
+            `idempotency_key_in_use` (a concurrent request with the same `Idempotency-Key` is still in flight),
+
+            `object_modified_concurrently` (another request changed the balance while this one was processing; fetch it and retry).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: This balance is closed; no further lifecycle actions are permitted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: operation_invalid
+                message: The request is not allowed for this object in its current state.
+                errors:
+                - code: object_status_terminal
+                  message: User Credit Balance user_credit_balance_xyz123 is closed and can't be deactivated.
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '503':
+          description: The endpoint is temporarily disabled. Retry after the interval given in the `Retry-After` header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the interval given in the Retry-After header.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/user_credit_balances/{user_credit_balance_id}/close:
+    post:
+      tags:
+      - User Credit Balance
+      operationId: close-a-user-credit-balance
+      summary: Close a Credit Balance
+      description: Close an `active` or `inactive` User Credit Balance. Closing is terminal. Outstanding principal, interest, and fees must all be zero first, unless the User Credit Balance is charged off. Calling this on a `closed` User Credit Balance returns `200` with its current state.
+      parameters:
+      - name: user_credit_balance_id
+        in: path
+        required: true
+        description: The Credit Balance's ID
+        schema:
+          type: string
+          pattern: ^user_credit_balance_\w+$
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloseUserCreditBalanceRequest'
+      responses:
+        '200':
+          description: Credit Balance closed successfully (or already closed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreditBalance'
+        '400':
+          description: The request could not be parsed, or a required header is missing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_missing
+                message: The Idempotency-Key header is required on this endpoint.
+        '403':
+          description: 'Rejected before the request reached the User Credit Balance API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: id passed in is not a valid Credit Balance object, or does not belong to the caller's program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: '`code` is one of:
+
+            `idempotency_key_in_use` (a concurrent request with the same `Idempotency-Key` is still in flight),
+
+            `object_modified_concurrently` (another request changed the balance while this one was processing; fetch it and retry).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: Outstanding principal, interest, and fees must all be zero before closing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_state_conflict
+                message: The object is not in the state this request assumed. Fetch its current state before retrying.
+                errors:
+                - code: object_balance_nonzero
+                  message: User Credit Balance user_credit_balance_xyz123 has a balance of 1250.00. Bring it to zero before closing.
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '503':
+          description: The endpoint is temporarily disabled. Retry after the interval given in the `Retry-After` header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the interval given in the Retry-After header.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/user_credit_balances/{user_credit_balance_id}/stop_reporting:
+    post:
+      tags:
+      - User Credit Balance
+      operationId: stop-reporting-a-user-credit-balance
+      summary: Stop Reporting on a Credit Balance
+      description: Stop reporting on an `active` or `inactive` User Credit Balance, which moves it to `reporting_stopped`. This is terminal. The User Credit Balance must have no outstanding Receivables held by Lead. Calling this on a User Credit Balance already `reporting_stopped` returns `200` with its current state.
+      parameters:
+      - name: user_credit_balance_id
+        in: path
+        required: true
+        description: The Credit Balance's ID
+        schema:
+          type: string
+          pattern: ^user_credit_balance_\w+$
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StopReportingUserCreditBalanceRequest'
+      responses:
+        '200':
+          description: Reporting stopped successfully (or already stopped)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreditBalance'
+        '400':
+          description: The request could not be parsed, or a required header is missing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_missing
+                message: The Idempotency-Key header is required on this endpoint.
+        '403':
+          description: 'Rejected before the request reached the User Credit Balance API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: id passed in is not a valid Credit Balance object, or does not belong to the caller's program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: '`code` is one of:
+
+            `idempotency_key_in_use` (a concurrent request with the same `Idempotency-Key` is still in flight),
+
+            `object_modified_concurrently` (another request changed the balance while this one was processing; fetch it and retry).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: User Credit Balance has outstanding receivables that are currently held by Lead.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: operation_invalid
+                message: The request is not allowed for this object in its current state.
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '503':
+          description: The endpoint is temporarily disabled. Retry after the interval given in the `Retry-After` header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the interval given in the Retry-After header.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+components:
+  schemas:
+    ErrorCode:
+      type: string
+      description: A snake_case code identifying the error family — the stable, machine-readable value partners branch on, together with the HTTP status.
+      example: parameters_invalid
+      enum:
+      - request_malformed
+      - content_too_large
+      - idempotency_key_missing
+      - authentication_missing
+      - token_invalid
+      - source_ip_not_allowed
+      - url_invalid
+      - object_not_found
+      - method_not_allowed
+      - idempotency_key_in_use
+      - idempotency_request_inconsistent
+      - rate_limit_exceeded
+      - internal_server_error
+      - service_unavailable
+      - endpoint_disabled
+      - gateway_timeout
+      - unclassified
+      - parameters_invalid
+      - related_object_invalid
+      - related_object_not_ready
+      - related_object_conflict
+      - limit_exceeded
+      - client_control_restricted
+      - lead_control_restricted
+      - object_state_conflict
+      - object_modified_concurrently
+      - operation_invalid
+    UserCreditBalancePaymentFrequency:
+      type: string
+      enum:
+      - business_daily
+      - weekly
+      - biweekly
+      - semi_monthly
+      - monthly
+      - quarterly
+      - semi_annually
+      - annually
+      - fixed_interval
+      - maturity
+      - variable
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+          description: A human-readable description of the error family. Identical for every occurrence of a given `code`; carries no request-specific detail.
+          example: One or more parameters are invalid.
+        errors:
+          type: array
+          description: Zero or more specific errors within this family. Always present for validation errors, one entry per failing field.
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+    CreateUserCreditBalanceIntervalDaysRule:
+      description: 'Structure-independent conditional: expected_payment_frequency_interval_days is
+
+        required when expected_payment_frequency is fixed_interval, and must not be present
+
+        otherwise. Combined via allOf with the base repayment_details object on create only
+
+        — on PATCH this depends on the stored value too, so it stays a Go-side check.'
+      oneOf:
+      - properties:
+          expected_payment_frequency:
+            enum:
+            - fixed_interval
+        required:
+        - expected_payment_frequency_interval_days
+      - properties:
+          expected_payment_frequency:
+            not:
+              enum:
+              - fixed_interval
+        not:
+          required:
+          - expected_payment_frequency_interval_days
+    CreateUserCreditBalanceRepaymentDetailsRevolving:
+      allOf:
+      - type: object
+        additionalProperties: false
+        required:
+        - expected_payment_frequency
+        properties:
+          expected_payment_frequency:
+            $ref: '#/components/schemas/UserCreditBalancePaymentFrequency'
+          expected_payment_frequency_interval_days:
+            type: integer
+            minimum: 1
+            maximum: 730
+      - $ref: '#/components/schemas/CreateUserCreditBalanceIntervalDaysRule'
+    DeactivateUserCreditBalanceRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - status_reason
+      properties:
+        status_reason:
+          type: string
+          enum:
+          - frozen
+          - dormant
+          - other
+    PatchUserCreditBalanceRequest:
+      type: object
+      description: 'Request body for updating an existing User Credit Balance. Only mutable fields are
+
+        present — amount-row fields (amount, amount_in_usd, amount_breakdown, rewards,
+
+        dispute, charge_off) and other immutable fields aren''t in this schema at all, so
+
+        they''re rejected the same way any unrecognized field is.'
+      additionalProperties: false
+      properties:
+        autopay_method:
+          type: string
+          enum:
+          - ach
+          - debit_card
+          - wire
+          - virtual_wallet
+          - credit_card
+          - none
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Set to an empty object to clear all metadata.
+        past_due:
+          type: object
+          additionalProperties: false
+          properties:
+            amount:
+              type: integer
+            past_due_days:
+              type: integer
+            amount_breakdown:
+              $ref: '#/components/schemas/UserCreditBalanceAmountBreakdown'
+        interest:
+          type: object
+          additionalProperties: false
+          properties:
+            effective_rate:
+              type: string
+            rate:
+              type: string
+        details:
+          type: object
+          additionalProperties: false
+          properties:
+            expected_maturity_date:
+              type: string
+              format: date
+            term:
+              type: object
+              additionalProperties: false
+              properties:
+                length:
+                  type: integer
+                  exclusiveMinimum: 0
+                unit:
+                  type: string
+                  enum:
+                  - days
+                  - weeks
+                  - months
+                  - years
+            repayment_details:
+              $ref: '#/components/schemas/PatchUserCreditBalanceRepaymentDetails'
+    PatchUserCreditBalanceRepaymentDetails:
+      type: object
+      description: 'All 8 fields are mutable per the PRD ("details.repayment_details, all fields within
+
+        the sub-object"). Which fields are actually applicable depends on the balance''s
+
+        stored structure — enforced in Go, not here (see
+
+        CreateUserCreditBalanceIntervalDaysRule''s description for why).'
+      additionalProperties: false
+      properties:
+        expected_payment_frequency:
+          $ref: '#/components/schemas/UserCreditBalancePaymentFrequency'
+        expected_payment_frequency_interval_days:
+          type: integer
+          minimum: 1
+          maximum: 730
+        expected_number_of_payments:
+          type: integer
+          exclusiveMinimum: 0
+        expected_first_payment_date:
+          type: string
+          format: date
+        expected_first_payment_amount:
+          type: integer
+          description: Minor units.
+          minimum: 0
+        expected_last_payment_date:
+          type: string
+          format: date
+        expected_last_payment_amount:
+          type: integer
+          description: Minor units.
+          minimum: 0
+        expected_payment_amount:
+          type: integer
+          description: Minor units.
+          minimum: 0
+    UserCreditBalanceAmountBreakdown:
+      type: object
+      properties:
+        principal:
+          type: integer
+          description: Principal portion, minor units.
+        interest:
+          type: integer
+          description: Interest portion, minor units.
+        fees:
+          type: integer
+          description: Fees portion, minor units.
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
+    CreateUserCreditBalanceRequest:
+      type: object
+      description: Request body for creating a new User Credit Balance.
+      additionalProperties: false
+      required:
+      - name
+      - currency_code
+      - interest
+      - autopay_method
+      - details
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+          pattern: \S
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        interest:
+          type: object
+          additionalProperties: false
+          required:
+          - rate
+          - effective_rate
+          - effective_apr
+          properties:
+            rate:
+              type: string
+            effective_rate:
+              type: string
+            effective_apr:
+              type: string
+        autopay_method:
+          type: string
+          enum:
+          - ach
+          - debit_card
+          - wire
+          - virtual_wallet
+          - credit_card
+          - none
+        details:
+          oneOf:
+          - $ref: '#/components/schemas/CreateUserCreditBalanceRevolvingDetail'
+          - $ref: '#/components/schemas/CreateUserCreditBalanceNonRevolvingDetail'
+          discriminator:
+            propertyName: structure
+            mapping:
+              revolving: '#/components/schemas/CreateUserCreditBalanceRevolvingDetail'
+              non_revolving: '#/components/schemas/CreateUserCreditBalanceNonRevolvingDetail'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    StopReportingUserCreditBalanceRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - status_reason
+      properties:
+        status_reason:
+          type: string
+          enum:
+          - receivables_sold_to_partner
+          - data_not_available
+    CreateUserCreditBalanceNonRevolvingDetail:
+      type: object
+      additionalProperties: false
+      required:
+      - structure
+      - expected_maturity_date
+      - repayment_details
+      - max_funding_amount
+      - term
+      - expected_finance_charge_amount
+      properties:
+        structure:
+          type: string
+          enum:
+          - non_revolving
+        expected_maturity_date:
+          type: string
+          format: date
+        repayment_details:
+          $ref: '#/components/schemas/CreateUserCreditBalanceRepaymentDetailsNonRevolving'
+        max_funding_amount:
+          type: integer
+          description: Minor units.
+          exclusiveMinimum: 0
+        term:
+          type: object
+          additionalProperties: false
+          required:
+          - length
+          - unit
+          properties:
+            length:
+              type: integer
+              exclusiveMinimum: 0
+            unit:
+              type: string
+              enum:
+              - days
+              - weeks
+              - months
+              - years
+        expected_finance_charge_amount:
+          type: integer
+          description: Minor units.
+          minimum: 0
+    UserCreditBalance:
+      type: object
+      description: A user credit balance — a virtual end-customer credit position.
+      properties:
+        id:
+          type: string
+          pattern: ^user_credit_balance_\w+$
+        user_account_id:
+          type: string
+          description: The parent User Account's ID.
+        name:
+          type: string
+          description: Human-readable name.
+          example: Personal Loan - Jane Smith
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+          - closed
+          - reporting_stopped
+        status_reason:
+          type: string
+          enum:
+          - active
+          - frozen
+          - dormant
+          - other
+          - entity_closed
+          - client_closed
+          - paid_off
+          - charged_off
+          - canceled
+          - receivables_sold_to_partner
+          - data_not_available
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        amount:
+          type: integer
+          description: Signed, minor units.
+        amount_in_usd:
+          type: integer
+          description: Signed, minor units, in USD.
+        amount_breakdown:
+          $ref: '#/components/schemas/UserCreditBalanceAmountBreakdown'
+        fees:
+          type: object
+          properties:
+            accrued:
+              type: integer
+              description: Total fees accrued to date, minor units.
+        rewards:
+          type: object
+          properties:
+            amount:
+              type: integer
+            unit:
+              type: string
+              enum:
+              - USD
+              - points
+        dispute:
+          type: object
+          properties:
+            amount:
+              type: integer
+            amount_breakdown:
+              $ref: '#/components/schemas/UserCreditBalanceAmountBreakdown'
+        charge_off:
+          type: object
+          properties:
+            amount:
+              type: integer
+            amount_breakdown:
+              $ref: '#/components/schemas/UserCreditBalanceAmountBreakdown'
+        past_due:
+          type: object
+          properties:
+            amount:
+              type: integer
+            past_due_days:
+              type: integer
+            amount_breakdown:
+              $ref: '#/components/schemas/UserCreditBalanceAmountBreakdown'
+        interest:
+          type: object
+          properties:
+            rate:
+              type: string
+              description: Contractual annual interest rate, decimal(M,6).
+            effective_rate:
+              type: string
+              description: True annualized accrual rate, decimal(M,6).
+            effective_apr:
+              type: string
+              description: APR as disclosed to borrower, decimal(M,3).
+        autopay_method:
+          type: string
+          enum:
+          - ach
+          - debit_card
+          - wire
+          - virtual_wallet
+          - credit_card
+          - none
+        details:
+          type: object
+          properties:
+            structure:
+              type: string
+              enum:
+              - revolving
+              - non_revolving
+            expected_maturity_date:
+              type: string
+              format: date
+            repayment_details:
+              type: object
+              properties:
+                expected_payment_frequency:
+                  $ref: '#/components/schemas/UserCreditBalancePaymentFrequency'
+                expected_payment_frequency_interval_days:
+                  type: integer
+                expected_number_of_payments:
+                  type: integer
+                expected_first_payment_date:
+                  type: string
+                  format: date
+                expected_first_payment_amount:
+                  type: integer
+                  description: Minor units.
+                expected_last_payment_date:
+                  type: string
+                  format: date
+                expected_last_payment_amount:
+                  type: integer
+                  description: Minor units.
+                expected_payment_amount:
+                  type: integer
+                  description: Minor units.
+            max_funding_amount:
+              type: integer
+              description: Minor units.
+            term:
+              type: object
+              properties:
+                length:
+                  type: integer
+                unit:
+                  type: string
+                  enum:
+                  - days
+                  - weeks
+                  - months
+                  - years
+            expected_finance_charge_amount:
+              type: integer
+              description: Minor units.
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        closed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    CreateUserCreditBalanceRevolvingDetail:
+      type: object
+      additionalProperties: false
+      required:
+      - structure
+      properties:
+        structure:
+          type: string
+          enum:
+          - revolving
+        repayment_details:
+          $ref: '#/components/schemas/CreateUserCreditBalanceRepaymentDetailsRevolving'
+    ErrorItem:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          description: A snake_case code naming the specific error or sub-category.
+          example: required
+        message:
+          type: string
+          description: A human-readable description of this specific error, with interpolated values where relevant.
+          example: account_number_id is required.
+        parameters:
+          type: array
+          description: The request fields this error implicates, in dot notation for nested fields. Present for validation errors.
+          items:
+            type: string
+          example:
+          - account_number_id
+    CloseUserCreditBalanceRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - status_reason
+      properties:
+        status_reason:
+          type: string
+          enum:
+          - entity_closed
+          - client_closed
+          - paid_off
+          - charged_off
+          - canceled
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    CreateUserCreditBalanceRepaymentDetailsNonRevolving:
+      allOf:
+      - type: object
+        additionalProperties: false
+        required:
+        - expected_payment_frequency
+        properties:
+          expected_payment_frequency:
+            $ref: '#/components/schemas/UserCreditBalancePaymentFrequency'
+          expected_payment_frequency_interval_days:
+            type: integer
+            minimum: 1
+            maximum: 730
+          expected_number_of_payments:
+            type: integer
+            exclusiveMinimum: 0
+          expected_first_payment_date:
+            type: string
+            format: date
+          expected_first_payment_amount:
+            type: integer
+            description: Minor units.
+            exclusiveMinimum: 0
+          expected_last_payment_date:
+            type: string
+            format: date
+          expected_last_payment_amount:
+            type: integer
+            description: Minor units.
+            exclusiveMinimum: 0
+          expected_payment_amount:
+            type: integer
+            description: Minor units.
+            exclusiveMinimum: 0
+      - $ref: '#/components/schemas/CreateUserCreditBalanceIntervalDaysRule'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -134,7 +134,7 @@ paths:
       description: 'Certain updates on Entity trigger KYC re-screening, requiring an updated kyc_details.result and kyc_details.screened_at.
 
 
-        For individual entities, KYC re-screening is triggered by changes to: first name, last name, date of birth, tax ID (for US entities), existing identification document (for non-US entities), and switching between US vs. non-US entities.
+        For individual entities, KYC re-screening is triggered by changes to: first name, last name, date of birth, tax ID value, switching between `us_entity` and `non_us_entity` when that adds or removes a tax ID, and an existing identification document (for non-US entities). The requirement applies only when kyc_details has previously been submitted for the entity, and the new kyc_details.screened_at must be later than the previous one.
 
 
         For business and sole proprietorship entities, KYC re-screening is triggered by changes to: business name, business type, tax ID (US entities), and existing identification document (non-US entities).
@@ -259,266 +259,593 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIError'
+  /v2/entities:
+    post:
+      tags:
+      - Entity
+      operationId: create-an-entity-v2
+      summary: Create an entity
+      description: 'Create an `individual`, `business`, or `sole_prop` Entity. `lead` and `partner` Entities are provisioned by Lead and cannot be created, so a `POST` with either type returns `422 parameters_invalid`.
+
+
+        Each entry in `identification_documents` and `additional_documents` takes a `file_id` from `POST /v2/files` or a declared `type`, not both.'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: A unique key for this request, up to 255 characters. Retrying with the same key and body returns the original response without creating a second entity. See [Idempotency](https://docs.lead.bank/api-reference/using-the-api/idempotency-v2).
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+        example: 3f1c9a52-7d4e-4b8a-9c21-6e0f5d2a8b14
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAnEntityRequestBodyV2'
+      responses:
+        '200':
+          description: Entity object created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAnEntitySuccessResponseV2'
+        '400':
+          description: The request could not be parsed (`request_malformed`), or the `Idempotency-Key` header is missing (`idempotency_key_missing`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_missing
+                message: This endpoint requires an Idempotency-Key header. Add one and resend the request.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `entity/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '409':
+          description: A concurrent request with the same `Idempotency-Key` is still in flight.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: 'The request was parsed but cannot be processed. `code` is one of:
+
+            `parameters_invalid` (a field is missing or invalid, including a malformed value (`value_malformed`) or one outside its allowed list, like a country, NAICS or currency code (`value_not_permitted`); `type` is `lead` or `partner` (`schema_violation`); a field that another field requires is missing, like `state` and `postal_code` on a US address, or a physical address on a business (`dependent_parameter_required`), or two fields don''t fit together, like an `ein` tax ID on an individual (`dependent_parameter_invalid`); `tax_identification` has a `type` without a `value`, or a `value` without a `type` (`parameter_group_incomplete`); a document entry has neither `file_id` nor `type`, or a `credit_details` entry has neither a score nor a non-score value (`parameter_group_empty`), or either has both (`parameters_mutually_exclusive`); the beneficial owners'' `ownership_percentage` values add up to more than 100 (`parameter_bound_exceeded`); a `file_id` appears more than once on the entity, or `intended_eligibility` lists a relationship type twice (`parameter_duplicated`); a screening or credit timestamp, or the date of birth, is in the future (`future_date_not_permitted`); an identification document has already expired (`past_date_not_permitted`); or the entity fails a check for a relationship type listed in `intended_eligibility`, where each failed check is an `errors[]` entry whose `code` is the check name. All failures are returned at once),
+
+            `related_object_invalid` (a linked beneficial owner, control person, or sole proprietor, or a `file_id`, does not exist or belongs to another program; `errors[].code` is `reference_not_found`),
+
+            `related_object_conflict` (a linked beneficial owner, control person, or sole proprietor is not an individual entity, or a file''s type is not allowed on that document entry; `errors[].code` is `reference_type_mismatched`),
+
+            `lead_control_restricted` (your program is not enabled for Entity v2, or only allows individual entities and the request creates a `business` or `sole_prop`; `errors[].code` is `feature_not_enabled`),
+
+            `idempotency_request_inconsistent` (this `Idempotency-Key` was used with a different request body).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: check_kyc_status
+                  message: entity_xyz123 is not eligible for account_holder. KYC must be passed. Set kyc_details.result and kyc_details.screened_at.
+                  parameters:
+                  - intended_eligibility
+                - code: check_physical_address
+                  message: entity_xyz123 is not eligible for account_holder. A physical address is required. Set individual_details.address_details.physical_address.
+                  parameters:
+                  - intended_eligibility
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error. Retry with the same `Idempotency-Key`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+    get:
+      tags:
+      - Entity
+      operationId: list-entities-v2
+      summary: List entities
+      description: List Entities, filtered by `client_customer_id`. The filter is required. Each object in `objects` has the same shape as `GET /v2/entities/{id}` returns. If no Entity has that `client_customer_id`, `objects` is empty.
+      parameters:
+      - name: client_customer_id
+        in: query
+        required: true
+        description: Return only entities with this `client_customer_id`.
+        schema:
+          type: string
+        example: CUST-2024-001
+      responses:
+        '200':
+          description: A list of entities. `objects` is empty if no entity matches.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEntitiesSuccessResponseV2'
+        '400':
+          description: The request could not be parsed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `entity/read` or `entity/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '422':
+          description: '`code` is one of:
+
+            `parameters_invalid` (`client_customer_id` is missing; `errors[].code` is `schema_violation`),
+
+            `lead_control_restricted` (your program is not enabled for Entity v2; `errors[].code` is `feature_not_enabled`).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: schema_violation
+                  message: client_customer_id is required.
+                  parameters:
+                  - client_customer_id
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/entities/{id}:
+    patch:
+      tags:
+      - Entity
+      operationId: update-an-entity-v2
+      summary: Update an entity
+      description: Update an `individual`, `business`, or `sole_prop` Entity. Some changes need a fresh KYC attestation. See Create and update for which changes need one and how `PATCH` handles each field.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityID'
+      - name: Idempotency-Key
+        in: header
+        description: A unique key for this request, up to 255 characters. Retrying with the same key and body returns the original response without applying the update twice. See [Idempotency](https://docs.lead.bank/api-reference/using-the-api/idempotency-v2).
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+        example: 3f1c9a52-7d4e-4b8a-9c21-6e0f5d2a8b14
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAnEntityRequestBodyV2'
+      responses:
+        '200':
+          description: Entity object updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateAnEntitySuccessResponseV2'
+        '400':
+          description: The request could not be parsed (`request_malformed`), or the `Idempotency-Key` header is missing (`idempotency_key_missing`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: body_malformed
+                  message: The request body is missing or isn't JSON.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `entity/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '404':
+          description: No entity exists with this ID, or it is not visible to your program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: '`code` is one of:
+
+            `idempotency_key_in_use` (a concurrent request with the same `Idempotency-Key` is still in flight),
+
+            `object_modified_concurrently` (another request changed the entity while this one was processing; fetch it and retry).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: 'The request was parsed but cannot be processed. `code` is one of:
+
+            `parameters_invalid` (a field is missing or invalid, including a malformed value (`value_malformed`) or one outside its allowed list, like a country, NAICS or currency code (`value_not_permitted`); `type` does not match the entity, or a business switches between `us_entity` and `non_us_entity` (`parameter_immutable`); a field that another field requires is missing, like `state` and `postal_code` on a US address, or a later `kyc_details.screened_at` when a name, date of birth, tax ID, or business name or type changes (`dependent_parameter_required`), or two fields don''t fit together, like an `ein` tax ID on an individual (`dependent_parameter_invalid`); `tax_identification` has a `type` without a `value`, or a `value` without a `type` (`parameter_group_incomplete`); a document entry has neither `file_id` nor `type`, or a `credit_details` entry has neither a score nor a non-score value (`parameter_group_empty`), or either has both (`parameters_mutually_exclusive`); the beneficial owners'' `ownership_percentage` values add up to more than 100 (`parameter_bound_exceeded`); a `file_id` appears more than once on the entity, or `intended_eligibility` lists a relationship type twice (`parameter_duplicated`); a screening or credit timestamp, or the date of birth, is in the future (`future_date_not_permitted`); `kyc_details.screened_at` is not later than the stored one (`parameter_sequence_invalid`); the request clears a stored KYC or OFAC `result` or `screened_at` (`parameter_not_removable`); or the updated entity fails a check for a relationship type listed in `intended_eligibility`, where each failed check is an `errors[]` entry whose `code` is the check name. All failures are returned at once),
+
+            `related_object_invalid` (a linked beneficial owner, control person, or sole proprietor, or a `file_id`, does not exist or belongs to another program; `errors[].code` is `reference_not_found`),
+
+            `related_object_conflict` (a linked beneficial owner, control person, or sole proprietor is not an individual entity, or a file''s type is not allowed on that document entry; `errors[].code` is `reference_type_mismatched`),
+
+            `lead_control_restricted` (your program is not enabled for Entity v2; `errors[].code` is `feature_not_enabled`),
+
+            `operation_invalid` (the entity is a `lead` or `partner` entity, which cannot be updated; `errors[].code` is `object_lead_managed`; a body whose `type` is `lead` or `partner` returns `parameters_invalid` (`schema_violation`) instead, because the body is validated first),
+
+            `idempotency_request_inconsistent` (this `Idempotency-Key` was used with a different request body).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: check_date_of_birth
+                  message: entity_xyz123 is not eligible for account_holder. The entity must be 18 or older.
+                  parameters:
+                  - intended_eligibility
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error. Retry with the same `Idempotency-Key`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+    get:
+      tags:
+      - Entity
+      operationId: retrieve-an-entity-by-entity-id-v2
+      summary: Retrieve an entity
+      description: Retrieve an Entity by its ID. Entities created on v0 are returned in this shape. `eligibility` is computed from the Entity's current data on every read. This also returns your program's `lead` and `partner` Entities, which Lead provisions and which have a reduced, read-only shape. Documents sent through v0 are returned read-only in `legacy_identification_documents` and `legacy_additional_documents`.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityID'
+      responses:
+        '200':
+          description: An entity object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveAnEntitySuccessResponseV2'
+        '400':
+          description: The request could not be parsed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `entity/read` or `entity/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '404':
+          description: No entity exists with this ID, or it is not visible to your program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '422':
+          description: Your program is not enabled for Entity v2 (`lead_control_restricted`; `errors[].code` is `feature_not_enabled`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: lead_control_restricted
+                message: A Lead-configured control blocks this request. Contact Lead with the Lead-Request-ID.
+                errors:
+                - code: feature_not_enabled
+                  message: Entity v2 isn't enabled for your program. Contact Lead to enable it.
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
 components:
   schemas:
-    CreateAnEntityRequestBody:
-      oneOf:
-      - $ref: '#/components/schemas/CreateAnIndividualEntityRequestBody'
-      - $ref: '#/components/schemas/CreateABusinessEntityRequestBody'
-      - $ref: '#/components/schemas/CreateASolePropEntityRequestBody'
-      discriminator:
-        propertyName: type
-        mapping:
-          individual: '#/components/schemas/CreateAnIndividualEntityRequestBody'
-          business: '#/components/schemas/CreateABusinessEntityRequestBody'
-          sole_prop: '#/components/schemas/CreateASolePropEntityRequestBody'
-    UpdateASolePropEntityRequestBody:
-      title: Sole Prop
+    RfiDetailsResultEnum:
+      type: string
+      enum:
+      - requested
+      - completed
+      example: completed
+      description: Result of request for information with the end customer. Leave blank if RFI has not been sent to the customer.
+    EntityTypePartner:
+      type: string
+      pattern: ^partner$
+      default: partner
+      description: Type of entity = partner. Lead provisions it; you cannot create or update it.
+    ContactMethodTypeEmail:
+      type: string
+      pattern: ^email$
+      default: email
+      description: ContactMethodType = email.
+    UpdateAddressDetails:
+      type: object
+      properties:
+        physical_address:
+          $ref: '#/components/schemas/UpdateAddress'
+          description: Physical address for the entity. Physical addresses must not be P.O. boxes, registered agent addresses or in prohibited countries.
+        mailing_address:
+          $ref: '#/components/schemas/UpdateAddress'
+          description: Mailing address for the entity.
+        other_addresses:
+          type: array
+          description: Other addresses for the entity.
+          items:
+            $ref: '#/components/schemas/Address'
+    BusinessDetailsV2:
       type: object
       required:
-      - type
+      - name
+      - identification_details
+      - address_details
       properties:
         type:
-          $ref: '#/components/schemas/EntityTypeSoleProp'
-        intended_roles:
+          $ref: '#/components/schemas/BusinessTypeEnum'
+        name:
+          type: string
+          description: Legal name of the business. Must be at least 2 characters.
+        gross_annual_revenue:
+          type: string
+          description: Business gross revenue for prior fiscal year.
+        currency_code:
+          type: string
+          description: A three-letter currency code as defined in ISO 4217.
+        industry:
           type: array
           items:
-            $ref: '#/components/schemas/IntendedRolesEnum'
-          example: 'Possible values: authorized_user, authorized_signer, account_holder. In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed. It will be an all or nothing behavior. For type = business, sole_prop, only account_holder should be provided'
-        risk_score:
-          $ref: '#/components/schemas/EntityRiskScoreEnum'
-        business_details:
-          $ref: '#/components/schemas/UpdateBusinessDetails'
-        sole_proprietor:
-          $ref: '#/components/schemas/SoleProprietor'
-        rfi_details:
-          $ref: '#/components/schemas/RfiDetails'
-        ofac_details:
-          $ref: '#/components/schemas/OfacDetails'
-        kyc_details:
-          $ref: '#/components/schemas/KycDetails'
-        credit_details:
+            type: string
+          description: NAICS code(s) for the applicable industries. 2-6 digits of NAICS code(s) are accepted and valid NAICS codes can be found on naics.com/search. Please refer to 2022 NAICS Reference Files.
+        doing_business_as:
+          type: string
+          description: Business name if the business operates under a different name.
+        website:
+          type: string
+          description: The website of the business. Must start with http:// or https://.
+        contact_methods:
           type: array
           items:
-            $ref: '#/components/schemas/CreditDetails'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    NonUsEntityIndividual:
-      title: Non US Entity
-      type: object
-      required:
-      - type
-      properties:
-        type:
-          $ref: '#/components/schemas/NonUsEntityTypeEnum'
-        identification_documents:
-          type: array
-          items:
-            $ref: '#/components/schemas/IdentificationDocument'
-    UpdateABusinessEntityRequestBody:
-      title: Business
-      type: object
-      required:
-      - type
-      properties:
-        type:
-          $ref: '#/components/schemas/EntityTypeBusiness'
-        intended_roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/IntendedRolesEnum'
-          example: 'Possible values: authorized_user, authorized_signer, account_holder. In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed. It will be an all or nothing behavior. For type = business, sole_prop, only account_holder should be provided'
-        risk_score:
-          $ref: '#/components/schemas/EntityRiskScoreEnum'
-        business_details:
-          $ref: '#/components/schemas/UpdateBusinessDetails'
-        beneficial_owners:
-          type: array
-          items:
-            $ref: '#/components/schemas/BeneficialOwners'
-        control_persons:
-          type: array
-          items:
-            $ref: '#/components/schemas/ControlPersons'
-        rfi_details:
-          $ref: '#/components/schemas/RfiDetails'
-        ofac_details:
-          $ref: '#/components/schemas/OfacDetails'
-        kyc_details:
-          $ref: '#/components/schemas/KycDetails'
-        credit_details:
-          type: array
-          items:
-            $ref: '#/components/schemas/CreditDetails'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
+            $ref: '#/components/schemas/ContactMethod'
+        address_details:
+          $ref: '#/components/schemas/AddressDetails'
+        identification_details:
+          $ref: '#/components/schemas/IdentificationDetailsBusinessV2'
+        additional_documents:
+          $ref: '#/components/schemas/AdditionalDocumentsV2'
+      description: Details for the business entity.
     CreditDetails:
       type: object
       required:
-      - credit_score
       - credit_report_source
       - credit_pulled_at
       properties:
         credit_score:
           type: string
-          description: Credit score given by the credit bureau. Cannot be above 999.
+          description: Credit score given by the credit bureau. Cannot be above 850. Mutually exclusive with `credit_report_non_score_value`.
+        credit_report_non_score_value:
+          $ref: '#/components/schemas/CreditReportNonScoreValueEnum'
         credit_report_source:
           $ref: '#/components/schemas/CreditReportSourceEnum'
         credit_pulled_at:
           type: string
           format: date-time
           description: Date time credit is pulled at.
-      description: Details on credit data from credit bureaus on the entity.
-    CreateAnIndividualEntityResponse:
-      title: Individual
+      description: Details on credit data from credit bureaus on the entity. Exactly one of `credit_score` or `credit_report_non_score_value` must be provided.
+    Error:
       type: object
       required:
-      - id
-      - type
-      - created_at
-      - updated_at
+      - code
+      - message
       properties:
-        id:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
           type: string
-          description: Unique ID for the Entity object.
-        client_customer_id:
-          type: string
-          maxLength: 64
-          description: Client customer ID for the entity object. Limit of 64 characters.
-        created_at:
-          type: string
-          format: date-time
-          description: Timestamp at which the entity object is created.
-        updated_at:
-          type: string
-          format: date-time
-          description: Timestamp at which the entity object was last updated.
-        type:
-          $ref: '#/components/schemas/EntityTypeIndividual'
-        intended_roles:
+          description: A human-readable description of the error family. Identical for every occurrence of a given `code`; carries no request-specific detail.
+          example: One or more parameters are invalid.
+        errors:
           type: array
+          description: Zero or more specific errors within this family. Always present for validation errors, one entry per failing field.
           items:
-            $ref: '#/components/schemas/IntendedRolesEnum'
-          example: 'Possible values: authorized_user, authorized_signer, account_holder. In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed. It will be an all or nothing behavior. For type = business, sole_prop, only account_holder should be provided'
-        risk_score:
-          $ref: '#/components/schemas/EntityRiskScoreEnum'
-        individual_details:
-          $ref: '#/components/schemas/IndividualDetails'
-        rfi_details:
-          $ref: '#/components/schemas/RfiDetails'
-        ofac_details:
-          $ref: '#/components/schemas/OfacDetails'
-        kyc_details:
-          $ref: '#/components/schemas/KycDetails'
-        credit_details:
-          type: array
-          items:
-            $ref: '#/components/schemas/CreditDetails'
-        role_details:
-          type: array
-          items:
-            $ref: '#/components/schemas/RoleDetails'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    OfacDetailsResultEnum:
-      type: string
-      enum:
-      - pending
-      - passed
-      - failed
-      description: 'OFAC result. Possible values: pending | passed | failed. '
-    IntendedRolesEnum:
-      type: string
-      enum:
-      - authorized_user
-      - authorized_signer
-      - account_holder
-      description: 'The entity''s intended role. Lead highly recommends using this field to confirm data requirements for different roles to minimize errors later. In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed. It will be an all or nothing behavior.
-
-        Lead currently supports:
-
-        * `authorized_user`: Individual entity with restricted access to the account, without legal responsibility. Only applies to individual entity.
-
-        * `authorized_signer`: Individual entity allowed to sign on behalf of the account holder, without legal responsibility. Only applies to individual entity.
-
-        * `account_holder`: Entity with full control and legal responsibility for the account. Applies to all entity types.
-
-        '
-    ContactMethodPhone:
-      title: Phone Number
-      type: object
-      required:
-      - type
-      - phone_number
-      properties:
-        type:
-          $ref: '#/components/schemas/ContactMethodTypePhone'
-        phone_number:
-          type: string
-          description: Primary phone number of the entity. Must follow E.123 format.
-    UsEntityTypeEnum:
-      type: string
-      pattern: ^us_entity$
-      default: us_entity
-      description: Entity is considered US entity if they have US tax identification. For US entities, US tax identification number as well as other available government-verified identification documents, if collected, are required.
-    ControlPersons:
-      type: object
-      required:
-      - entity_id
-      - title
-      properties:
-        entity_id:
-          type: string
-          description: Individual entity_id created for the control person. Data requirements for control persons match those of authorized_signer roles.
-        title:
-          type: string
-          description: The title of this control person.
-        relationship_established_at:
-          type: string
-          format: date
-          description: The date the relationship was established.
-    CreateABusinessEntityRequestBody:
-      title: Business
-      type: object
-      required:
-      - type
-      - business_details
-      properties:
-        client_customer_id:
-          type: string
-          maxLength: 64
-          description: Client customer ID for the entity object. Limit of 64 characters.
-        type:
-          $ref: '#/components/schemas/EntityTypeBusiness'
-        intended_roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/IntendedRolesEnum'
-          example: 'Possible values: authorized_user, authorized_signer, account_holder. In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed. It will be an all or nothing behavior. For type = business, sole_prop, only account_holder should be provided'
-        risk_score:
-          $ref: '#/components/schemas/EntityRiskScoreEnum'
-        business_details:
-          $ref: '#/components/schemas/BusinessDetails'
-        beneficial_owners:
-          type: array
-          items:
-            $ref: '#/components/schemas/BeneficialOwners'
-        control_persons:
-          type: array
-          items:
-            $ref: '#/components/schemas/ControlPersons'
-        rfi_details:
-          $ref: '#/components/schemas/RfiDetails'
-        ofac_details:
-          $ref: '#/components/schemas/OfacDetails'
-        kyc_details:
-          $ref: '#/components/schemas/KycDetails'
-        credit_details:
-          type: array
-          items:
-            $ref: '#/components/schemas/CreditDetails'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
+            $ref: '#/components/schemas/ErrorItem'
     CreateAnIndividualEntityRequestBody:
       title: Individual
       type: object
@@ -536,7 +863,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/IntendedRolesEnum'
-          example: 'Possible values: authorized_user, authorized_signer, account_holder. In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed. It will be an all or nothing behavior. For type = business, sole_prop, only account_holder should be provided'
+          description: The entity's intended role(s). In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed; it is an all or nothing behavior. For type `business` or `sole_prop`, only `account_holder` should be provided.
+          example:
+          - account_holder
         risk_score:
           $ref: '#/components/schemas/EntityRiskScoreEnum'
         individual_details:
@@ -553,17 +882,89 @@ components:
             $ref: '#/components/schemas/CreditDetails'
         metadata:
           $ref: '#/components/schemas/Metadata'
-    UpdateAnEntitySuccessResponse:
+    DocumentFileID:
+      type: string
+      pattern: ^file_\w+$
+      description: A file ID from `POST /v2/files`. The file must exist, belong to your program, and have a type this entry accepts. Each file can appear at most once on an entity.
+      example: file_7RwQ2mK9pL4xT1vN8jS5
+    IdentificationDetailsIndividualV2:
+      type: object
+      description: Required on every individual; only `type` is required inside it. `tax_identification` is required for a `us_entity` holding the `account_holder`, `minor_account_holder`, or `authorized_signer` relationship type, and for beneficial owners, control persons, and sole proprietors. It is not required for an `authorized_user`. A `non_us_entity` needs at least one `identification_documents` entry for the same relationship types; on an entity created on v0, `legacy_identification_documents` entries count.
       oneOf:
-      - $ref: '#/components/schemas/CreateAnIndividualEntityResponse'
-      - $ref: '#/components/schemas/CreateABusinessEntityResponse'
-      - $ref: '#/components/schemas/CreateASolePropEntityResponse'
+      - $ref: '#/components/schemas/UsEntityV2'
+      - $ref: '#/components/schemas/NonUsEntityV2'
       discriminator:
         propertyName: type
         mapping:
-          individual: '#/components/schemas/CreateAnIndividualEntityResponse'
-          business: '#/components/schemas/CreateABusinessEntityResponse'
-          sole_prop: '#/components/schemas/CreateASolePropEntityResponse'
+          us_entity: '#/components/schemas/UsEntityV2'
+          non_us_entity: '#/components/schemas/NonUsEntityV2'
+    UpdateAnIndividualEntityRequestBody:
+      title: Individual
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          $ref: '#/components/schemas/EntityTypeIndividual'
+        intended_roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntendedRolesEnum'
+          description: The entity's intended role(s). In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed; it is an all or nothing behavior. For type `business` or `sole_prop`, only `account_holder` should be provided.
+          example:
+          - account_holder
+        risk_score:
+          $ref: '#/components/schemas/EntityRiskScoreEnum'
+        individual_details:
+          $ref: '#/components/schemas/UpdateIndividualDetails'
+        rfi_details:
+          $ref: '#/components/schemas/RfiDetails'
+        ofac_details:
+          $ref: '#/components/schemas/OfacDetails'
+        kyc_details:
+          $ref: '#/components/schemas/KycDetails'
+        credit_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    UpdateAnIndividualEntityRequestBodyV2:
+      title: Individual
+      type: object
+      required:
+      - type
+      description: Lead ignores fields not listed here.
+      properties:
+        type:
+          $ref: '#/components/schemas/EntityTypeIndividual'
+        intended_eligibility:
+          $ref: '#/components/schemas/IntendedEligibilityV2'
+        risk_score:
+          $ref: '#/components/schemas/EntityRiskScoreEnum'
+        individual_details:
+          $ref: '#/components/schemas/UpdateIndividualDetailsV2'
+        rfi_details:
+          $ref: '#/components/schemas/RfiDetails'
+        ofac_details:
+          $ref: '#/components/schemas/OfacDetails'
+        kyc_details:
+          $ref: '#/components/schemas/KycDetails'
+        credit_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    LegacyAdditionalDocumentsV2:
+      type: array
+      example:
+      - client_document_id: 2026_01_02_statement
+        type: bank_statement
+        description: Bank statement for January
+      description: 'Additional document entries created on v0 Entities, returned exactly as sent. Read only: ignored if included on a POST or PATCH.'
+      items:
+        $ref: '#/components/schemas/AdditionalDocument'
     CreateABusinessEntityResponse:
       title: Business
       type: object
@@ -595,7 +996,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/IntendedRolesEnum'
-          example: 'Possible values: authorized_user, authorized_signer, account_holder. In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed. It will be an all or nothing behavior. For type = business, sole_prop, only account_holder should be provided'
+          description: The entity's intended role(s). In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed; it is an all or nothing behavior. For type `business` or `sole_prop`, only `account_holder` should be provided.
+          example:
+          - account_holder
         risk_score:
           $ref: '#/components/schemas/EntityRiskScoreEnum'
         business_details:
@@ -624,24 +1027,39 @@ components:
             $ref: '#/components/schemas/RoleDetails'
         metadata:
           $ref: '#/components/schemas/Metadata'
-    CreateASolePropEntityResponse:
-      title: Sole Prop
+    TaxIdentificationTypeEnum:
+      type: string
+      enum:
+      - ssn
+      - itin
+      - ein
+      example: ssn
+      description: 'The entity''s US tax identification type: `ssn`, `itin`, or `ein`.
+
+        - For `individual` entity, use SSN or ITIN.
+
+        - For `business` entity, use EIN. For single-member LLC entities where no EIN is available, SSN or ITIN may be used.
+
+        - For `sole_prop` entity, use SSN, ITIN, or EIN.
+
+        '
+    IndividualEntityV2:
+      title: Individual
       type: object
       required:
       - id
       - type
-      - business_details
-      - sole_proprietor
+      - individual_details
+      - eligibility
       - created_at
       - updated_at
       properties:
         id:
-          type: string
+          $ref: '#/components/schemas/EntityID'
           description: Unique ID for the Entity object.
         client_customer_id:
           type: string
-          maxLength: 64
-          description: Client customer ID for the entity object. Limit of 64 characters.
+          description: Your customer ID, on entities created on v0 or through Entity files. Response only. Lead ignores it if sent, and does not return it on other entities.
         created_at:
           type: string
           format: date-time
@@ -651,18 +1069,11 @@ components:
           format: date-time
           description: Timestamp at which the entity object was last updated.
         type:
-          $ref: '#/components/schemas/EntityTypeSoleProp'
-        intended_roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/IntendedRolesEnum'
-          example: 'Possible values: authorized_user, authorized_signer, account_holder. In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed. It will be an all or nothing behavior. For type = business, sole_prop, only account_holder should be provided'
+          $ref: '#/components/schemas/EntityTypeIndividual'
         risk_score:
           $ref: '#/components/schemas/EntityRiskScoreEnum'
-        business_details:
-          $ref: '#/components/schemas/BusinessDetails'
-        sole_proprietor:
-          $ref: '#/components/schemas/SoleProprietor'
+        individual_details:
+          $ref: '#/components/schemas/IndividualDetailsResponseV2'
         rfi_details:
           $ref: '#/components/schemas/RfiDetails'
         ofac_details:
@@ -673,13 +1084,33 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CreditDetails'
-        role_details:
-          type: array
-          items:
-            $ref: '#/components/schemas/RoleDetails'
+        intended_eligibility:
+          $ref: '#/components/schemas/IntendedEligibilityV2'
+        eligibility:
+          $ref: '#/components/schemas/EligibilityV2'
         metadata:
           $ref: '#/components/schemas/Metadata'
-    IndividualDetails:
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
+    IdentificationDetailsBusiness:
+      type: object
+      oneOf:
+      - $ref: '#/components/schemas/UsEntity'
+      - $ref: '#/components/schemas/NonUsEntityBusiness'
+      discriminator:
+        propertyName: type
+        mapping:
+          us_entity: '#/components/schemas/UsEntity'
+          non_us_entity: '#/components/schemas/NonUsEntityBusiness'
+    UsEntityTypeEnum:
+      type: string
+      pattern: ^us_entity$
+      default: us_entity
+      description: Use `us_entity` for an entity with US tax identification, including one you have not collected yet. `tax_identification` is required for an `account_holder`, `minor_account_holder`, or `authorized_signer`, and for beneficial owners, control persons, and sole proprietors. It is not required for an `authorized_user`. Include other government-verified identification documents in `identification_documents` when collected.
+    IndividualDetailsResponseV2:
       type: object
       required:
       - first_name
@@ -688,7 +1119,7 @@ components:
       properties:
         first_name:
           type: string
-          description: Legal first name.
+          description: Legal first name, as your customer gave it. Non-Latin characters are accepted.
         preferred_first_name:
           type: string
           description: Preferred first name.
@@ -697,11 +1128,11 @@ components:
           description: Middle name.
         last_name:
           type: string
-          description: Legal last name. Must be at least 2 alphanumeric characters.
+          description: Legal last name, as your customer gave it. Non-Latin characters are accepted.
         date_of_birth:
           type: string
           format: date
-          description: Date of birth, in YYYY-MM-DD format. Authorized signers and account holders must be 18 years or older.
+          description: Date of birth, in YYYY-MM-DD format. `account_holder` and `authorized_signer` require age 18 or older. `minor_account_holder` requires age 16 or 17.
           example: '2002-02-15'
         occupation:
           type: string
@@ -713,22 +1144,139 @@ components:
         address_details:
           $ref: '#/components/schemas/AddressDetails'
         identification_details:
-          $ref: '#/components/schemas/IdentificationDetailsIndividual'
+          $ref: '#/components/schemas/IdentificationDetailsIndividualResponseV2'
         additional_documents:
+          $ref: '#/components/schemas/AdditionalDocumentsV2'
+        legacy_additional_documents:
+          $ref: '#/components/schemas/LegacyAdditionalDocumentsV2'
+      description: Details for the individual entity. An `authorized_user` requires only `first_name`, `last_name`, a contact method, and `identification_details.type`. Other relationship types require more; see [Eligibility](https://docs.lead.bank/v2/products/entity/eligibility).
+    RfiDetails:
+      type: object
+      required:
+      - result
+      - requested_at
+      properties:
+        result:
+          $ref: '#/components/schemas/RfiDetailsResultEnum'
+        requested_at:
+          type: string
+          format: date-time
+          description: Date time RFI is requested at.
+    UsEntityV2:
+      title: US Entity
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          $ref: '#/components/schemas/UsEntityTypeEnum'
+        tax_identification:
+          $ref: '#/components/schemas/TaxIdentification'
+        identification_documents:
+          $ref: '#/components/schemas/IdentificationDocumentsV2'
+    BusinessTypeEnum:
+      type: string
+      enum:
+      - corporation
+      - partnership
+      - sole_prop
+      - llc
+      - trust
+      - cooperative
+      - other
+      example: llc
+      description: 'Business Types. Possible business types are `corporation`, `partnership`, `sole_prop`, `llc`, `trust`, `cooperative`, `other`.
+
+        - For business entity, cannot use `sole_prop` as business type.
+
+        - For sole_prop entity, must use `sole_prop` as business type.
+
+        '
+    BusinessEntityV2:
+      title: Business
+      type: object
+      required:
+      - id
+      - type
+      - business_details
+      - eligibility
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityID'
+          description: Unique ID for the Entity object.
+        client_customer_id:
+          type: string
+          description: Your customer ID, on entities created on v0 or through Entity files. Response only. Lead ignores it if sent, and does not return it on other entities.
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp at which the entity object is created.
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp at which the entity object was last updated.
+        type:
+          $ref: '#/components/schemas/EntityTypeBusiness'
+        risk_score:
+          $ref: '#/components/schemas/EntityRiskScoreEnum'
+        business_details:
+          $ref: '#/components/schemas/BusinessDetailsResponseV2'
+        beneficial_owners:
           type: array
           items:
-            $ref: '#/components/schemas/AdditionalDocument'
-      description: Details for the individual entity
-    IdentificationDetailsBusiness:
+            $ref: '#/components/schemas/BeneficialOwners'
+        control_persons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ControlPersons'
+        rfi_details:
+          $ref: '#/components/schemas/RfiDetails'
+        ofac_details:
+          $ref: '#/components/schemas/OfacDetails'
+        kyc_details:
+          $ref: '#/components/schemas/KycDetails'
+        credit_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditDetails'
+        intended_eligibility:
+          $ref: '#/components/schemas/IntendedEligibilityV2'
+        eligibility:
+          $ref: '#/components/schemas/EligibilityV2'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    ErrorItem:
       type: object
-      oneOf:
-      - $ref: '#/components/schemas/UsEntity'
-      - $ref: '#/components/schemas/NonUsEntityBusiness'
-      discriminator:
-        propertyName: type
-        mapping:
-          us_entity: '#/components/schemas/UsEntity'
-          non_us_entity: '#/components/schemas/NonUsEntityBusiness'
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          description: A snake_case code naming the specific error or sub-category.
+          example: required
+        message:
+          type: string
+          description: A human-readable description of this specific error, with interpolated values where relevant.
+          example: account_number_id is required.
+        parameters:
+          type: array
+          description: The request fields this error implicates, in dot notation for nested fields. Present for validation errors.
+          items:
+            type: string
+          example:
+          - account_number_id
+    CriteriaDetails:
+      type: object
+      properties:
+        failed_checks:
+          type: array
+          items:
+            type: string
+        entity_id:
+          type: string
     RetrieveAnEntitySuccessResponse:
       oneOf:
       - $ref: '#/components/schemas/CreateAnIndividualEntityResponse'
@@ -740,39 +1288,29 @@ components:
           individual: '#/components/schemas/CreateAnIndividualEntityResponse'
           business: '#/components/schemas/CreateABusinessEntityResponse'
           sole_prop: '#/components/schemas/CreateASolePropEntityResponse'
-    ContactMethodTypePhone:
-      type: string
-      pattern: ^phone_number$
-      default: phone_number
-      example: +22 607 123 4567
-      description: ContactMethodType = phone_number. Conforms to E.123 standard
-    UpdateAddressDetails:
-      type: object
-      properties:
-        physical_address:
-          $ref: '#/components/schemas/UpdateAddress'
-          description: Physical address for the entity. Physical addresses must not be P.O. boxes, registered agent addresses or in prohibited countries.
-        mailing_address:
-          $ref: '#/components/schemas/UpdateAddress'
-          description: Mailing address for the entity.
-        other_addresses:
-          type: array
-          description: Other addresses for the entity.
-          items:
-            $ref: '#/components/schemas/Address'
-    OfacDetails:
+    UpdateAnEntitySuccessResponse:
+      oneOf:
+      - $ref: '#/components/schemas/CreateAnIndividualEntityResponse'
+      - $ref: '#/components/schemas/CreateABusinessEntityResponse'
+      - $ref: '#/components/schemas/CreateASolePropEntityResponse'
+      discriminator:
+        propertyName: type
+        mapping:
+          individual: '#/components/schemas/CreateAnIndividualEntityResponse'
+          business: '#/components/schemas/CreateABusinessEntityResponse'
+          sole_prop: '#/components/schemas/CreateASolePropEntityResponse'
+    NonUsEntityResponseV2:
+      title: Non US Entity
       type: object
       required:
-      - result
-      - screened_at
+      - type
       properties:
-        result:
-          $ref: '#/components/schemas/OfacDetailsResultEnum'
-        screened_at:
-          type: string
-          format: date-time
-          description: Date time OFAC screen is screened at.
-      description: Details on OFAC on the entity.
+        type:
+          $ref: '#/components/schemas/NonUsEntityTypeEnum'
+        identification_documents:
+          $ref: '#/components/schemas/IdentificationDocumentsV2'
+        legacy_identification_documents:
+          $ref: '#/components/schemas/LegacyIdentificationDocumentsV2'
     CreateAnEntitySuccessResponse:
       oneOf:
       - $ref: '#/components/schemas/CreateAnIndividualEntityResponse'
@@ -784,40 +1322,6 @@ components:
           individual: '#/components/schemas/CreateAnIndividualEntityResponse'
           business: '#/components/schemas/CreateABusinessEntityResponse'
           sole_prop: '#/components/schemas/CreateASolePropEntityResponse'
-    TaxIdentification:
-      type: object
-      required:
-      - type
-      - value
-      properties:
-        type:
-          $ref: '#/components/schemas/TaxIdentificationTypeEnum'
-        value:
-          type: string
-          description: The entity's US tax identification number. Must be 9 digits (e.g. XXXXXXXXX). ssn must not start with a 9. ein must begin with a number between 00 and 99. itin must begin with a 9
-          pattern: ^\d{9}$
-    EntityTypeBusiness:
-      type: string
-      pattern: ^business$
-      default: business
-      description: Type of entity = business.
-    NonUsEntityBusiness:
-      title: Non US Entity
-      type: object
-      required:
-      - type
-      properties:
-        type:
-          $ref: '#/components/schemas/NonUsEntityTypeEnum'
-        identification_documents:
-          type: array
-          items:
-            $ref: '#/components/schemas/IdentificationDocument'
-    EntityTypeIndividual:
-      type: string
-      pattern: ^individual$
-      default: individual
-      description: Type of entity = individual.
     AddressDetails:
       type: object
       properties:
@@ -832,184 +1336,6 @@ components:
           description: Other addresses for the entity.
           items:
             $ref: '#/components/schemas/Address'
-    SoleProprietor:
-      type: object
-      required:
-      - entity_id
-      properties:
-        entity_id:
-          type: string
-          minLength: 1
-          description: Individual entity_id created for the sole proprietor. Data requirements for sole proprietors match those of authorized_signer roles.
-    ContactMethod:
-      type: object
-      oneOf:
-      - $ref: '#/components/schemas/ContactMethodEmail'
-      - $ref: '#/components/schemas/ContactMethodPhone'
-      discriminator:
-        propertyName: type
-        mapping:
-          email: '#/components/schemas/ContactMethodEmail'
-          phone_number: '#/components/schemas/ContactMethodPhone'
-    CriteriaDetails:
-      type: object
-      properties:
-        failed_checks:
-          type: array
-          items:
-            type: string
-        entity_id:
-          type: string
-    UpdateAnEntityRequestBody:
-      oneOf:
-      - $ref: '#/components/schemas/UpdateAnIndividualEntityRequestBody'
-      - $ref: '#/components/schemas/UpdateABusinessEntityRequestBody'
-      - $ref: '#/components/schemas/UpdateASolePropEntityRequestBody'
-      discriminator:
-        propertyName: type
-        mapping:
-          individual: '#/components/schemas/UpdateAnIndividualEntityRequestBody'
-          business: '#/components/schemas/UpdateABusinessEntityRequestBody'
-          sole_prop: '#/components/schemas/UpdateASolePropEntityRequestBody'
-    APIError:
-      type: object
-      properties:
-        code:
-          type: string
-          description: The error code.
-        title:
-          type: string
-          description: The error title.
-        detail:
-          type: string
-          description: A detailed error description.
-        status:
-          type: string
-          description: The HTTP status code.
-        invalid_parameters:
-          type: array
-          description: Invalid request parameters with reasons, if applicable.
-          items:
-            $ref: '#/components/schemas/InvalidParameterDetail'
-        instance:
-          type: string
-          description: The object causing this specific occurrence of the error, if applicable.
-    IdentificationDetailsIndividual:
-      type: object
-      oneOf:
-      - $ref: '#/components/schemas/UsEntity'
-      - $ref: '#/components/schemas/NonUsEntityIndividual'
-      discriminator:
-        propertyName: type
-        mapping:
-          us_entity: '#/components/schemas/UsEntity'
-          non_us_entity: '#/components/schemas/NonUsEntityIndividual'
-    CreditReportSourceEnum:
-      type: string
-      enum:
-      - equifax
-      - experian
-      - transunion
-      description: The name of the credit bureau.
-    AdditionalDocument:
-      type: object
-      required:
-      - type
-      properties:
-        client_document_id:
-          type: string
-          description: Client document ID for the additional document.
-        type:
-          $ref: '#/components/schemas/AdditionalDocumentTypeEnum'
-        description:
-          type: string
-          description: Description about the identification document. Required if additional document type is `other`.
-    IdentificationDocument:
-      type: object
-      required:
-      - type
-      - identification_number
-      - issuing_country
-      properties:
-        client_document_id:
-          type: string
-          description: Client document ID for the identification document.
-        type:
-          $ref: '#/components/schemas/IdentificationDocumentsTypeEnum'
-        description:
-          type: string
-          description: Description about the identification document. Required if identification document type is `other`.
-        identification_number:
-          type: string
-          description: Unique identification number on the identification document.
-        expiration_date:
-          type: string
-          format: date
-          description: Expiration date of the identification document.
-        issuing_state:
-          type: string
-          description: Issuing state of the identification document. Must be 2 character code (e.g. NY). If the issuing country is US, this value must be a valid US State.
-        issuing_country:
-          type: string
-          description: Issuing country of the identification document. ISO3166-1 Alpha-2 country code.
-    EntityTypeSoleProp:
-      type: string
-      pattern: ^sole_prop$
-      default: sole_prop
-      description: Type of entity = sole_prop.
-    RfiDetailsResultEnum:
-      type: string
-      enum:
-      - requested
-      - completed
-      description: Result of request for information with the end customer. Leave blank if RFI has not been sent to the customer.
-    ContactMethodEmail:
-      title: Email
-      type: object
-      required:
-      - type
-      - email
-      properties:
-        type:
-          $ref: '#/components/schemas/ContactMethodTypeEmail'
-        email:
-          type: string
-          description: Must be a valid email address in the form `local-part@domain.tld`. The domain must contain at least one dot. Addresses using `localhost`, IP literals (e.g., user@[127.0.0.1]), or quoted local parts (e.g., "user"@example.com) are not accepted. Only common, real-world email formats are supported.
-          example: abc@gmail.com
-    UsEntity:
-      title: US Entity
-      type: object
-      required:
-      - type
-      properties:
-        type:
-          $ref: '#/components/schemas/UsEntityTypeEnum'
-        tax_identification:
-          $ref: '#/components/schemas/TaxIdentification'
-        identification_documents:
-          type: array
-          items:
-            $ref: '#/components/schemas/IdentificationDocument'
-    TaxIdentificationTypeEnum:
-      type: string
-      enum:
-      - ssn
-      - itin
-      - ein
-      description: 'The entity''s US tax identification type.
-
-        - For `individual` entity, `ssn` or `itin` is required.
-
-        - For `business` entity, `ein` is required. For single-member LLC entities where no EIN is available, `ssn` or `itin` may be used.
-
-        - For `sole_prop` entity, `ssn` or `itin` or `ein` is required.
-
-        '
-    ContactMethodTypeEmail:
-      type: string
-      pattern: ^email$
-      default: email
-      description: ContactMethodType = email.
     RoleDetails:
       type: object
       properties:
@@ -1021,71 +1347,45 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CriteriaDetails'
-    Address:
+    ContactMethod:
       type: object
-      required:
-      - line_1
-      - city
-      - country
-      properties:
-        line_1:
-          type: string
-          description: Address line 1.
-          example: 123 Main St.
-        line_2:
-          type: string
-          description: Address line 2.
-          example: Apt 25
-        city:
-          type: string
-          description: City.
-          example: Denver
-        postal_code:
-          type: string
-          description: 'Postal Code, required for US addresses. Please follow the following format: US: ^\d5(?:-\d4)?$, CN: ^\d6$, GB: ^[A-Z]{1,2}d[A-Z0-9]? ?d[A-Z]{2}$, JP: ^\d3-\d4$'
-          example: 80014
-        state:
-          type: string
-          description: State. required for US addresses in 2 character code (e.g. NY).
-          example: CO
-        country:
-          type: string
-          description: ISO3166-1 Alpha-2 country code.
-          example: US
-    IdentificationDocumentsTypeEnum:
+      oneOf:
+      - $ref: '#/components/schemas/ContactMethodEmail'
+      - $ref: '#/components/schemas/ContactMethodPhone'
+      discriminator:
+        propertyName: type
+        mapping:
+          email: '#/components/schemas/ContactMethodEmail'
+          phone_number: '#/components/schemas/ContactMethodPhone'
+    EntityRiskScoreEnum:
       type: string
       enum:
-      - drivers_license
-      - state_or_provincial_id
-      - passport
-      - permanent_residency_id
-      - military_id
-      - national_id
-      - matriculate_id
-      - other
-      - tax_certificate
-      - tax_returns
-      - partnership_agreement
-      - certificate_of_good_standing
-      - formation_document
-      - proof_of_place_on_stock_exchange
-      - name_certificate
-      description: 'The entity''s government-verified identification document type. This will apply for identification types other than US tax identification.
-
-        - For `individual` entity, possible types are: `drivers_license`, `state_or_provincial_id`, `passport`, `permanent_residency_id`, `military_id`, `national_id`, `matriculate_id`, `other`. Note that `national_id` and `matriculate_id` are not applicable for `us_entity`.
-
-        - For `business` entity, possible types are: `tax_certificate`, `tax_returns`, `partnership_agreement`, `certificate_of_good_standing`, `formation_document`, `proof_of_place_on_stock_exchange`, `other`.
-
-        - For `sole_prop` entity, possible types are: `tax_certificate`, `tax_returns`, `name_certificate`, `drivers_license`, `state_or_provincial_id`, `passport`, `permanent_residency_id`, `military_id`, `national_id`, `matriculate_id`, `other`. Note that `national_id` and `matriculate_id` are not applicable for `us_entity`.
-
-        '
-    Metadata:
+      - low
+      - medium
+      - high
+      example: low
+      description: The entity's risk score, mapped to Lead by the client. Client should have provided risk score mapping to Lead.
+    RetrieveAnEntitySuccessResponseV2:
+      oneOf:
+      - $ref: '#/components/schemas/IndividualEntityV2'
+      - $ref: '#/components/schemas/BusinessEntityV2'
+      - $ref: '#/components/schemas/SolePropEntityV2'
+      - $ref: '#/components/schemas/LeadEntityResponse'
+      - $ref: '#/components/schemas/PartnerEntityResponse'
+      discriminator:
+        propertyName: type
+        mapping:
+          individual: '#/components/schemas/IndividualEntityV2'
+          business: '#/components/schemas/BusinessEntityV2'
+          sole_prop: '#/components/schemas/SolePropEntityV2'
+          lead: '#/components/schemas/LeadEntityResponse'
+          partner: '#/components/schemas/PartnerEntityResponse'
+    BusinessDetailsResponseV2:
       type: object
-      additionalProperties:
-        type: string
-      description: A set of key-value pairs that can be used to store additional information related to this object.
-    UpdateBusinessDetails:
-      type: object
+      required:
+      - name
+      - identification_details
+      - address_details
       properties:
         type:
           $ref: '#/components/schemas/BusinessTypeEnum'
@@ -1102,7 +1402,7 @@ components:
           type: array
           items:
             type: string
-          description: NAICS code(s) for the applicable industries. 2-6 digits of NAICS code(s) are accepted and valid NAICS codes can be found on naics.com.
+          description: NAICS code(s) for the applicable industries. 2-6 digits of NAICS code(s) are accepted and valid NAICS codes can be found on naics.com/search. Please refer to 2022 NAICS Reference Files.
         doing_business_as:
           type: string
           description: Business name if the business operates under a different name.
@@ -1114,19 +1414,105 @@ components:
           items:
             $ref: '#/components/schemas/ContactMethod'
         address_details:
-          $ref: '#/components/schemas/UpdateAddressDetails'
+          $ref: '#/components/schemas/AddressDetails'
         identification_details:
-          $ref: '#/components/schemas/IdentificationDetailsBusiness'
+          $ref: '#/components/schemas/IdentificationDetailsBusinessResponseV2'
         additional_documents:
+          $ref: '#/components/schemas/AdditionalDocumentsV2'
+        legacy_additional_documents:
+          $ref: '#/components/schemas/LegacyAdditionalDocumentsV2'
+      description: Details for the business entity.
+    RoleDetailsStatus:
+      type: string
+      description: Role Details Status
+      example: active
+      enum:
+      - active
+      - inactive
+    ErrorCode:
+      type: string
+      description: A snake_case code identifying the error family — the stable, machine-readable value partners branch on, together with the HTTP status.
+      example: parameters_invalid
+      enum:
+      - request_malformed
+      - content_too_large
+      - idempotency_key_missing
+      - authentication_missing
+      - token_invalid
+      - source_ip_not_allowed
+      - url_invalid
+      - object_not_found
+      - method_not_allowed
+      - idempotency_key_in_use
+      - idempotency_request_inconsistent
+      - rate_limit_exceeded
+      - internal_server_error
+      - service_unavailable
+      - endpoint_disabled
+      - gateway_timeout
+      - unclassified
+      - parameters_invalid
+      - related_object_invalid
+      - related_object_not_ready
+      - related_object_conflict
+      - limit_exceeded
+      - client_control_restricted
+      - lead_control_restricted
+      - object_state_conflict
+      - object_modified_concurrently
+      - operation_invalid
+    IntendedEligibilityV2:
+      type: array
+      items:
+        $ref: '#/components/schemas/EligibilityRelationshipType'
+      example:
+      - account_holder
+      description: 'The relationship types you intend this entity to hold. When you send it, Lead checks the entity''s data against every listed type and rejects the request with `422 parameters_invalid` if any fails. The check is all or nothing, and the error returns every failing check, not just the first. Listing fewer types than the entity qualifies for still succeeds, and `eligibility` shows everything it qualifies for.
+
+
+        If the check passes, Lead saves the list and returns it on the entity. On a `PATCH`, Lead checks the entity as it would be after the update, against the list you send or, if you leave the field out, the saved list. Send an empty array to clear the saved list; no check runs.
+
+        '
+    CreateASolePropEntityRequestBodyV2:
+      title: Sole Prop
+      type: object
+      required:
+      - type
+      - business_details
+      - sole_proprietor
+      description: Lead ignores fields not listed here.
+      properties:
+        type:
+          $ref: '#/components/schemas/EntityTypeSoleProp'
+        intended_eligibility:
+          $ref: '#/components/schemas/IntendedEligibilityV2'
+        risk_score:
+          $ref: '#/components/schemas/EntityRiskScoreEnum'
+        business_details:
+          $ref: '#/components/schemas/BusinessDetailsV2'
+        sole_proprietor:
+          $ref: '#/components/schemas/SoleProprietor'
+        rfi_details:
+          $ref: '#/components/schemas/RfiDetails'
+        ofac_details:
+          $ref: '#/components/schemas/OfacDetails'
+        kyc_details:
+          $ref: '#/components/schemas/KycDetails'
+        credit_details:
           type: array
           items:
-            $ref: '#/components/schemas/AdditionalDocument'
-      description: Details for the business entity
-    NonUsEntityTypeEnum:
-      type: string
-      pattern: ^non_us_entity$
-      default: non_us_entity
-      description: Entity is considered non-US entity if they do not have US tax identification. For non-US entities, at least 1 government-verified identification documents is required.
+            $ref: '#/components/schemas/CreditDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    SoleProprietor:
+      type: object
+      required:
+      - entity_id
+      properties:
+        entity_id:
+          type: string
+          minLength: 1
+          description: Individual entity_id created for the sole proprietor. Data requirements for sole proprietors match those of an `authorized_signer`.
     UpdateIndividualDetails:
       type: object
       properties:
@@ -1168,148 +1554,101 @@ components:
           items:
             $ref: '#/components/schemas/AdditionalDocument'
       description: Details for the individual entity
-    InvalidParameterDetail:
+    UpdateBusinessDetailsV2:
       type: object
-      properties:
-        parameter:
-          type: string
-          description: Which parameter is invalid.
-          example: transaction_type
-        reason:
-          type: string
-          description: Why the parameter is invalid.
-    CreateASolePropEntityRequestBody:
-      title: Sole Prop
-      type: object
-      required:
-      - type
-      - business_details
-      - sole_proprietor
-      properties:
-        client_customer_id:
-          type: string
-          maxLength: 64
-          description: Client customer ID for the entity object. Limit of 64 characters.
-        type:
-          $ref: '#/components/schemas/EntityTypeSoleProp'
-        intended_roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/IntendedRolesEnum'
-          example: 'Possible values: authorized_user, authorized_signer, account_holder. In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed. It will be an all or nothing behavior. For type = business, sole_prop, only account_holder should be provided'
-        risk_score:
-          $ref: '#/components/schemas/EntityRiskScoreEnum'
-        business_details:
-          $ref: '#/components/schemas/BusinessDetails'
-        sole_proprietor:
-          $ref: '#/components/schemas/SoleProprietor'
-        rfi_details:
-          $ref: '#/components/schemas/RfiDetails'
-        ofac_details:
-          $ref: '#/components/schemas/OfacDetails'
-        kyc_details:
-          $ref: '#/components/schemas/KycDetails'
-        credit_details:
-          type: array
-          items:
-            $ref: '#/components/schemas/CreditDetails'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    KycDetailsResultEnum:
-      type: string
-      enum:
-      - pending
-      - passed
-      - failed
-      description: 'KYC result. Possible values: pending | passed | failed. '
-    RfiDetails:
-      type: object
-      required:
-      - result
-      - requested_at
-      properties:
-        result:
-          $ref: '#/components/schemas/RfiDetailsResultEnum'
-        requested_at:
-          type: string
-          format: date-time
-          description: Date time RFI is requested at.
-    BeneficialOwners:
-      type: object
-      required:
-      - entity_id
-      properties:
-        entity_id:
-          type: string
-          description: Individual entity_id created for the beneficial owner. Data requirements for beneficial owners match those of authorized_signer roles.
-        ownership_percentage:
-          type: string
-          description: Percentage ownership (0-100.00 or 0-1.00 for decimal representation).
-          pattern: ^(0(\.\d{1,2})?|[1-9]\d{0,1}(\.\d{1,2})?|100(\.0{1,2})?)$
-        relationship_established_at:
-          type: string
-          format: date
-          description: The date the relationship was established.
-    BusinessTypeEnum:
-      type: string
-      enum:
-      - corporation
-      - partnership
-      - sole_prop
-      - llc
-      - trust
-      - cooperative
-      - other
-      description: 'Business Types. Possible business types are `corporation`, `partnership`, `sole_prop`, `llc`, `trust`, `cooperative`, `other`.
-
-        - For business entity, cannot use `sole_prop` as business type.
-
-        - For sole_prop entity, must use `sole_prop` as business type.
-
-        '
-    RoleDetailsStatus:
-      type: string
-      description: Role Details Status
-      example: active
-      enum:
-      - active
-      - inactive
-    UpdateAnIndividualEntityRequestBody:
-      title: Individual
-      type: object
-      required:
-      - type
       properties:
         type:
-          $ref: '#/components/schemas/EntityTypeIndividual'
-        intended_roles:
+          $ref: '#/components/schemas/BusinessTypeEnum'
+        name:
+          type: string
+          description: Legal name of the business. Must be at least 2 characters.
+        gross_annual_revenue:
+          type: string
+          description: Business gross revenue for prior fiscal year.
+        currency_code:
+          type: string
+          description: A three-letter currency code as defined in ISO 4217.
+        industry:
           type: array
           items:
-            $ref: '#/components/schemas/IntendedRolesEnum'
-          example: 'Possible values: authorized_user, authorized_signer, account_holder. In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed. It will be an all or nothing behavior. For type = business, sole_prop, only account_holder should be provided'
-        risk_score:
-          $ref: '#/components/schemas/EntityRiskScoreEnum'
-        individual_details:
-          $ref: '#/components/schemas/UpdateIndividualDetails'
-        rfi_details:
-          $ref: '#/components/schemas/RfiDetails'
-        ofac_details:
-          $ref: '#/components/schemas/OfacDetails'
-        kyc_details:
-          $ref: '#/components/schemas/KycDetails'
-        credit_details:
+            type: string
+          description: NAICS code(s) for the applicable industries. 2-6 digits of NAICS code(s) are accepted and valid NAICS codes can be found on naics.com/search. Please refer to 2022 NAICS Reference Files.
+        doing_business_as:
+          type: string
+          description: Business name if the business operates under a different name.
+        website:
+          type: string
+          description: The website of the business. Must start with http:// or https://.
+        contact_methods:
           type: array
           items:
-            $ref: '#/components/schemas/CreditDetails'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    EntityRiskScoreEnum:
+            $ref: '#/components/schemas/ContactMethod'
+        address_details:
+          $ref: '#/components/schemas/UpdateAddressDetails'
+        identification_details:
+          $ref: '#/components/schemas/IdentificationDetailsBusinessV2'
+        additional_documents:
+          $ref: '#/components/schemas/AdditionalDocumentsV2'
+      description: Details for the business entity.
+    EntityTypeIndividual:
       type: string
-      enum:
-      - low
-      - medium
-      - high
-      description: The entity's risk score, mapped to Lead by the client. Client should have provided risk score mapping to Lead.
+      pattern: ^individual$
+      default: individual
+      description: Type of entity = individual.
+    IdentificationDetailsBusinessResponseV2:
+      type: object
+      oneOf:
+      - $ref: '#/components/schemas/UsEntityResponseV2'
+      - $ref: '#/components/schemas/NonUsEntityResponseV2'
+      discriminator:
+        propertyName: type
+        mapping:
+          us_entity: '#/components/schemas/UsEntityResponseV2'
+          non_us_entity: '#/components/schemas/NonUsEntityResponseV2'
+    EligibilityV2:
+      type: object
+      description: Whether the entity's current data qualifies it for each relationship type, with the failing checks. Response only. Lead computes it from current data on every read and never stores it. All four keys are always present. On a program that does not offer minor account holders, `minor_account_holder` is `ineligible` for every entity.
+      required:
+      - account_holder
+      - minor_account_holder
+      - authorized_signer
+      - authorized_user
+      properties:
+        account_holder:
+          $ref: '#/components/schemas/EligibilityRelationshipV2'
+        minor_account_holder:
+          $ref: '#/components/schemas/EligibilityRelationshipV2'
+        authorized_signer:
+          $ref: '#/components/schemas/EligibilityRelationshipV2'
+        authorized_user:
+          $ref: '#/components/schemas/EligibilityRelationshipV2'
+      example:
+        account_holder:
+          status: eligible
+          failed_checks: []
+        minor_account_holder:
+          status: ineligible
+          failed_checks:
+          - check: check_date_of_birth_above_maximum
+            entity_id: entity_xyz123
+            reason: The entity exceeds the maximum age for minor_account_holder.
+        authorized_signer:
+          status: eligible
+          failed_checks: []
+        authorized_user:
+          status: eligible
+          failed_checks: []
+    CreateAnEntitySuccessResponseV2:
+      oneOf:
+      - $ref: '#/components/schemas/IndividualEntityV2'
+      - $ref: '#/components/schemas/BusinessEntityV2'
+      - $ref: '#/components/schemas/SolePropEntityV2'
+      discriminator:
+        propertyName: type
+        mapping:
+          individual: '#/components/schemas/IndividualEntityV2'
+          business: '#/components/schemas/BusinessEntityV2'
+          sole_prop: '#/components/schemas/SolePropEntityV2'
     BusinessDetails:
       type: object
       required:
@@ -1352,28 +1691,266 @@ components:
           items:
             $ref: '#/components/schemas/AdditionalDocument'
       description: Details for the business entity
-    AdditionalDocumentTypeEnum:
+    CreateASolePropEntityRequestBody:
+      title: Sole Prop
+      type: object
+      required:
+      - type
+      - business_details
+      - sole_proprietor
+      properties:
+        client_customer_id:
+          type: string
+          maxLength: 64
+          description: Client customer ID for the entity object. Limit of 64 characters.
+        type:
+          $ref: '#/components/schemas/EntityTypeSoleProp'
+        intended_roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntendedRolesEnum'
+          description: The entity's intended role(s). In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed; it is an all or nothing behavior. For type `business` or `sole_prop`, only `account_holder` should be provided.
+          example:
+          - account_holder
+        risk_score:
+          $ref: '#/components/schemas/EntityRiskScoreEnum'
+        business_details:
+          $ref: '#/components/schemas/BusinessDetails'
+        sole_proprietor:
+          $ref: '#/components/schemas/SoleProprietor'
+        rfi_details:
+          $ref: '#/components/schemas/RfiDetails'
+        ofac_details:
+          $ref: '#/components/schemas/OfacDetails'
+        kyc_details:
+          $ref: '#/components/schemas/KycDetails'
+        credit_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    EligibilityRelationshipType:
       type: string
       enum:
-      - bank_statement
-      - utility_bills
-      - proof_of_address
-      - investigation_report
-      - financial_statement
-      - public_records
-      - adverse_media
-      - id_selfie
-      - other
-      description: Type of additional non-government documents being provided to verify entity. Possible values are `bank_statement`, `utility_bills`, `proof_of_address`, `investigation_report`, `financial_statement`, `public_records`, `adverse_media`, `id_selfie`, `other`.
+      - account_holder
+      - minor_account_holder
+      - authorized_signer
+      - authorized_user
+      example: account_holder
+      description: 'A relationship type an entity can hold.
+
+        * `account_holder`: Full control of, and legal responsibility for, the account.
+
+        * `minor_account_holder`: An individual aged 16 or 17 with account holder eligibility.
+
+        * `authorized_signer`: An individual allowed to sign on behalf of the account holder, without legal responsibility.
+
+        * `authorized_user`: An individual with restricted access to the account, without legal responsibility.
+
+        '
+    CreditReportSourceEnum:
+      type: string
+      enum:
+      - equifax
+      - experian
+      - transunion
+      example: equifax
+      description: The name of the credit bureau.
+    IndividualDetails:
+      type: object
+      required:
+      - first_name
+      - last_name
+      - identification_details
+      properties:
+        first_name:
+          type: string
+          description: Legal first name.
+        preferred_first_name:
+          type: string
+          description: Preferred first name.
+        middle_name:
+          type: string
+          description: Middle name.
+        last_name:
+          type: string
+          description: Legal last name. Must be at least 2 alphanumeric characters.
+        date_of_birth:
+          type: string
+          format: date
+          description: Date of birth, in YYYY-MM-DD format. Authorized signers and account holders must be 18 years or older.
+          example: '2002-02-15'
+        occupation:
+          type: string
+          description: Occupation / job.
+        contact_methods:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactMethod'
+        address_details:
+          $ref: '#/components/schemas/AddressDetails'
+        identification_details:
+          $ref: '#/components/schemas/IdentificationDetailsIndividual'
+        additional_documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdditionalDocument'
+      description: Details for the individual entity. An `authorized_user` requires only `first_name`, `last_name`, a contact method, and `identification_details.type`. Other roles require more; see https://docs.lead.bank/products/entity/roles#data-requirements.
+    IdentificationDetailsIndividualResponseV2:
+      type: object
+      description: Required on every individual; only `type` is required inside it. `tax_identification` is required for a `us_entity` holding the `account_holder`, `minor_account_holder`, or `authorized_signer` relationship type, and for beneficial owners, control persons, and sole proprietors. It is not required for an `authorized_user`. A `non_us_entity` needs at least one `identification_documents` entry for the same relationship types; on an entity created on v0, `legacy_identification_documents` entries count.
+      oneOf:
+      - $ref: '#/components/schemas/UsEntityResponseV2'
+      - $ref: '#/components/schemas/NonUsEntityResponseV2'
+      discriminator:
+        propertyName: type
+        mapping:
+          us_entity: '#/components/schemas/UsEntityResponseV2'
+          non_us_entity: '#/components/schemas/NonUsEntityResponseV2'
+    CreateAnEntityRequestBodyV2:
+      oneOf:
+      - $ref: '#/components/schemas/CreateAnIndividualEntityRequestBodyV2'
+      - $ref: '#/components/schemas/CreateABusinessEntityRequestBodyV2'
+      - $ref: '#/components/schemas/CreateASolePropEntityRequestBodyV2'
+      discriminator:
+        propertyName: type
+        mapping:
+          individual: '#/components/schemas/CreateAnIndividualEntityRequestBodyV2'
+          business: '#/components/schemas/CreateABusinessEntityRequestBodyV2'
+          sole_prop: '#/components/schemas/CreateASolePropEntityRequestBodyV2'
+    CreateABusinessEntityRequestBodyV2:
+      title: Business
+      type: object
+      required:
+      - type
+      - business_details
+      description: Lead ignores fields not listed here.
+      properties:
+        type:
+          $ref: '#/components/schemas/EntityTypeBusiness'
+        intended_eligibility:
+          $ref: '#/components/schemas/IntendedEligibilityV2'
+        risk_score:
+          $ref: '#/components/schemas/EntityRiskScoreEnum'
+        business_details:
+          $ref: '#/components/schemas/BusinessDetailsV2'
+        beneficial_owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/BeneficialOwners'
+        control_persons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ControlPersons'
+        rfi_details:
+          $ref: '#/components/schemas/RfiDetails'
+        ofac_details:
+          $ref: '#/components/schemas/OfacDetails'
+        kyc_details:
+          $ref: '#/components/schemas/KycDetails'
+        credit_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    LegacyIdentificationDocumentsV2:
+      type: array
+      example:
+      - client_document_id: passport_jane_doe.pdf
+        type: passport
+        identification_number: X1234567
+        issuing_country: GB
+        expiration_date: '2026-06-01'
+      description: 'Identification document entries created on v0 Entities, returned exactly as sent. Read only: ignored if included on a POST or PATCH.'
+      items:
+        $ref: '#/components/schemas/IdentificationDocument'
+    UpdateABusinessEntityRequestBody:
+      title: Business
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          $ref: '#/components/schemas/EntityTypeBusiness'
+        intended_roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntendedRolesEnum'
+          description: The entity's intended role(s). In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed; it is an all or nothing behavior. For type `business` or `sole_prop`, only `account_holder` should be provided.
+          example:
+          - account_holder
+        risk_score:
+          $ref: '#/components/schemas/EntityRiskScoreEnum'
+        business_details:
+          $ref: '#/components/schemas/UpdateBusinessDetails'
+        beneficial_owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/BeneficialOwners'
+        control_persons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ControlPersons'
+        rfi_details:
+          $ref: '#/components/schemas/RfiDetails'
+        ofac_details:
+          $ref: '#/components/schemas/OfacDetails'
+        kyc_details:
+          $ref: '#/components/schemas/KycDetails'
+        credit_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    CreditReportNonScoreValueEnum:
+      type: string
+      enum:
+      - unestablished
+      - frozen
+      example: unestablished
+      description: Indicates the state of a credit file when a numeric score is not available.
     UpdateAddress:
       type: object
       properties:
         line_1:
           type: string
-          description: Address line 1.
+          description: 'Address line 1 is the required primary street-address field. It must contain the full base address needed to identify the physical location, such as the street number and street name together, or the closest local equivalent in countries where addresses do not use that exact structure.
+
+
+            Use address line 1 for all core location details that describe the main property or thoroughfare. Regardless of how each component of an address is collected from your end-users, they must be combined into address line 1 before sending to Lead.
+
+
+            Do not:
+
+            - split the primary street address across line 1 and line 2
+
+            - put only the street number in line 1 and the street name in line 2
+
+            - pad line 1 with false or altered data just to satisfy validation'
         line_2:
           type: string
-          description: Address line 2.
+          description: 'Address line 2 is optional and should be used only for secondary or sub-premise information, such as:
+
+            - apartment
+
+            - unit
+
+            - suite
+
+            - floor
+
+            - building
+
+            - care-of / attention
+
+
+            If there is no secondary or sub-premise information, address line 2 should be blank.
+
+
+            Do not use address line 2 for any part of the primary street address.'
         city:
           type: string
           description: City.
@@ -1386,6 +1963,1173 @@ components:
         country:
           type: string
           description: ISO3166-1 Alpha-2 country code.
+    IdentificationDocumentsV2:
+      type: array
+      example:
+      - file_id: file_7Tq4mR9vKx2LpW8nZc3B
+        identification_number: X1234567
+        issuing_country: GB
+        expiration_date: '2030-06-01'
+      - type: passport
+        identification_number: X7654321
+        issuing_country: GB
+        expiration_date: '2031-01-15'
+      description: Government-issued identification. A supplied array replaces the whole array, and Lead re-checks every `file_id` in it. Changing documents does not need a new KYC attestation.
+      items:
+        $ref: '#/components/schemas/IdentificationDocumentV2'
+    EligibilityStatus:
+      type: string
+      enum:
+      - eligible
+      - ineligible
+      example: eligible
+      description: Whether the entity's current data qualifies it for the relationship type.
+    BeneficialOwners:
+      type: object
+      required:
+      - entity_id
+      properties:
+        entity_id:
+          type: string
+          description: Individual entity_id created for the beneficial owner. Data requirements for beneficial owners match those of an `authorized_signer`.
+        ownership_percentage:
+          type: string
+          description: Percentage ownership (0-100.00 or 0-1.00 for decimal representation).
+          pattern: ^(0(\.\d{1,2})?|[1-9]\d{0,1}(\.\d{1,2})?|100(\.0{1,2})?)$
+        relationship_established_at:
+          type: string
+          format: date
+          description: The date the relationship was established.
+    IdentificationDocumentV2:
+      type: object
+      description: A government-issued identification document. Send exactly one of `file_id` or `type`; both returns `422 parameters_invalid` (`parameters_mutually_exclusive`), and neither returns it with `parameter_group_empty`. With a `file_id`, Lead takes the type from the file and the response omits `type`. Retrieve it with `GET /v2/files/{id}`.
+      required:
+      - identification_number
+      - issuing_country
+      properties:
+        file_id:
+          $ref: '#/components/schemas/DocumentFileID'
+        type:
+          $ref: '#/components/schemas/IdentificationDocumentTypeV2'
+        identification_number:
+          type: string
+          description: The number on the document.
+          example: X1234567
+        issuing_country:
+          type: string
+          description: Issuing country, as an ISO 3166-1 alpha-2 code.
+          example: GB
+          minLength: 2
+          maxLength: 2
+          pattern: ^[A-Z]{2}$
+        issuing_state:
+          type: string
+          description: Issuing state, as a two-letter code. When `issuing_country` is `US`, it must be a valid US state.
+        expiration_date:
+          type: string
+          format: date
+          description: Expiration date, in YYYY-MM-DD format. Cannot be in the past when you create the entity.
+          example: '2030-06-01'
+    IndividualDetailsV2:
+      type: object
+      required:
+      - first_name
+      - last_name
+      - identification_details
+      properties:
+        first_name:
+          type: string
+          description: Legal first name, as your customer gave it. Non-Latin characters are accepted.
+        preferred_first_name:
+          type: string
+          description: Preferred first name.
+        middle_name:
+          type: string
+          description: Middle name.
+        last_name:
+          type: string
+          description: Legal last name, as your customer gave it. Non-Latin characters are accepted.
+        date_of_birth:
+          type: string
+          format: date
+          description: Date of birth, in YYYY-MM-DD format. `account_holder` and `authorized_signer` require age 18 or older. `minor_account_holder` requires age 16 or 17.
+          example: '2002-02-15'
+        occupation:
+          type: string
+          description: Occupation / job.
+        contact_methods:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactMethod'
+        address_details:
+          $ref: '#/components/schemas/AddressDetails'
+        identification_details:
+          $ref: '#/components/schemas/IdentificationDetailsIndividualV2'
+        additional_documents:
+          $ref: '#/components/schemas/AdditionalDocumentsV2'
+      description: Details for the individual entity. An `authorized_user` requires only `first_name`, `last_name`, a contact method, and `identification_details.type`. Other relationship types require more; see [Eligibility](https://docs.lead.bank/v2/products/entity/eligibility).
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
+    UsEntity:
+      title: US Entity
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          $ref: '#/components/schemas/UsEntityTypeEnum'
+        tax_identification:
+          $ref: '#/components/schemas/TaxIdentification'
+        identification_documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentificationDocument'
+    IdentificationDetailsIndividual:
+      type: object
+      description: Required on every individual; only `type` is required inside it. The identification itself (`tax_identification` for `us_entity`, `identification_documents` for `non_us_entity`) is required for the `account_holder`, `minor_account_holder`, and `authorized_signer` roles and for beneficial owners, control persons, and sole proprietors, not for an `authorized_user`.
+      oneOf:
+      - $ref: '#/components/schemas/UsEntity'
+      - $ref: '#/components/schemas/NonUsEntityIndividual'
+      discriminator:
+        propertyName: type
+        mapping:
+          us_entity: '#/components/schemas/UsEntity'
+          non_us_entity: '#/components/schemas/NonUsEntityIndividual'
+    CreateAnIndividualEntityResponse:
+      title: Individual
+      type: object
+      required:
+      - id
+      - type
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: string
+          description: Unique ID for the Entity object.
+        client_customer_id:
+          type: string
+          maxLength: 64
+          description: Client customer ID for the entity object. Limit of 64 characters.
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp at which the entity object is created.
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp at which the entity object was last updated.
+        type:
+          $ref: '#/components/schemas/EntityTypeIndividual'
+        intended_roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntendedRolesEnum'
+          description: The entity's intended role(s). In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed; it is an all or nothing behavior. For type `business` or `sole_prop`, only `account_holder` should be provided.
+          example:
+          - account_holder
+        risk_score:
+          $ref: '#/components/schemas/EntityRiskScoreEnum'
+        individual_details:
+          $ref: '#/components/schemas/IndividualDetails'
+        rfi_details:
+          $ref: '#/components/schemas/RfiDetails'
+        ofac_details:
+          $ref: '#/components/schemas/OfacDetails'
+        kyc_details:
+          $ref: '#/components/schemas/KycDetails'
+        credit_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditDetails'
+        role_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    CreateAnIndividualEntityRequestBodyV2:
+      title: Individual
+      type: object
+      required:
+      - type
+      - individual_details
+      description: Lead ignores fields not listed here.
+      properties:
+        type:
+          $ref: '#/components/schemas/EntityTypeIndividual'
+        intended_eligibility:
+          $ref: '#/components/schemas/IntendedEligibilityV2'
+        risk_score:
+          $ref: '#/components/schemas/EntityRiskScoreEnum'
+        individual_details:
+          $ref: '#/components/schemas/IndividualDetailsV2'
+        rfi_details:
+          $ref: '#/components/schemas/RfiDetails'
+        ofac_details:
+          $ref: '#/components/schemas/OfacDetails'
+        kyc_details:
+          $ref: '#/components/schemas/KycDetails'
+        credit_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    UpdateBusinessDetails:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/BusinessTypeEnum'
+        name:
+          type: string
+          description: Legal name of the business. Must be at least 2 characters.
+        gross_annual_revenue:
+          type: string
+          description: Business gross revenue for prior fiscal year.
+        currency_code:
+          type: string
+          description: A three-letter currency code as defined in ISO 4217.
+        industry:
+          type: array
+          items:
+            type: string
+          description: NAICS code(s) for the applicable industries. 2-6 digits of NAICS code(s) are accepted and valid NAICS codes can be found on naics.com.
+        doing_business_as:
+          type: string
+          description: Business name if the business operates under a different name.
+        website:
+          type: string
+          description: The website of the business. Must start with http:// or https://.
+        contact_methods:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactMethod'
+        address_details:
+          $ref: '#/components/schemas/UpdateAddressDetails'
+        identification_details:
+          $ref: '#/components/schemas/IdentificationDetailsBusiness'
+        additional_documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdditionalDocument'
+      description: Details for the business entity
+    IdentificationDocument:
+      type: object
+      required:
+      - type
+      - identification_number
+      - issuing_country
+      properties:
+        client_document_id:
+          type: string
+          description: Client document ID for the identification document.
+        type:
+          $ref: '#/components/schemas/IdentificationDocumentsTypeEnum'
+        description:
+          type: string
+          description: Description about the identification document. Required if identification document type is `other`.
+        identification_number:
+          type: string
+          description: Unique identification number on the identification document.
+        expiration_date:
+          type: string
+          format: date
+          description: Expiration date of the identification document.
+        issuing_state:
+          type: string
+          description: Issuing state of the identification document. Must be 2 character code (e.g. NY). If the issuing country is US, this value must be a valid US State.
+        issuing_country:
+          type: string
+          description: Issuing country of the identification document. ISO3166-1 Alpha-2 country code.
+    CreateAnEntityRequestBody:
+      oneOf:
+      - $ref: '#/components/schemas/CreateAnIndividualEntityRequestBody'
+      - $ref: '#/components/schemas/CreateABusinessEntityRequestBody'
+      - $ref: '#/components/schemas/CreateASolePropEntityRequestBody'
+      discriminator:
+        propertyName: type
+        mapping:
+          individual: '#/components/schemas/CreateAnIndividualEntityRequestBody'
+          business: '#/components/schemas/CreateABusinessEntityRequestBody'
+          sole_prop: '#/components/schemas/CreateASolePropEntityRequestBody'
+    EntityTypeSoleProp:
+      type: string
+      pattern: ^sole_prop$
+      default: sole_prop
+      description: Type of entity = sole_prop.
+    LeadPartnerBusinessDetails:
+      type: object
+      required:
+      - name
+      - address_details
+      properties:
+        name:
+          type: string
+          description: Legal name of the business.
+          example: Example Fintech Inc.
+        doing_business_as:
+          type:
+          - string
+          - 'null'
+          description: The name the business operates under. Lead requires it on new `lead` and `partner` entities, so `null` appears only on older ones.
+          example: Example
+        address_details:
+          type: object
+          required:
+          - physical_address
+          properties:
+            physical_address:
+              $ref: '#/components/schemas/Address'
+      description: Business details for a `lead` or `partner` entity.
+    OfacDetails:
+      type: object
+      required:
+      - result
+      - screened_at
+      properties:
+        result:
+          $ref: '#/components/schemas/OfacDetailsResultEnum'
+        screened_at:
+          type: string
+          format: date-time
+          description: Date time OFAC screen is screened at.
+      description: Details on OFAC on the entity.
+    NonUsEntityTypeEnum:
+      type: string
+      pattern: ^non_us_entity$
+      default: non_us_entity
+      description: Use `non_us_entity` for an entity without US tax identification. At least one government-verified document in `identification_documents` is required for an `account_holder`, `minor_account_holder`, or `authorized_signer`, and for beneficial owners, control persons, and sole proprietors. It is not required for an `authorized_user`.
+    AdditionalDocumentV2:
+      type: object
+      description: A supporting document. Send exactly one of `file_id` or `type`; both returns `422 parameters_invalid` (`parameters_mutually_exclusive`), and neither returns it with `parameter_group_empty`. With a `file_id`, Lead takes the type from the file and the response omits `type`. Retrieve it with `GET /v2/files/{id}`.
+      properties:
+        file_id:
+          $ref: '#/components/schemas/DocumentFileID'
+        type:
+          $ref: '#/components/schemas/AdditionalDocumentTypeV2'
+    IdentificationDocumentsTypeEnum:
+      type: string
+      enum:
+      - drivers_license
+      - state_or_provincial_id
+      - passport
+      - permanent_residency_id
+      - military_id
+      - national_id
+      - matriculate_id
+      - other
+      - tax_certificate
+      - tax_returns
+      - partnership_agreement
+      - certificate_of_good_standing
+      - formation_document
+      - proof_of_place_on_stock_exchange
+      - name_certificate
+      example: drivers_license
+      description: 'The entity''s government-verified identification document type. This will apply for identification types other than US tax identification.
+
+        - For `individual` entity, possible types are: `drivers_license`, `state_or_provincial_id`, `passport`, `permanent_residency_id`, `military_id`, `national_id`, `matriculate_id`, `other`. Note that `national_id` and `matriculate_id` are not applicable for `us_entity`.
+
+        - For `business` entity, possible types are: `tax_certificate`, `tax_returns`, `partnership_agreement`, `certificate_of_good_standing`, `formation_document`, `proof_of_place_on_stock_exchange`, `other`.
+
+        - For `sole_prop` entity, possible types are: `tax_certificate`, `tax_returns`, `name_certificate`, `drivers_license`, `state_or_provincial_id`, `passport`, `permanent_residency_id`, `military_id`, `national_id`, `matriculate_id`, `other`. Note that `national_id` and `matriculate_id` are not applicable for `us_entity`.
+
+        '
+    EligibilityFailedCheck:
+      type: object
+      required:
+      - check
+      - entity_id
+      - reason
+      properties:
+        check:
+          type: string
+          example: check_kyc_status
+          description: 'The name of the failing check. The same names appear in `422` errors for a failed `intended_eligibility` assertion. Lead may add checks, so handle names you do not recognize. Current checks:
+
+            - Identity and contact: `check_first_name`, `check_last_name`, `check_date_of_birth`, `check_date_of_birth_missing`, `check_date_of_birth_below_minimum`, `check_date_of_birth_above_maximum`, `check_phone_or_email`, `check_physical_address`, `check_government_id`.
+
+            - Business: `check_business_name`, `check_business_type`, `check_business_industry`, `check_control_person_exists`, `check_child_entity_not_found`.
+
+            - Screening and risk: `check_kyc_status`, `check_ofac`, `check_risk_score`, `check_manual_review_status` (a manual review of the entity is pending).
+
+            - Relationship type: `check_individual_entity` (only individuals can hold `minor_account_holder`, `authorized_signer`, and `authorized_user`), `check_minor_account_holder_enabled` (your program is not approved for minor account holders).
+
+            - Stored data: `invalid_entity` (the entity''s stored data fails Lead''s current validations, which can happen to an older entity when rules change).
+
+
+            See [Eligibility](https://docs.lead.bank/v2/products/entity/eligibility).'
+        entity_id:
+          $ref: '#/components/schemas/EntityID'
+          description: The entity whose data failed the check. A business or sole proprietorship fails when a linked individual fails, and the check then points at that individual's `entity_id`.
+        reason:
+          type: string
+          example: KYC must be passed. Update kyc_details.result and kyc_details.screened_at on entity_xyz123.
+          description: A human-readable explanation of the failure and how to fix it. Not part of the API contract, so do not parse it. It may change without notice.
+    ContactMethodTypePhone:
+      type: string
+      pattern: ^phone_number$
+      default: phone_number
+      example: +22 607 123 4567
+      description: ContactMethodType = phone_number. Conforms to E.123 standard
+    NonUsEntityV2:
+      title: Non US Entity
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          $ref: '#/components/schemas/NonUsEntityTypeEnum'
+        identification_documents:
+          $ref: '#/components/schemas/IdentificationDocumentsV2'
+    OfacDetailsResultEnum:
+      type: string
+      enum:
+      - pending
+      - passed
+      - failed
+      example: passed
+      description: 'OFAC result. Possible values: pending | passed | failed. '
+    LeadEntityResponse:
+      title: Lead
+      type: object
+      description: 'A `lead` entity. Lead provisions it during onboarding, and it holds your program''s core accounts. It is read only: a `POST` with this type returns `422 parameters_invalid`, and a `PATCH` returns `422 operation_invalid`. It carries no KYC, OFAC, risk score, identification, documents, or linked entities. `account_holder` is always `eligible`; the other three relationship types are always `ineligible`, because only individuals can hold them.'
+      required:
+      - id
+      - type
+      - business_details
+      - eligibility
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityID'
+        type:
+          $ref: '#/components/schemas/EntityTypeLead'
+        business_details:
+          $ref: '#/components/schemas/LeadPartnerBusinessDetails'
+        eligibility:
+          $ref: '#/components/schemas/EligibilityV2'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp at which the entity object is created.
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp at which the entity object was last updated.
+      example:
+        id: entity_3XkTBcRw5nYs1LvKqM7hZjDp0Ug
+        type: lead
+        business_details:
+          name: Example Fintech Inc.
+          doing_business_as: Example
+          address_details:
+            physical_address:
+              line_1: 100 Example St
+              city: New York
+              state: NY
+              postal_code: '10006'
+              country: US
+        eligibility:
+          account_holder:
+            status: eligible
+            failed_checks: []
+          minor_account_holder:
+            status: ineligible
+            failed_checks:
+            - check: check_individual_entity
+              entity_id: entity_3XkTBcRw5nYs1LvKqM7hZjDp0Ug
+              reason: Only individual entities can hold this relationship type.
+          authorized_signer:
+            status: ineligible
+            failed_checks:
+            - check: check_individual_entity
+              entity_id: entity_3XkTBcRw5nYs1LvKqM7hZjDp0Ug
+              reason: Only individual entities can hold this relationship type.
+          authorized_user:
+            status: ineligible
+            failed_checks:
+            - check: check_individual_entity
+              entity_id: entity_3XkTBcRw5nYs1LvKqM7hZjDp0Ug
+              reason: Only individual entities can hold this relationship type.
+        metadata: {}
+        created_at: '2026-08-10T00:00:00Z'
+        updated_at: '2026-08-10T00:00:00Z'
+    AdditionalDocumentTypeV2:
+      type: string
+      enum:
+      - bank_statement
+      - utility_bills
+      - proof_of_address
+      - investigation_report
+      - financial_statement
+      - public_records
+      - adverse_media
+      - id_selfie
+      example: bank_statement
+      description: The supporting document type.
+    ListEntitiesSuccessResponseV2:
+      type: object
+      description: A page of entities matching the query filters.
+      properties:
+        has_more:
+          type: boolean
+          description: Whether more results are available after this page.
+        objects:
+          type: array
+          items:
+            $ref: '#/components/schemas/RetrieveAnEntitySuccessResponseV2'
+      required:
+      - has_more
+      - objects
+    EligibilityRelationshipV2:
+      type: object
+      required:
+      - status
+      - failed_checks
+      properties:
+        status:
+          $ref: '#/components/schemas/EligibilityStatus'
+        failed_checks:
+          type: array
+          description: The checks the entity fails for this relationship type. Empty when `status` is `eligible`.
+          items:
+            $ref: '#/components/schemas/EligibilityFailedCheck'
+    KycDetailsResultEnum:
+      type: string
+      enum:
+      - pending
+      - passed
+      - failed
+      example: passed
+      description: 'KYC result. Possible values: pending | passed | failed. '
+    UpdateASolePropEntityRequestBodyV2:
+      title: Sole Prop
+      type: object
+      required:
+      - type
+      description: Lead ignores fields not listed here.
+      properties:
+        type:
+          $ref: '#/components/schemas/EntityTypeSoleProp'
+        intended_eligibility:
+          $ref: '#/components/schemas/IntendedEligibilityV2'
+        risk_score:
+          $ref: '#/components/schemas/EntityRiskScoreEnum'
+        business_details:
+          $ref: '#/components/schemas/UpdateBusinessDetailsV2'
+        sole_proprietor:
+          $ref: '#/components/schemas/SoleProprietor'
+        rfi_details:
+          $ref: '#/components/schemas/RfiDetails'
+        ofac_details:
+          $ref: '#/components/schemas/OfacDetails'
+        kyc_details:
+          $ref: '#/components/schemas/KycDetails'
+        credit_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    IdentificationDocumentTypeV2:
+      type: string
+      enum:
+      - drivers_license
+      - state_or_provincial_id
+      - passport
+      - permanent_residency_id
+      - military_id
+      - national_id
+      - matriculate_id
+      - tax_certificate
+      - tax_returns
+      - partnership_agreement
+      - certificate_of_good_standing
+      - formation_document
+      - proof_of_place_on_stock_exchange
+      - name_certificate
+      example: passport
+      description: 'The identification document type.
+
+        - For an `individual`: `drivers_license`, `state_or_provincial_id`, `passport`, `permanent_residency_id`, `military_id`, `national_id`, `matriculate_id`.
+
+        - For a `business`: `tax_certificate`, `tax_returns`, `partnership_agreement`, `certificate_of_good_standing`, `formation_document`, `proof_of_place_on_stock_exchange`.
+
+        - For a `sole_prop`: `tax_certificate`, `tax_returns`, `name_certificate`, `drivers_license`, `state_or_provincial_id`, `passport`, `permanent_residency_id`, `military_id`, `national_id`, `matriculate_id`.
+
+        '
+    UsEntityResponseV2:
+      title: US Entity
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          $ref: '#/components/schemas/UsEntityTypeEnum'
+        tax_identification:
+          $ref: '#/components/schemas/TaxIdentification'
+        identification_documents:
+          $ref: '#/components/schemas/IdentificationDocumentsV2'
+        legacy_identification_documents:
+          $ref: '#/components/schemas/LegacyIdentificationDocumentsV2'
+    Address:
+      type: object
+      required:
+      - line_1
+      - city
+      - country
+      properties:
+        line_1:
+          type: string
+          description: 'Address line 1 is the required primary street-address field. It must contain the full base address needed to identify the physical location, such as the street number and street name together, or the closest local equivalent in countries where addresses do not use that exact structure.
+
+
+            Use address line 1 for all core location details that describe the main property or thoroughfare. Regardless of how each component of an address is collected from your end-users, they must be combined into address line 1 before sending to Lead.
+
+
+            Do not:
+
+            - split the primary street address across line 1 and line 2
+
+            - put only the street number in line 1 and the street name in line 2
+
+            - pad line 1 with false or altered data just to satisfy validation'
+          example: 123 Main St.
+        line_2:
+          type: string
+          description: 'Address line 2 is optional and should be used only for secondary or sub-premise information, such as:
+
+            - apartment
+
+            - unit
+
+            - suite
+
+            - floor
+
+            - building
+
+            - care-of / attention
+
+
+            If there is no secondary or sub-premise information, address line 2 should be blank.
+
+
+            Do not use address line 2 for any part of the primary street address.'
+          example: Apt 25
+        city:
+          type: string
+          description: City.
+          example: Denver
+        postal_code:
+          type: string
+          description: 'Postal Code, required for US addresses. Please follow the following format: US: ^\d5(?:-\d4)?$, CN: ^\d6$, GB: ^[A-Z]{1,2}d[A-Z0-9]? ?d[A-Z]{2}$, JP: ^\d3-\d4$'
+          example: 80014
+        state:
+          type: string
+          description: State. required for US addresses in 2 character code (e.g. NY).
+          example: CO
+        country:
+          type: string
+          description: ISO3166-1 Alpha-2 country code.
+          example: US
+    SolePropEntityV2:
+      title: Sole Prop
+      type: object
+      required:
+      - id
+      - type
+      - business_details
+      - sole_proprietor
+      - eligibility
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityID'
+          description: Unique ID for the Entity object.
+        client_customer_id:
+          type: string
+          description: Your customer ID, on entities created on v0 or through Entity files. Response only. Lead ignores it if sent, and does not return it on other entities.
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp at which the entity object is created.
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp at which the entity object was last updated.
+        type:
+          $ref: '#/components/schemas/EntityTypeSoleProp'
+        risk_score:
+          $ref: '#/components/schemas/EntityRiskScoreEnum'
+        business_details:
+          $ref: '#/components/schemas/BusinessDetailsResponseV2'
+        sole_proprietor:
+          $ref: '#/components/schemas/SoleProprietor'
+        rfi_details:
+          $ref: '#/components/schemas/RfiDetails'
+        ofac_details:
+          $ref: '#/components/schemas/OfacDetails'
+        kyc_details:
+          $ref: '#/components/schemas/KycDetails'
+        credit_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditDetails'
+        intended_eligibility:
+          $ref: '#/components/schemas/IntendedEligibilityV2'
+        eligibility:
+          $ref: '#/components/schemas/EligibilityV2'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    EntityID:
+      type: string
+      description: The ID of your entity.
+      example: entity_xyz123
+      pattern: ^entity_[^\s]{1,33}$
+    AdditionalDocument:
+      type: object
+      required:
+      - type
+      properties:
+        client_document_id:
+          type: string
+          description: Client document ID for the additional document.
+        type:
+          $ref: '#/components/schemas/AdditionalDocumentTypeEnum'
+        description:
+          type: string
+          description: Description about the identification document. Required if additional document type is `other`.
+    EntityTypeBusiness:
+      type: string
+      pattern: ^business$
+      default: business
+      description: Type of entity = business.
+    UpdateAnEntitySuccessResponseV2:
+      oneOf:
+      - $ref: '#/components/schemas/IndividualEntityV2'
+      - $ref: '#/components/schemas/BusinessEntityV2'
+      - $ref: '#/components/schemas/SolePropEntityV2'
+      discriminator:
+        propertyName: type
+        mapping:
+          individual: '#/components/schemas/IndividualEntityV2'
+          business: '#/components/schemas/BusinessEntityV2'
+          sole_prop: '#/components/schemas/SolePropEntityV2'
+    UpdateAnEntityRequestBodyV2:
+      oneOf:
+      - $ref: '#/components/schemas/UpdateAnIndividualEntityRequestBodyV2'
+      - $ref: '#/components/schemas/UpdateABusinessEntityRequestBodyV2'
+      - $ref: '#/components/schemas/UpdateASolePropEntityRequestBodyV2'
+      discriminator:
+        propertyName: type
+        mapping:
+          individual: '#/components/schemas/UpdateAnIndividualEntityRequestBodyV2'
+          business: '#/components/schemas/UpdateABusinessEntityRequestBodyV2'
+          sole_prop: '#/components/schemas/UpdateASolePropEntityRequestBodyV2'
+    UpdateASolePropEntityRequestBody:
+      title: Sole Prop
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          $ref: '#/components/schemas/EntityTypeSoleProp'
+        intended_roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntendedRolesEnum'
+          description: The entity's intended role(s). In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed; it is an all or nothing behavior. For type `business` or `sole_prop`, only `account_holder` should be provided.
+          example:
+          - account_holder
+        risk_score:
+          $ref: '#/components/schemas/EntityRiskScoreEnum'
+        business_details:
+          $ref: '#/components/schemas/UpdateBusinessDetails'
+        sole_proprietor:
+          $ref: '#/components/schemas/SoleProprietor'
+        rfi_details:
+          $ref: '#/components/schemas/RfiDetails'
+        ofac_details:
+          $ref: '#/components/schemas/OfacDetails'
+        kyc_details:
+          $ref: '#/components/schemas/KycDetails'
+        credit_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    IntendedRolesEnum:
+      type: string
+      enum:
+      - authorized_user
+      - authorized_signer
+      - account_holder
+      - minor_account_holder
+      example: account_holder
+      description: 'The entity''s intended role. Lead highly recommends using this field to confirm data requirements for different roles to minimize errors later. In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed. It will be an all or nothing behavior.
+
+        Lead currently supports:
+
+        * `authorized_user`: Individual entity with restricted access to the account, without legal responsibility. Only applies to individual entity.
+
+        * `authorized_signer`: Individual entity allowed to sign on behalf of the account holder, without legal responsibility. Only applies to individual entity.
+
+        * `account_holder`: Entity with full control and legal responsibility for the account. Applies to all entity types.
+
+        * `minor_account_holder`: Individual entity aged 16-17 with account-holder eligibility. Individual entities only.
+
+        '
+    EntityTypeLead:
+      type: string
+      pattern: ^lead$
+      default: lead
+      description: Type of entity = lead. Lead provisions it; you cannot create or update it.
+    UpdateAnEntityRequestBody:
+      oneOf:
+      - $ref: '#/components/schemas/UpdateAnIndividualEntityRequestBody'
+      - $ref: '#/components/schemas/UpdateABusinessEntityRequestBody'
+      - $ref: '#/components/schemas/UpdateASolePropEntityRequestBody'
+      discriminator:
+        propertyName: type
+        mapping:
+          individual: '#/components/schemas/UpdateAnIndividualEntityRequestBody'
+          business: '#/components/schemas/UpdateABusinessEntityRequestBody'
+          sole_prop: '#/components/schemas/UpdateASolePropEntityRequestBody'
+    ContactMethodPhone:
+      title: Phone Number
+      type: object
+      required:
+      - type
+      - phone_number
+      properties:
+        type:
+          $ref: '#/components/schemas/ContactMethodTypePhone'
+        phone_number:
+          type: string
+          description: Primary phone number of the entity. Must follow E.123 format.
+    UpdateABusinessEntityRequestBodyV2:
+      title: Business
+      type: object
+      required:
+      - type
+      description: Lead ignores fields not listed here.
+      properties:
+        type:
+          $ref: '#/components/schemas/EntityTypeBusiness'
+        intended_eligibility:
+          $ref: '#/components/schemas/IntendedEligibilityV2'
+        risk_score:
+          $ref: '#/components/schemas/EntityRiskScoreEnum'
+        business_details:
+          $ref: '#/components/schemas/UpdateBusinessDetailsV2'
+        beneficial_owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/BeneficialOwners'
+        control_persons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ControlPersons'
+        rfi_details:
+          $ref: '#/components/schemas/RfiDetails'
+        ofac_details:
+          $ref: '#/components/schemas/OfacDetails'
+        kyc_details:
+          $ref: '#/components/schemas/KycDetails'
+        credit_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    NonUsEntityIndividual:
+      title: Non US Entity
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          $ref: '#/components/schemas/NonUsEntityTypeEnum'
+        identification_documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentificationDocument'
+    PartnerEntityResponse:
+      title: Partner
+      type: object
+      description: 'A `partner` entity. Lead provisions it during onboarding, and it holds your program''s core accounts. It is read only: a `POST` with this type returns `422 parameters_invalid`, and a `PATCH` returns `422 operation_invalid`. It carries no KYC, OFAC, risk score, identification, documents, or linked entities. `account_holder` is always `eligible`; the other three relationship types are always `ineligible`, because only individuals can hold them.'
+      required:
+      - id
+      - type
+      - business_details
+      - eligibility
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityID'
+        type:
+          $ref: '#/components/schemas/EntityTypePartner'
+        business_details:
+          $ref: '#/components/schemas/LeadPartnerBusinessDetails'
+        eligibility:
+          $ref: '#/components/schemas/EligibilityV2'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp at which the entity object is created.
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp at which the entity object was last updated.
+      example:
+        id: entity_3XkTBcRw5nYs1LvKqM7hZjDp0Ug
+        type: partner
+        business_details:
+          name: Example Fintech Inc.
+          doing_business_as: Example
+          address_details:
+            physical_address:
+              line_1: 100 Example St
+              city: New York
+              state: NY
+              postal_code: '10006'
+              country: US
+        eligibility:
+          account_holder:
+            status: eligible
+            failed_checks: []
+          minor_account_holder:
+            status: ineligible
+            failed_checks:
+            - check: check_individual_entity
+              entity_id: entity_3XkTBcRw5nYs1LvKqM7hZjDp0Ug
+              reason: Only individual entities can hold this relationship type.
+          authorized_signer:
+            status: ineligible
+            failed_checks:
+            - check: check_individual_entity
+              entity_id: entity_3XkTBcRw5nYs1LvKqM7hZjDp0Ug
+              reason: Only individual entities can hold this relationship type.
+          authorized_user:
+            status: ineligible
+            failed_checks:
+            - check: check_individual_entity
+              entity_id: entity_3XkTBcRw5nYs1LvKqM7hZjDp0Ug
+              reason: Only individual entities can hold this relationship type.
+        metadata: {}
+        created_at: '2026-08-10T00:00:00Z'
+        updated_at: '2026-08-10T00:00:00Z'
+    ControlPersons:
+      type: object
+      required:
+      - entity_id
+      - title
+      properties:
+        entity_id:
+          type: string
+          description: Individual entity_id created for the control person. Data requirements for control persons match those of an `authorized_signer`.
+        title:
+          type: string
+          description: The title of this control person.
+        relationship_established_at:
+          type: string
+          format: date
+          description: The date the relationship was established.
+    UpdateIndividualDetailsV2:
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: Legal first name, as your customer gave it. Non-Latin characters are accepted.
+          example: Lucy
+        preferred_first_name:
+          type: string
+          description: Preferred first name.
+          example: Lu
+        middle_name:
+          type: string
+          description: Middle name.
+          example: Reginald
+        last_name:
+          type: string
+          description: Legal last name, as your customer gave it. Non-Latin characters are accepted.
+          example: Collins
+        date_of_birth:
+          type: string
+          format: date
+          description: Date of birth, in YYYY-MM-DD format. `account_holder` and `authorized_signer` require age 18 or older. `minor_account_holder` requires age 16 or 17.
+          example: '2002-02-15'
+        occupation:
+          type: string
+          description: Occupation / job.
+          example: Author
+        contact_methods:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactMethod'
+        address_details:
+          $ref: '#/components/schemas/UpdateAddressDetails'
+        identification_details:
+          $ref: '#/components/schemas/IdentificationDetailsIndividualV2'
+        additional_documents:
+          $ref: '#/components/schemas/AdditionalDocumentsV2'
+      description: Details for the individual entity.
+    AdditionalDocumentsV2:
+      type: array
+      example:
+      - file_id: file_X5jD8hN2sQ6yFb1Gt9Ka
+      - type: financial_statement
+      description: Supporting documents. A supplied array replaces the whole array, and Lead re-checks every `file_id` in it. Changing documents does not need a new KYC attestation.
+      items:
+        $ref: '#/components/schemas/AdditionalDocumentV2'
+    CreateABusinessEntityRequestBody:
+      title: Business
+      type: object
+      required:
+      - type
+      - business_details
+      properties:
+        client_customer_id:
+          type: string
+          maxLength: 64
+          description: Client customer ID for the entity object. Limit of 64 characters.
+        type:
+          $ref: '#/components/schemas/EntityTypeBusiness'
+        intended_roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntendedRolesEnum'
+          description: The entity's intended role(s). In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed; it is an all or nothing behavior. For type `business` or `sole_prop`, only `account_holder` should be provided.
+          example:
+          - account_holder
+        risk_score:
+          $ref: '#/components/schemas/EntityRiskScoreEnum'
+        business_details:
+          $ref: '#/components/schemas/BusinessDetails'
+        beneficial_owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/BeneficialOwners'
+        control_persons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ControlPersons'
+        rfi_details:
+          $ref: '#/components/schemas/RfiDetails'
+        ofac_details:
+          $ref: '#/components/schemas/OfacDetails'
+        kyc_details:
+          $ref: '#/components/schemas/KycDetails'
+        credit_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    IdentificationDetailsBusinessV2:
+      type: object
+      oneOf:
+      - $ref: '#/components/schemas/UsEntityV2'
+      - $ref: '#/components/schemas/NonUsEntityV2'
+      discriminator:
+        propertyName: type
+        mapping:
+          us_entity: '#/components/schemas/UsEntityV2'
+          non_us_entity: '#/components/schemas/NonUsEntityV2'
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    NonUsEntityBusiness:
+      title: Non US Entity
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          $ref: '#/components/schemas/NonUsEntityTypeEnum'
+        identification_documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentificationDocument'
+    AdditionalDocumentTypeEnum:
+      type: string
+      enum:
+      - bank_statement
+      - utility_bills
+      - proof_of_address
+      - investigation_report
+      - financial_statement
+      - public_records
+      - adverse_media
+      - id_selfie
+      - other
+      example: bank_statement
+      description: Type of additional non-government documents being provided to verify entity. Possible values are `bank_statement`, `utility_bills`, `proof_of_address`, `investigation_report`, `financial_statement`, `public_records`, `adverse_media`, `id_selfie`, `other`.
+    TaxIdentification:
+      type: object
+      description: The entity's own US tax identification. Do not submit another person's SSN or ITIN (e.g. a parent's for a minor). If you have not collected it, omit `tax_identification`; `type` without a valid `value` is rejected. See https://docs.lead.bank/products/entity/entity-object#identification-for-us-and-non-us-entities.
+      required:
+      - type
+      - value
+      properties:
+        type:
+          $ref: '#/components/schemas/TaxIdentificationTypeEnum'
+        value:
+          type: string
+          description: The entity's US tax identification number. Must be 9 digits (e.g. XXXXXXXXX). An SSN must not start with 9. An EIN must begin with a number between 00 and 99. An ITIN must begin with 9. Required whenever `tax_identification` is sent; omit the whole object if you have not collected the tax identification.
+          pattern: ^\d{9}$
+    ContactMethodEmail:
+      title: Email
+      type: object
+      required:
+      - type
+      - email
+      properties:
+        type:
+          $ref: '#/components/schemas/ContactMethodTypeEmail'
+        email:
+          type: string
+          description: Must be a valid email address in the form `local-part@domain.tld`. The domain must contain at least one dot. Addresses using `localhost`, IP literals (e.g., user@[127.0.0.1]), or quoted local parts (e.g., "user"@example.com) are not accepted. Only common, real-world email formats are supported.
+          example: abc@gmail.com
     KycDetails:
       type: object
       required:
@@ -1399,6 +3143,63 @@ components:
           format: date-time
           description: Date time KYC screen is screened at.
       description: Details on KYC on the entity.
+    CreateASolePropEntityResponse:
+      title: Sole Prop
+      type: object
+      required:
+      - id
+      - type
+      - business_details
+      - sole_proprietor
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: string
+          description: Unique ID for the Entity object.
+        client_customer_id:
+          type: string
+          maxLength: 64
+          description: Client customer ID for the entity object. Limit of 64 characters.
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp at which the entity object is created.
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp at which the entity object was last updated.
+        type:
+          $ref: '#/components/schemas/EntityTypeSoleProp'
+        intended_roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntendedRolesEnum'
+          description: The entity's intended role(s). In the event more than 1 role is passed in and at least 1 role doesn’t pass validation, the request will not succeed; it is an all or nothing behavior. For type `business` or `sole_prop`, only `account_holder` should be provided.
+          example:
+          - account_holder
+        risk_score:
+          $ref: '#/components/schemas/EntityRiskScoreEnum'
+        business_details:
+          $ref: '#/components/schemas/BusinessDetails'
+        sole_proprietor:
+          $ref: '#/components/schemas/SoleProprietor'
+        rfi_details:
+          $ref: '#/components/schemas/RfiDetails'
+        ofac_details:
+          $ref: '#/components/schemas/OfacDetails'
+        kyc_details:
+          $ref: '#/components/schemas/KycDetails'
+        credit_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditDetails'
+        role_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleDetails'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
   securitySchemes:
     bearerAuth:
       type: http

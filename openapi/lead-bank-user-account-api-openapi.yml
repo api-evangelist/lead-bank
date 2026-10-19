@@ -1,0 +1,2144 @@
+openapi: 3.2.0
+info:
+  title: Lead Bank User Account API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: User Account
+paths:
+  /v2/user_accounts:
+    post:
+      tags:
+      - User Account
+      operationId: create-a-user-account-v2
+      summary: Create a user account
+      description: Create a User Account.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: A unique key for this request, up to 255 characters. Retrying with the same key and body returns the original response without creating a second user account. See [Idempotency](https://docs.lead.bank/api-reference/using-the-api/idempotency-v2).
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+        example: 3f1c9a52-7d4e-4b8a-9c21-6e0f5d2a8b14
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserAccountRequestV2'
+            examples:
+              consumer_deposit:
+                summary: Consumer deposit user account
+                value:
+                  requested_features:
+                  - deposit
+                  product_config_id: product_config_xyz123
+                  entities:
+                    account_holders:
+                    - entity_consumer_123
+                  product_name: Everyday Checking
+                  metadata: {}
+                  documents: []
+              commercial_credit:
+                summary: Commercial credit user account
+                value:
+                  application_id: application_xyz123
+                  requested_features:
+                  - credit_with_underwriting
+                  product_config_id: product_config_xyz123
+                  balance_sheet_model: held_for_investment
+                  entities:
+                    account_holders:
+                    - entity_biz_456
+                    authorized_signers:
+                    - entity_signer_789
+                  product_name: Business Credit Line
+                  details:
+                    underwriting:
+                      is_secured: false
+                      is_mla: false
+                      underwriting_grade: A
+                      currency_code: USD
+                      available_credit: 5000000
+                      limit: 5000000
+                      max_limit: 10000000
+                  metadata:
+                    external_id: BIZ-2024-001
+                  documents:
+                  - file_id: file_7RwQ2mK9pL4xT1vN8jS5
+                    timestamp: '2025-11-15T09:00:00Z'
+      responses:
+        '200':
+          description: User account created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccountV2'
+        '400':
+          description: The request could not be parsed (`request_malformed`), or the `Idempotency-Key` header is missing (`idempotency_key_missing`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_missing
+                message: This endpoint requires an Idempotency-Key header. Add one and resend the request.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `user_account/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '409':
+          description: A concurrent request with the same `Idempotency-Key` is still in flight.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '413':
+          description: The request body is over this endpoint's size limit, for example because `metadata` is too large (`content_too_large`; `errors[].code` is `body_too_large`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: content_too_large
+                message: The request is over a size limit for this endpoint. Make it smaller and resend it.
+                errors:
+                - code: body_too_large
+                  message: metadata is over this endpoint's size limit.
+                  parameters:
+                  - metadata
+        '422':
+          description: 'The request was parsed but cannot be processed. `code` is one of:
+
+            `parameters_invalid` (a field is missing or invalid; a feature-dependent field is missing, like `balance_sheet_model` when `requested_features` includes a credit feature, or `application_id` and `details.underwriting` for `credit_with_underwriting` (`dependent_parameter_required`); `limit` exceeds `max_limit` (`parameter_bound_exceeded`); a `documents[].file_id` appears twice, or an entity appears twice in one relationship type (`parameter_duplicated`); or a `documents[].timestamp` is more than five minutes in the future (`future_date_not_permitted`). All failures are returned at once),
+
+            `related_object_invalid` (an entity, the `application_id`, the `product_config_id` or a `documents[].file_id` does not exist or belongs to another program; `errors[].code` is `reference_not_found`, with the path in `parameters`),
+
+            `related_object_not_ready` (an entity is not eligible for its relationship type (`entity_role_missing`), with the entity''s path in `parameters`; update the entity, then retry the request unchanged),
+
+            `related_object_conflict` (the account holders mix consumer and commercial entities (`account_holder_types_mismatched`), or an account holder is a lead or partner entity, or a `documents[].file_id` references a file whose type is not a compliance document type (`reference_type_mismatched`)),
+
+            `lead_control_restricted` (your program is not enabled for User Accounts v2; `errors[].code` is `feature_not_enabled`),
+
+            `idempotency_request_inconsistent` (this `Idempotency-Key` was used with a different request body).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: dependent_parameter_required
+                  message: balance_sheet_model is required when requested_features includes a credit feature.
+                  parameters:
+                  - balance_sheet_model
+                - code: parameter_bound_exceeded
+                  message: details.underwriting.limit (10000000) cannot exceed details.underwriting.max_limit (5000000).
+                  parameters:
+                  - details.underwriting.limit
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error. Retry with the same `Idempotency-Key`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+    get:
+      tags:
+      - User Account
+      operationId: list-user-accounts-v2
+      summary: List user accounts
+      description: List User Accounts, filtered by the `client_account_id` you assigned in an Account file. Use it to find the `id` of User Accounts you created through Account files. The filter is required, and `objects` has at most one User Account.
+      parameters:
+      - name: client_account_id
+        in: query
+        required: true
+        description: Return only user accounts with this `client_account_id`.
+        schema:
+          type: string
+        example: BIZ-2024-001
+      responses:
+        '200':
+          description: A list of User Account objects.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - objects
+                - has_more
+                properties:
+                  objects:
+                    type: array
+                    description: At most one user account.
+                    items:
+                      $ref: '#/components/schemas/UserAccountV2'
+                  has_more:
+                    type: boolean
+                    description: Always `false`. At most one user account matches a `client_account_id`.
+        '400':
+          description: The request could not be parsed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `user_account/read` or `user_account/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '422':
+          description: '`code` is one of:
+
+            `parameters_invalid` (`client_account_id` is missing; `errors[].code` is `schema_violation`),
+
+            `lead_control_restricted` (your program is not enabled for User Accounts v2; `errors[].code` is `feature_not_enabled`).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: schema_violation
+                  message: client_account_id is required.
+                  parameters:
+                  - client_account_id
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/user_accounts/{user_account_id}:
+    get:
+      tags:
+      - User Account
+      operationId: retrieve-a-user-account-v2
+      summary: Retrieve a user account
+      description: Retrieve a User Account by its ID.
+      parameters:
+      - name: user_account_id
+        in: path
+        required: true
+        description: User Account ID
+        schema:
+          $ref: '#/components/schemas/UserAccountID'
+        example: user_account_2N5Hk8xYmQpL9rBvC3jD
+      responses:
+        '200':
+          description: User account object retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccountV2'
+        '400':
+          description: The request could not be parsed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `user_account/read` or `user_account/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '404':
+          description: No user account exists with this ID, or it is not visible to your program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '422':
+          description: Your program is not enabled for User Accounts v2 (`lead_control_restricted`; `errors[].code` is `feature_not_enabled`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: lead_control_restricted
+                message: A Lead-configured control blocks this request. Contact Lead with the Lead-Request-ID.
+                errors:
+                - code: feature_not_enabled
+                  message: User Accounts v2 isn't enabled for your program. Contact Lead to enable it.
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+    patch:
+      tags:
+      - User Account
+      operationId: update-a-user-account-v2
+      summary: Update a user account
+      description: Update a User Account. See User Account Object for the fields you can change.
+      parameters:
+      - name: user_account_id
+        in: path
+        required: true
+        description: User Account ID
+        schema:
+          $ref: '#/components/schemas/UserAccountID'
+      - name: Idempotency-Key
+        in: header
+        description: A unique key for this request, up to 255 characters. Retrying with the same key and body returns the original response without applying the update twice. See [Idempotency](https://docs.lead.bank/api-reference/using-the-api/idempotency-v2).
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+        example: 3f1c9a52-7d4e-4b8a-9c21-6e0f5d2a8b14
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchUserAccountRequestV2'
+            examples:
+              update_metadata:
+                summary: Update metadata
+                value:
+                  metadata:
+                    external_id: BIZ-2024-002
+              update_underwriting:
+                summary: Update underwriting details
+                value:
+                  details:
+                    underwriting:
+                      available_credit: 3000000
+                      limit: 3000000
+      responses:
+        '200':
+          description: User account updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccountV2'
+        '400':
+          description: The request could not be parsed (`request_malformed`), or the `Idempotency-Key` header is missing (`idempotency_key_missing`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: body_malformed
+                  message: The request body is missing or isn't a JSON object.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `user_account/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '404':
+          description: No user account exists with this ID, or it is not visible to your program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: '`code` is one of:
+
+            `idempotency_key_in_use` (a concurrent request with the same `Idempotency-Key` is still in flight),
+
+            `object_modified_concurrently` (another request changed the user account while this one was processing; fetch it and retry).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '413':
+          description: The request body is over this endpoint's size limit, for example because `metadata` is too large (`content_too_large`; `errors[].code` is `body_too_large`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: content_too_large
+                message: The request is over a size limit for this endpoint. Make it smaller and resend it.
+                errors:
+                - code: body_too_large
+                  message: metadata is over this endpoint's size limit.
+                  parameters:
+                  - metadata
+        '422':
+          description: 'The request was parsed but cannot be processed. `code` is one of:
+
+            `parameters_invalid` (a field is invalid; an immutable field such as `entities` or `product_config_id` is sent; `balance_sheet_model` is sent without adding a credit feature, or is already set; the updated `limit` exceeds `max_limit` (`parameter_bound_exceeded`); a `documents[].file_id` appears twice (`parameter_duplicated`); or a `documents[].timestamp` is more than five minutes in the future (`future_date_not_permitted`). All failures are returned at once),
+
+            `related_object_invalid` (the `application_id` or a `documents[].file_id` does not exist or belongs to another program; `errors[].code` is `reference_not_found`, with the path in `parameters`),
+
+            `related_object_conflict` (a `documents[].file_id` references a file whose type is not a compliance document type; `errors[].code` is `reference_type_mismatched`),
+
+            `object_state_conflict` (the user account is closed and cannot be modified),
+
+            `lead_control_restricted` (your program is not enabled for User Accounts v2; `errors[].code` is `feature_not_enabled`),
+
+            `idempotency_request_inconsistent` (this `Idempotency-Key` was used with a different request body).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: parameter_bound_exceeded
+                  message: details.underwriting.limit (12000000) cannot exceed details.underwriting.max_limit (10000000).
+                  parameters:
+                  - details.underwriting.limit
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error. Retry with the same `Idempotency-Key`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/user_accounts/{user_account_id}/activate:
+    post:
+      tags:
+      - User Account
+      operationId: activate-a-user-account-v2
+      summary: Activate a user account
+      description: Activate an `inactive` User Account. You can also activate a `closed` User Account to correct a mistaken closure. See Correcting a mistaken closure.
+      parameters:
+      - name: user_account_id
+        in: path
+        required: true
+        description: User Account ID
+        schema:
+          $ref: '#/components/schemas/UserAccountID'
+      - name: Idempotency-Key
+        in: header
+        description: A unique key for this request, up to 255 characters. Retrying with the same key and body returns the original response without applying the update twice. See [Idempotency](https://docs.lead.bank/api-reference/using-the-api/idempotency-v2).
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+        example: 3f1c9a52-7d4e-4b8a-9c21-6e0f5d2a8b14
+      responses:
+        '200':
+          description: User account activated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccountV2'
+        '400':
+          description: The request could not be parsed (`request_malformed`), or the `Idempotency-Key` header is missing (`idempotency_key_missing`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_missing
+                message: This endpoint requires an Idempotency-Key header. Add one and resend the request.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `user_account/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '404':
+          description: No user account exists with this ID, or it is not visible to your program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: '`code` is one of:
+
+            `idempotency_key_in_use` (a concurrent request with the same `Idempotency-Key` is still in flight),
+
+            `object_modified_concurrently` (another request changed the user account while this one was processing; fetch it and retry).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: 'The request was parsed but cannot be processed. `code` is one of:
+
+            `object_state_conflict` (the user account cannot be activated from its current status, for example because it is already `active`),
+
+            `lead_control_restricted` (your program is not enabled for User Accounts v2; `errors[].code` is `feature_not_enabled`),
+
+            `idempotency_request_inconsistent` (this `Idempotency-Key` was used with a different request body).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_state_conflict
+                message: The object is not in the state this request assumed. Fetch its current state before retrying.
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error. Retry with the same `Idempotency-Key`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/user_accounts/{user_account_id}/deactivate:
+    post:
+      tags:
+      - User Account
+      operationId: deactivate-a-user-account-v2
+      summary: Deactivate a user account
+      description: Deactivate an `active` User Account.
+      parameters:
+      - name: user_account_id
+        in: path
+        required: true
+        description: User Account ID
+        schema:
+          $ref: '#/components/schemas/UserAccountID'
+      - name: Idempotency-Key
+        in: header
+        description: A unique key for this request, up to 255 characters. Retrying with the same key and body returns the original response without applying the update twice. See [Idempotency](https://docs.lead.bank/api-reference/using-the-api/idempotency-v2).
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+        example: 3f1c9a52-7d4e-4b8a-9c21-6e0f5d2a8b14
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAccountDeactivateRequestV2'
+            examples:
+              deactivate_with_reason:
+                summary: Deactivate with reason
+                value:
+                  status_reason: dormant
+      responses:
+        '200':
+          description: User account deactivated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccountV2'
+        '400':
+          description: The request could not be parsed (`request_malformed`), or the `Idempotency-Key` header is missing (`idempotency_key_missing`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: body_malformed
+                  message: The request body is missing or isn't a JSON object.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `user_account/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '404':
+          description: No user account exists with this ID, or it is not visible to your program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: '`code` is one of:
+
+            `idempotency_key_in_use` (a concurrent request with the same `Idempotency-Key` is still in flight),
+
+            `object_modified_concurrently` (another request changed the user account while this one was processing; fetch it and retry).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: 'The request was parsed but cannot be processed. `code` is one of:
+
+            `parameters_invalid` (`status_reason` is missing or is not a deactivation reason),
+
+            `object_state_conflict` (the user account cannot be deactivated from its current status, for example because it is `closed`),
+
+            `lead_control_restricted` (your program is not enabled for User Accounts v2; `errors[].code` is `feature_not_enabled`),
+
+            `idempotency_request_inconsistent` (this `Idempotency-Key` was used with a different request body).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_state_conflict
+                message: The object is not in the state this request assumed. Fetch its current state before retrying.
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error. Retry with the same `Idempotency-Key`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/user_accounts/{user_account_id}/close:
+    post:
+      tags:
+      - User Account
+      operationId: close-a-user-account-v2
+      summary: Close a user account
+      description: Close a User Account. All balances must be zero before a User Account can be closed. If a User Account can reopen in the normal course of business, deactivate it instead. To undo a mistaken closure, see Correcting a mistaken closure.
+      parameters:
+      - name: user_account_id
+        in: path
+        required: true
+        description: User Account ID
+        schema:
+          $ref: '#/components/schemas/UserAccountID'
+      - name: Idempotency-Key
+        in: header
+        description: A unique key for this request, up to 255 characters. Retrying with the same key and body returns the original response without applying the update twice. See [Idempotency](https://docs.lead.bank/api-reference/using-the-api/idempotency-v2).
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+        example: 3f1c9a52-7d4e-4b8a-9c21-6e0f5d2a8b14
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAccountCloseRequestV2'
+            examples:
+              close_with_reason:
+                summary: Close with reason
+                value:
+                  status_reason: client_closed
+      responses:
+        '200':
+          description: User account closed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccountV2'
+        '400':
+          description: The request could not be parsed (`request_malformed`), or the `Idempotency-Key` header is missing (`idempotency_key_missing`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: body_malformed
+                  message: The request body is missing or isn't a JSON object.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `user_account/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '404':
+          description: No user account exists with this ID, or it is not visible to your program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: '`code` is one of:
+
+            `idempotency_key_in_use` (a concurrent request with the same `Idempotency-Key` is still in flight),
+
+            `object_modified_concurrently` (another request changed the user account while this one was processing; fetch it and retry).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: 'The request was parsed but cannot be processed. `code` is one of:
+
+            `parameters_invalid` (`status_reason` is missing or is not a close reason; `status_reason` is `client_closed` and the user account has no `details.adverse_action_notice` (`dependent_parameter_required`)),
+
+            `object_state_conflict` (the user account is already `closed`, or its balances are not zero),
+
+            `lead_control_restricted` (your program is not enabled for User Accounts v2; `errors[].code` is `feature_not_enabled`),
+
+            `idempotency_request_inconsistent` (this `Idempotency-Key` was used with a different request body).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_state_conflict
+                message: The object is not in the state this request assumed. Fetch its current state before retrying.
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error. Retry with the same `Idempotency-Key`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/user_accounts/{user_account_id}/entity_relationships:
+    get:
+      tags:
+      - User Account
+      operationId: list-user-account-entity-relationships-v2
+      summary: List user account entity relationships
+      description: List the Entities on a User Account and their relationship types.
+      parameters:
+      - name: user_account_id
+        in: path
+        required: true
+        description: User Account ID
+        schema:
+          $ref: '#/components/schemas/UserAccountID'
+      - name: limit
+        in: query
+        required: false
+        description: Maximum number of results to return. Defaults to 25, max 100.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 25
+      - name: starting_after
+        in: query
+        required: false
+        description: A cursor for pagination. Returns results starting after this cursor.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List of entity relationships for the user account.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  has_more:
+                    type: boolean
+                    description: Indicates whether more results are available beyond this page.
+                  cursor:
+                    type: string
+                    description: Cursor to retrieve the next page of results. Only present when has_more is true.
+                  objects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EntityRelationship'
+                required:
+                - has_more
+                - objects
+        '400':
+          description: The request could not be parsed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `user_account/read` or `user_account/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '404':
+          description: No user account exists with this ID, or it is not visible to your program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '422':
+          description: '`code` is one of:
+
+            `parameters_invalid` (`limit` is outside 1 to 100 (`schema_violation`), or the `starting_after` cursor cannot be decoded (`value_malformed`)),
+
+            `lead_control_restricted` (your program is not enabled for User Accounts v2; `errors[].code` is `feature_not_enabled`).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: schema_violation
+                  message: limit must be between 1 and 100.
+                  parameters:
+                  - limit
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/user_accounts/{user_account_id}/entity_relationships/{entity_id}:
+    delete:
+      tags:
+      - User Account
+      operationId: delete-user-account-entity-relationship-v2
+      summary: Delete user account entity relationship
+      description: Remove an Entity from a User Account and return the updated list of relationships. Send `relationship_type` to identify which relationship to remove.
+      parameters:
+      - name: user_account_id
+        in: path
+        required: true
+        description: User Account ID
+        schema:
+          $ref: '#/components/schemas/UserAccountID'
+      - name: entity_id
+        in: path
+        required: true
+        description: Entity ID to remove from the user account relationships
+        schema:
+          $ref: '#/components/schemas/EntityID'
+      - name: relationship_type
+        in: query
+        required: true
+        description: The specific relationship type to delete for the entity.
+        schema:
+          $ref: '#/components/schemas/EntityRelationshipType'
+      responses:
+        '200':
+          description: Entity relationship deleted successfully. Returns the updated list of entity relationships for the user account.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  objects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EntityRelationship'
+                required:
+                - objects
+        '400':
+          description: The request could not be parsed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `user_account/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '404':
+          description: No user account exists with this ID, the entity does not exist, or the entity has no relationship of this type on the user account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '422':
+          description: '`code` is one of:
+
+            `parameters_invalid` (`relationship_type` is missing or invalid; `errors[].code` is `schema_violation`),
+
+            `lead_control_restricted` (your program is not enabled for User Accounts v2; `errors[].code` is `feature_not_enabled`).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: schema_violation
+                  message: relationship_type is required.
+                  parameters:
+                  - relationship_type
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/user_accounts/{user_account_id}/entity_relationships/batch:
+    post:
+      tags:
+      - User Account
+      operationId: batch-create-user-account-entity-relationships-v2
+      summary: Batch create user account entity relationships
+      description: Add Entities to a User Account under a single relationship type.
+      parameters:
+      - name: user_account_id
+        in: path
+        required: true
+        description: User Account ID
+        schema:
+          $ref: '#/components/schemas/UserAccountID'
+      - name: Idempotency-Key
+        in: header
+        description: A unique key for this request, up to 255 characters. Retrying with the same key and body returns the original response without creating the relationships twice. See [Idempotency](https://docs.lead.bank/api-reference/using-the-api/idempotency-v2).
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+        example: 3f1c9a52-7d4e-4b8a-9c21-6e0f5d2a8b14
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchCreateEntityRelationshipsRequest'
+            examples:
+              authorized_user:
+                summary: Batch add authorized users
+                value:
+                  entity_ids:
+                  - entity_8kL9jH7gF6dS5aQ4wE3rT2yU1iO
+                  - entity_2mN3bV4cX5zL6kwdJ7hG8fD9sA0
+                  - entity_1qW2eR3tY4uI5oP6aS7dF8gH9jK
+                  - entity_9pLuO8iK7yJ6hT5gR4fE3dD2sS1
+                  - entity_5zX4cV3bN2m1qW0eR9tY8uI7oP6
+                  relationship_type: authorized_user
+      responses:
+        '200':
+          description: Entity relationships created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_account_id:
+                    $ref: '#/components/schemas/UserAccountID'
+                  relationship_type:
+                    $ref: '#/components/schemas/EntityRelationshipType'
+                  entity_ids:
+                    type: array
+                    description: List of entity IDs associated with the user account under the specified relationship type.
+                    items:
+                      $ref: '#/components/schemas/EntityID'
+                required:
+                - user_account_id
+                - relationship_type
+                - entity_ids
+              examples:
+                authorized_user:
+                  summary: Batch add authorized users
+                  value:
+                    user_account_id: user_account_9h8g7f6e5d4c3b2a1z0y9x8w7v6
+                    relationship_type: authorized_user
+                    entity_ids:
+                    - entity_8kL9jH7gF6dS5aQ4wE3rT2yU1iO
+                    - entity_2mN3bV4cX5zL6kwdJ7hG8fD9sA0
+                    - entity_1qW2eR3tY4uI5oP6aS7dF8gH9jK
+                    - entity_9pLuO8iK7yJ6hT5gR4fE3dD2sS1
+                    - entity_5zX4cV3bN2m1qW0eR9tY8uI7oP6
+        '400':
+          description: The request could not be parsed (`request_malformed`), or the `Idempotency-Key` header is missing (`idempotency_key_missing`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: body_malformed
+                  message: The request body is missing or isn't a JSON object.
+        '403':
+          description: '`code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is missing, expired, or invalid, or does not grant `user_account/read_write`),
+
+            `source_ip_not_allowed` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, malformed, or invalid.
+        '404':
+          description: No user account exists with this ID, or it is not visible to your program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: A concurrent request with the same `Idempotency-Key` is still in flight.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: 'The request was parsed but cannot be processed. `code` is one of:
+
+            `parameters_invalid` (`relationship_type` or `entity_ids` is missing or invalid; an entity appears twice (`parameter_duplicated`); or the relationship type would exceed 20 entities (`parameter_bound_exceeded`). All failures are returned at once),
+
+            `related_object_invalid` (an entity does not exist or belongs to another program; `errors[].code` is `reference_not_found`, with the path in `parameters`),
+
+            `related_object_not_ready` (an entity is not eligible for the relationship type (`entity_role_missing`), with the entity''s path in `parameters`; update the entity, then retry the request unchanged),
+
+            `related_object_conflict` (adding the entities would mix consumer and commercial account holders (`account_holder_types_mismatched`), or an account holder is a lead or partner entity),
+
+            `lead_control_restricted` (your program is not enabled for User Accounts v2; `errors[].code` is `feature_not_enabled`),
+
+            `idempotency_request_inconsistent` (this `Idempotency-Key` was used with a different request body).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: related_object_invalid
+                message: An object referenced in the request doesn't exist or can't be used.
+                errors:
+                - code: reference_not_found
+                  message: Entity entity_8kL9jH7gF6dS5aQ4wE3rT2yU1iO does not exist.
+                  parameters:
+                  - entity_ids[0]
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error. Retry with the same `Idempotency-Key`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+components:
+  schemas:
+    Scra:
+      type: object
+      description: SCRA (Servicemembers Civil Relief Act) details
+      properties:
+        start_date:
+          type: string
+          format: date
+          description: Start date for SCRA protections
+        end_date:
+          type: string
+          format: date
+          description: End date for SCRA protections
+      required:
+      - start_date
+    ErrorCode:
+      type: string
+      description: A snake_case code identifying the error family — the stable, machine-readable value partners branch on, together with the HTTP status.
+      example: parameters_invalid
+      enum:
+      - request_malformed
+      - content_too_large
+      - idempotency_key_missing
+      - authentication_missing
+      - token_invalid
+      - source_ip_not_allowed
+      - url_invalid
+      - object_not_found
+      - method_not_allowed
+      - idempotency_key_in_use
+      - idempotency_request_inconsistent
+      - rate_limit_exceeded
+      - internal_server_error
+      - service_unavailable
+      - endpoint_disabled
+      - gateway_timeout
+      - unclassified
+      - parameters_invalid
+      - related_object_invalid
+      - related_object_not_ready
+      - related_object_conflict
+      - limit_exceeded
+      - client_control_restricted
+      - lead_control_restricted
+      - object_state_conflict
+      - object_modified_concurrently
+      - operation_invalid
+    ComplianceDocumentType:
+      type: string
+      description: Type of document associated with an application
+      enum:
+      - aan
+      - loan_agreement
+      - loc_agreement
+      - truth_in_lending_document
+      - ach_authorization
+      - notice_of_incompleteness
+      - credit_score_notice
+      - offer_summary
+      - personal_guarantee
+      - consumer_credit_auth
+      - partner_privacy_policy
+      - lead_privacy_policy
+      - terms_of_use
+      - esign_agreement
+      - credit_pull_consent
+      - fcra_notice
+      - tcpa_consent
+      - patriot_act_notice
+      - mla_notice
+      - pre_approval_terms
+      - eft_authorization
+      - prohibited_industry_certification
+      - decision_maker_document
+      - bo_certification
+      - missed_payments_policy
+      - consent_to_link_account
+      - consent_to_link_hsa
+      - negative_option_consent
+      - lead_funds_transfer_agreement
+      - deposit_agreement
+      - cardholder_agreement
+      - periodic_statement
+      - autopay_authorization
+    UserAccountCloseStatusReasonV2:
+      type: string
+      description: Valid reasons for closing a user account
+      enum:
+      - entity_closed
+      - client_closed
+      - paid_off
+      - charged_off
+      - canceled
+    EntityID:
+      type: string
+      description: The ID of your entity.
+      example: entity_xyz123
+      pattern: ^entity_[^\s]{1,33}$
+    CreateUserAccountRequestV2:
+      type: object
+      description: Request body for creating a new user account
+      properties:
+        application_id:
+          $ref: '#/components/schemas/ApplicationID'
+        requested_features:
+          type: array
+          description: The features the user account should be granted. The feature must be pre-approved for your program. Learn more about features [here](/v2/products/user-accounts/user-account-object#features).
+          items:
+            $ref: '#/components/schemas/UserAccountFeatureV2'
+        entities:
+          $ref: '#/components/schemas/CreateUserAccountEntitiesV2'
+        product_name:
+          type: string
+          description: Partner's name for their product
+        balance_sheet_model:
+          type:
+          - string
+          - 'null'
+          allOf:
+          - $ref: '#/components/schemas/UserAccountBalanceSheetModelV2'
+          description: How Lead carries the user account's credit on its balance sheet. Required whenever `requested_features` includes a credit feature. Cannot be changed once set. Learn more about balance sheet model [here](/v2/products/user-accounts/user-account-object#balance-sheet-model).
+        product_config_id:
+          type: string
+          pattern: ^product_config_\w+$
+          description: Identifies the product configuration set up for your program. Provided to you by your Lead Technical Account Manager. Cannot be changed once set.
+          example: product_config_xyz123
+        details:
+          type: object
+          description: Additional details for the user account
+          properties:
+            underwriting:
+              $ref: '#/components/schemas/CreateUserAccountUnderwritingV2'
+            adverse_action_notice:
+              $ref: '#/components/schemas/AdverseActionNotice'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        documents:
+          type: array
+          description: 'Compliance documents linked to the user account. Each entry references a
+
+            file uploaded with the Files API.
+
+            Send `[]` when there are none to link yet.'
+          items:
+            $ref: '#/components/schemas/FileDocument'
+      required:
+      - requested_features
+      - product_config_id
+      - product_name
+      - entities
+      - documents
+    UserAccountStatusV2:
+      type: string
+      description: Current state of the user account
+      enum:
+      - active
+      - inactive
+      - closed
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+          description: A human-readable description of the error family. Identical for every occurrence of a given `code`; carries no request-specific detail.
+          example: One or more parameters are invalid.
+        errors:
+          type: array
+          description: Zero or more specific errors within this family. Always present for validation errors, one entry per failing field.
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+    UserAccountStatusReasonV2:
+      type: string
+      description: Machine-readable reason for the current status
+      enum:
+      - client_closed
+      - entity_closed
+      - frozen
+      - dormant
+      - active
+      - paid_off
+      - charged_off
+      - canceled
+      - other
+    EntityRelationshipType:
+      type: string
+      description: Indicates the type of Entity
+      enum:
+      - account_holder
+      - authorized_signer
+      - authorized_user
+      example: account_holder
+    UserAccountV2:
+      type: object
+      description: A user account object
+      readOnly: true
+      required:
+      - id
+      - status
+      - status_reason
+      - features
+      - product_name
+      - entities
+      - details
+      - documents
+      - metadata
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/UserAccountID'
+        status:
+          $ref: '#/components/schemas/UserAccountStatusV2'
+        status_reason:
+          $ref: '#/components/schemas/UserAccountStatusReasonV2'
+        application_id:
+          $ref: '#/components/schemas/ApplicationID'
+        features:
+          type: array
+          description: Features granted to the user account.
+          items:
+            $ref: '#/components/schemas/UserAccountFeatureV2'
+        entities:
+          $ref: '#/components/schemas/UserAccountEntitiesV2'
+        details:
+          $ref: '#/components/schemas/UserAccountDetailsV2'
+        product_name:
+          type: string
+          description: Partner's name for their product
+        documents:
+          type: array
+          description: 'Compliance documents linked to the user account. Each entry references a
+
+            file uploaded with the Files API.'
+          items:
+            $ref: '#/components/schemas/FileDocument'
+        legacy_documents:
+          type: array
+          readOnly: true
+          description: 'Document entries created on v0 User Accounts, returned exactly as sent.
+
+            Read only: ignored if included on a POST or PATCH.'
+          items:
+            $ref: '#/components/schemas/LegacyUserAccountDocumentV2'
+        client_account_id:
+          type: string
+          description: 'The identifier you assigned in an Account file. Present only on user
+
+            accounts created through file upload. Omitted on user accounts created
+
+            through the API, which are identified only by `id`.'
+          readOnly: true
+        balance_sheet_model:
+          type:
+          - string
+          - 'null'
+          allOf:
+          - $ref: '#/components/schemas/UserAccountBalanceSheetModelV2'
+          description: How Lead carries the user account's credit on its balance sheet.
+        product_config_id:
+          type:
+          - string
+          - 'null'
+          pattern: ^product_config_\w+$
+          description: 'The id of the product configuration the user account was created under.
+
+            `null` only on user accounts created before product config ids existed.'
+          example: product_config_xyz123
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          readOnly: true
+        closed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the user account was closed. Updated by /close endpoint.
+          readOnly: true
+    UserAccountBalanceSheetModelV2:
+      type: string
+      description: How Lead carries the user account's credit on its balance sheet.
+      enum:
+      - held_for_investment
+      - held_for_sale
+    UserAccountEntitiesV2:
+      type: object
+      readOnly: true
+      description: Entity relationships associated with the user account (response only)
+      properties:
+        account_holder_type:
+          type: string
+          description: Derived from the type of the entity referenced in account_holders
+          enum:
+          - consumer
+          - commercial
+    AdverseActionNotice:
+      type: object
+      description: Adverse action notice information
+      properties:
+        delivered_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the adverse action notice was sent to the applicant.
+        reason:
+          type: string
+          description: The reason stated in the adverse action notice.
+        delivery_method:
+          type: string
+          description: 'How the notice was delivered to the applicant. Possible values: `email`, `text`, `other`.'
+          enum:
+          - email
+          - text
+          - other
+      required:
+      - delivered_at
+      - reason
+      - delivery_method
+    EntityRelationship:
+      type: object
+      description: Common fields for entity relationships
+      properties:
+        entity_id:
+          $ref: '#/components/schemas/EntityID'
+        relationship_type:
+          $ref: '#/components/schemas/EntityRelationshipType'
+      required:
+      - entity_id
+      - relationship_type
+    PatchUserAccountRequestV2:
+      type: object
+      description: Request body for updating an existing user account
+      properties:
+        application_id:
+          $ref: '#/components/schemas/ApplicationID'
+        requested_features:
+          type: array
+          description: The features the user account should be granted. The feature must be pre-approved for your program. Learn more about features [here](/v2/products/user-accounts/user-account-object#features).
+          items:
+            $ref: '#/components/schemas/UserAccountFeatureV2'
+        product_name:
+          type: string
+          description: Partner's name for their product
+        balance_sheet_model:
+          allOf:
+          - $ref: '#/components/schemas/UserAccountBalanceSheetModelV2'
+          description: How Lead carries the user account's credit on its balance sheet. Accepted only when the PATCH adds a credit feature through `requested_features`, and required in that case. Cannot be changed once set. Learn more about balance sheet model [here](/v2/products/user-accounts/user-account-object#balance-sheet-model).
+        details:
+          type: object
+          description: Additional details for the user account
+          properties:
+            underwriting:
+              $ref: '#/components/schemas/PatchUserAccountUnderwritingV2'
+            adverse_action_notice:
+              $ref: '#/components/schemas/AdverseActionNotice'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        documents:
+          type: array
+          description: 'Compliance documents linked to the user account. Each entry references a
+
+            file uploaded with the Files API.
+
+            A supplied array replaces the whole array: to add a document, send every
+
+            existing entry plus the new one.'
+          items:
+            $ref: '#/components/schemas/FileDocument'
+    UserAccountDeactivateStatusReasonV2:
+      type: string
+      description: Valid reasons for deactivating a user account
+      enum:
+      - dormant
+      - frozen
+      - other
+    UserAccountCloseRequestV2:
+      type: object
+      description: Request body for closing a user account
+      properties:
+        status_reason:
+          $ref: '#/components/schemas/UserAccountCloseStatusReasonV2'
+      required:
+      - status_reason
+    FileDocument:
+      type: object
+      description: 'A document entry in a v2 Application or User Account `documents` array: a
+
+        reference to an uploaded file plus the moment the end user saw or agreed
+
+        to it. The file''s `type` is not repeated here; retrieve it via
+
+        `GET /v2/files/{id}`. Entity document entries have their own shape and are
+
+        specified with the v2 Entity operations.'
+      required:
+      - file_id
+      - timestamp
+      properties:
+        file_id:
+          $ref: '#/components/schemas/FileID'
+        timestamp:
+          type: string
+          format: date-time
+          description: 'When the end-user was shown or agreed to the document, per the file
+
+            type. Partner-supplied; records an exchange between the partner and
+
+            end-user, never upload time. ISO 8601, UTC.'
+          example: '2026-09-14T14:20:11Z'
+        version:
+          type: string
+          description: 'Partner-supplied label used for static documents so that two entries of
+
+            the same type on one object can be ordered (e.g. terms of use v1 and v2).'
+          example: v2
+    ApplicationID:
+      type: string
+      description: Unique identifier for the application. Prefixed with `application_`.
+      example: application_xyz123
+      pattern: ^application_\w+$
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
+    PatchUserAccountUnderwritingV2:
+      type: object
+      description: Underwriting details for updating a user account (all fields optional)
+      properties:
+        is_secured:
+          type: boolean
+          description: Indicates if this is a secured credit/deposit product
+        is_mla:
+          type: boolean
+          description: Indicates if this user account is considered a Military Lending Act account
+        underwriting_grade:
+          type: string
+          description: Grade given to the customer based on underwriting
+        currency_code:
+          type: string
+          description: The currency for the user account (3-letter ISO code)
+          example: USD
+        available_credit:
+          type: integer
+          description: Available credit for the customer to draw (in minor units)
+        limit:
+          type: integer
+          description: Current credit limit (in minor units)
+        max_limit:
+          type: integer
+          description: Maximum credit limit approved in underwriting (in minor units)
+        scra:
+          $ref: '#/components/schemas/Scra'
+        report:
+          $ref: '#/components/schemas/CreditReport'
+    UserAccountID:
+      type: string
+      description: The ID of the User Account object.
+      example: user_account_xyz123
+      pattern: ^user_account_\w+$
+    UserAccountDetailsV2:
+      type: object
+      description: Core details of the user account
+      readOnly: true
+      properties:
+        underwriting:
+          $ref: '#/components/schemas/UserAccountUnderwritingV2'
+        adverse_action_notice:
+          $ref: '#/components/schemas/AdverseActionNotice'
+    ErrorItem:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          description: A snake_case code naming the specific error or sub-category.
+          example: required
+        message:
+          type: string
+          description: A human-readable description of this specific error, with interpolated values where relevant.
+          example: account_number_id is required.
+        parameters:
+          type: array
+          description: The request fields this error implicates, in dot notation for nested fields. Present for validation errors.
+          items:
+            type: string
+          example:
+          - account_number_id
+    UserAccountDeactivateRequestV2:
+      type: object
+      description: Request body for deactivating a user account
+      properties:
+        status_reason:
+          $ref: '#/components/schemas/UserAccountDeactivateStatusReasonV2'
+      required:
+      - status_reason
+    UserAccountFeatureV2:
+      type: string
+      description: A feature of the user account
+      enum:
+      - deposit
+      - credit_with_underwriting
+      - credit_without_underwriting
+    CreateUserAccountEntitiesV2:
+      type: object
+      description: 'Entity relationships for the user account (POST request only).
+
+        Maximum 20 entities per relationship type.
+
+        Cannot mix individual and business/sole_prop entities in account_holders.
+
+        Authorized signers required for business/sole_prop account holders.
+
+        '
+      properties:
+        account_holders:
+          type: array
+          description: Account holders (min 1, max 20)
+          items:
+            $ref: '#/components/schemas/EntityID'
+          minItems: 1
+          maxItems: 20
+        authorized_signers:
+          type: array
+          description: Authorized signers on the user account (required with min 1 if business/sole_prop account holders)
+          items:
+            $ref: '#/components/schemas/EntityID'
+          maxItems: 20
+        authorized_users:
+          type: array
+          description: Authorized users on the user account
+          items:
+            $ref: '#/components/schemas/EntityID'
+          maxItems: 20
+      required:
+      - account_holders
+    LegacyUserAccountDocumentV2:
+      type: object
+      description: A document entry sent through the v0 Accounts API, returned exactly as sent. Read only.
+      properties:
+        document_id:
+          type: string
+          description: The SFTP filename sent on v0 as the document reference. Lead did not check that the file arrived.
+          example: loan_agreement_01_2026.pdf
+        type:
+          $ref: '#/components/schemas/ComplianceDocumentType'
+        displayed_at:
+          type: string
+          format: date-time
+          description: When the document was shown to the account holder, as sent on v0. Present on disclosure documents.
+        consented_at:
+          type: string
+          format: date-time
+          description: When the account holder consented to the document, as sent on v0. Present on consent documents.
+        version:
+          type: string
+          description: The version label sent on v0.
+          example: v1
+    CreateUserAccountUnderwritingV2:
+      type: object
+      description: Underwriting details for creating a user account. All fields are required except `scra` and `report`.
+      required:
+      - is_secured
+      - is_mla
+      - underwriting_grade
+      - currency_code
+      - available_credit
+      - limit
+      - max_limit
+      properties:
+        is_secured:
+          type: boolean
+          description: Indicates if this is a secured credit/deposit product
+        is_mla:
+          type: boolean
+          description: Indicates if this user account is considered a Military Lending Act account
+        underwriting_grade:
+          type: string
+          description: Grade given to the customer based on underwriting
+        currency_code:
+          type: string
+          description: The currency for the user account (3-letter ISO code)
+          example: USD
+        available_credit:
+          type: integer
+          description: Available credit for the customer to draw (in minor units)
+        limit:
+          type: integer
+          description: Current credit limit (in minor units)
+        max_limit:
+          type: integer
+          description: Maximum credit limit approved in underwriting (in minor units)
+        scra:
+          $ref: '#/components/schemas/Scra'
+        report:
+          $ref: '#/components/schemas/CreditReport'
+    FileID:
+      type: string
+      description: Lead-issued identifier of the file, from `POST /v2/files`.
+      example: file_7RwQ2mK9pL4xT1vN8jS5
+      pattern: ^file_\w+$
+    UserAccountUnderwritingV2:
+      type: object
+      description: Underwriting details for the user account
+      properties:
+        is_secured:
+          type: boolean
+          description: Indicates if this is a secured credit/deposit product
+        is_mla:
+          type: boolean
+          description: Indicates if this user account is considered a Military Lending Act account
+        underwriting_grade:
+          type: string
+          description: Grade given to the customer based on underwriting
+        currency_code:
+          type: string
+          description: The currency for the user account (3-letter ISO code)
+          example: USD
+        available_credit:
+          type: integer
+          description: Available credit for the customer to draw (in minor units)
+        limit:
+          type: integer
+          description: Current credit limit (in minor units)
+        max_limit:
+          type: integer
+          description: Maximum credit limit approved in underwriting (in minor units)
+        scra:
+          $ref: '#/components/schemas/Scra'
+        report:
+          $ref: '#/components/schemas/CreditReport'
+    BatchCreateEntityRelationshipsRequest:
+      type: object
+      description: Request body for batch creating entity relationships on an account.
+      properties:
+        entity_ids:
+          type: array
+          description: List of entity IDs to associate with the account under the specified relationship type.
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/EntityID'
+        relationship_type:
+          $ref: '#/components/schemas/EntityRelationshipType'
+      required:
+      - entity_ids
+      - relationship_type
+    CreditReport:
+      type: object
+      description: 'Credit report information. Exactly one of `score` or `non_score_value` must be provided; `pulled_at` and `source` are always required when a credit report is supplied.
+
+        '
+      required:
+      - pulled_at
+      - source
+      properties:
+        score:
+          type: integer
+          description: Credit score returned by the bureau. Supported range is 300-850. Mutually exclusive with `non_score_value`.
+          minimum: 300
+          maximum: 850
+        non_score_value:
+          type: string
+          description: Indicates the state of a credit file when a numeric score is not available. Mutually exclusive with `score`.
+          enum:
+          - unestablished
+          - frozen
+        pulled_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the credit report was pulled.
+        source:
+          type: string
+          description: 'Credit bureau that issued the report. Possible values: `equifax`, `experian`, `transunion`.'
+          enum:
+          - equifax
+          - transunion
+          - experian
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

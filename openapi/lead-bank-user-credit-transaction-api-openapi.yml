@@ -1,0 +1,990 @@
+openapi: 3.2.0
+info:
+  title: Lead Bank User Credit Transaction API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: User Credit Transaction
+paths:
+  /v2/user_credit_balances/{user_credit_balance_id}/user_credit_transactions:
+    post:
+      tags:
+      - User Credit Transaction
+      operationId: create-a-user-credit-transaction-v2
+      summary: Create a User Credit Transaction
+      description: Create a User Credit Transaction on a User Credit Balance.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          minLength: 5
+          maxLength: 255
+      - name: user_credit_balance_id
+        in: path
+        required: true
+        example: user_credit_balance_xyz123
+        schema:
+          type: string
+          pattern: ^user_credit_balance_\w+$
+        description: The ID of the User Credit Balance to create the transaction against.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserCreditTransactionRequest'
+      responses:
+        '200':
+          description: The created User Credit Transaction object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreditTransaction'
+        '400':
+          description: We couldn't parse your request body, please check that your request body is valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: payload_invalid
+                  message: The request body is not valid JSON.
+        '403':
+          description: 'Rejected before the request reached the User Credit Transaction API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: The user_credit_balance_id passed in is not a valid User Credit Balance ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: A concurrent request with the same `Idempotency-Key` is still in flight.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: Your request parameters did not validate, or this `Idempotency-Key` was used with a different request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: required
+                  message: amount_breakdown.principal is required.
+                  parameters:
+                  - amount_breakdown.principal
+                - code: dependent_parameter_required
+                  message: details.fee_type is required when type is fee.
+                  parameters:
+                  - details.fee_type
+        '429':
+          description: Too many requests. Please retry after some time.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '503':
+          description: The endpoint is temporarily disabled. Retry after the interval given in the `Retry-After` header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the interval given in the Retry-After header.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/user_credit_transactions/{user_credit_transaction_id}:
+    get:
+      tags:
+      - User Credit Transaction
+      operationId: retrieve-a-user-credit-transaction-v2
+      summary: Retrieve a User Credit Transaction
+      description: Retrieve a User Credit Transaction by its ID.
+      parameters:
+      - name: user_credit_transaction_id
+        in: path
+        required: true
+        example: user_credit_transaction_xyz123
+        schema:
+          type: string
+          pattern: ^user_credit_transaction_\w+$
+        description: The ID of the User Credit Transaction to be retrieved.
+      responses:
+        '200':
+          description: A User Credit Transaction object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreditTransaction'
+        '400':
+          description: The request URL could not be parsed (`request_malformed`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: 'Rejected before the request reached the User Credit Transaction API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: The user_credit_transaction_id passed in is not a valid User Credit Transaction ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '422':
+          description: 'The request was parsed but cannot be processed. `code` is one of:
+
+            `parameters_invalid` (the User Credit Transaction ID is malformed).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: value_malformed
+                  message: user_credit_transaction_id is not a valid ID.
+                  parameters:
+                  - user_credit_transaction_id
+        '429':
+          description: Too many requests. Please retry after some time.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '503':
+          description: The endpoint is temporarily disabled. Retry after the interval given in the `Retry-After` header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the interval given in the Retry-After header.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+    patch:
+      tags:
+      - User Credit Transaction
+      operationId: update-a-user-credit-transaction-v2
+      summary: Update a User Credit Transaction
+      description: Update a User Credit Transaction.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          minLength: 5
+          maxLength: 255
+      - name: user_credit_transaction_id
+        in: path
+        required: true
+        example: user_credit_transaction_xyz123
+        schema:
+          type: string
+          pattern: ^user_credit_transaction_\w+$
+        description: The ID of the User Credit Transaction to be updated.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserCreditTransactionRequest'
+      responses:
+        '200':
+          description: The updated User Credit Transaction object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreditTransaction'
+        '400':
+          description: We couldn't parse your request body, please check that your request body is valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: payload_invalid
+                  message: The request body is not valid JSON.
+        '403':
+          description: 'Rejected before the request reached the User Credit Transaction API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: The user_credit_transaction_id passed in is not a valid User Credit Transaction ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: '`code` is one of:
+
+            `idempotency_key_in_use` (a concurrent request with the same `Idempotency-Key` is still in flight),
+
+            `object_modified_concurrently` (another request changed the transaction while this one was processing; fetch it and retry).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: Your request parameters did not validate, or you attempted to update an immutable field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: parameter_immutable
+                  message: type cannot be changed after creation.
+                  parameters:
+                  - type
+        '429':
+          description: Too many requests. Please retry after some time.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '503':
+          description: The endpoint is temporarily disabled. Retry after the interval given in the `Retry-After` header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the interval given in the Retry-After header.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/user_credit_transactions/{user_credit_transaction_id}/reverse:
+    post:
+      tags:
+      - User Credit Transaction
+      operationId: reverse-a-user-credit-transaction-v2
+      summary: Reverse a User Credit Transaction
+      description: Reverse a User Credit Transaction. Lead creates and returns a new User Credit Transaction of the same `type` with every amount negated, linked to the original. See Reversals.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          minLength: 5
+          maxLength: 255
+      - name: user_credit_transaction_id
+        in: path
+        required: true
+        example: user_credit_transaction_xyz123
+        schema:
+          type: string
+          pattern: ^user_credit_transaction_\w+$
+        description: The ID of the User Credit Transaction to be reversed.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                metadata:
+                  $ref: '#/components/schemas/Metadata'
+      responses:
+        '200':
+          description: The newly created reversal User Credit Transaction object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreditTransaction'
+        '400':
+          description: We couldn't parse your request body, please check that your request body is valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: payload_invalid
+                  message: The request body is not valid JSON.
+        '403':
+          description: 'Rejected before the request reached the User Credit Transaction API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: The user_credit_transaction_id passed in is not a valid User Credit Transaction ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '409':
+          description: '`code` is one of:
+
+            `idempotency_key_in_use` (a concurrent request with the same `Idempotency-Key` is still in flight),
+
+            `object_modified_concurrently` (another request changed the transaction while this one was processing; fetch it and retry).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '422':
+          description: Your request parameters did not validate, or the transaction is not eligible for reversal.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_state_conflict
+                message: The object is not in the state this request assumed. Fetch its current state before retrying.
+                errors:
+                - code: object_status_unchanged
+                  message: User Credit Transaction user_credit_transaction_xyz123 is already reversed.
+        '429':
+          description: Too many requests. Please retry after some time.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '503':
+          description: The endpoint is temporarily disabled. Retry after the interval given in the `Retry-After` header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: endpoint_disabled
+                message: This endpoint is temporarily disabled. Retry after the interval given in the Retry-After header.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff, and with the same `Idempotency-Key` on a `POST` or `PATCH`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+components:
+  schemas:
+    UserCreditTransactionAmountBreakdown:
+      type: object
+      description: A breakdown of `amount` into its principal, interest, and fee components. The three values must sum to `amount`.
+      required:
+      - principal
+      - interest
+      - fees
+      properties:
+        principal:
+          type: integer
+          format: int64
+          description: The portion of `amount` applied to principal, represented in minor units.
+          example: 0
+        interest:
+          type: integer
+          format: int64
+          description: The portion of `amount` applied to interest, represented in minor units.
+          example: 0
+        fees:
+          type: integer
+          format: int64
+          description: The portion of `amount` applied to fees, represented in minor units.
+          example: 1500
+    ErrorCode:
+      type: string
+      description: A snake_case code identifying the error family — the stable, machine-readable value partners branch on, together with the HTTP status.
+      example: parameters_invalid
+      enum:
+      - request_malformed
+      - content_too_large
+      - idempotency_key_missing
+      - authentication_missing
+      - token_invalid
+      - source_ip_not_allowed
+      - url_invalid
+      - object_not_found
+      - method_not_allowed
+      - idempotency_key_in_use
+      - idempotency_request_inconsistent
+      - rate_limit_exceeded
+      - internal_server_error
+      - service_unavailable
+      - endpoint_disabled
+      - gateway_timeout
+      - unclassified
+      - parameters_invalid
+      - related_object_invalid
+      - related_object_not_ready
+      - related_object_conflict
+      - limit_exceeded
+      - client_control_restricted
+      - lead_control_restricted
+      - object_state_conflict
+      - object_modified_concurrently
+      - operation_invalid
+    CoreTransactionID:
+      type: string
+      example: core_transaction_xyz123
+      pattern: ^core_transaction_.+~\d+$
+    UserCreditTransactionCardNetworkDetails:
+      type: object
+      description: Card network details associated with a `card_network`-type User Credit Transaction.
+      properties:
+        card_id:
+          type: string
+          description: The ID of the card used for the transaction.
+          example: card_xyz123
+        bin:
+          type: string
+          pattern: ^\d{6,8}$
+          description: The Bank Identification Number of the card used for the transaction.
+          example: '412345'
+        card_network:
+          type: string
+          description: The card network that processed the transaction.
+          example: visa
+          enum:
+          - visa
+          - mastercard
+          - pulse
+          - accel
+          - maestro
+          - tabapay
+          - amex
+          - star
+          - interlink
+        original_transaction_id:
+          type: string
+          description: The card network's identifier for the original transaction this record relates to (e.g. for a clearing record referencing its authorization).
+          example: user_credit_transaction_id_xyz
+        network_transfer_type:
+          type: string
+          description: The stage of card network processing this record represents.
+          example: card
+          enum:
+          - card
+          - oct
+          - aft
+        authorization_amount:
+          type: integer
+          format: int64
+          description: The amount authorized by the card network, represented in minor units.
+          example: 1500
+        authorization_currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        settlement_amount:
+          type: integer
+          format: int64
+          description: The amount settled by the card network, represented in minor units.
+          example: 1500
+        settlement_currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        settlement_date:
+          type: string
+          format: date
+          description: The date on which the transaction is expected to settle with the card network. Mutable via the update endpoint.
+          example: '2026-09-30'
+        merchant:
+          $ref: '#/components/schemas/UserCreditTransactionCardNetworkMerchant'
+    CreditTransactionType:
+      type: string
+      description: The type of the User Credit Transaction, which determines how the transaction affects the associated User Credit Balance.
+      example: card_network
+      enum:
+      - card_network
+      - funding
+      - fee
+      - fee_accrued
+      - dispute_provisional
+      - dispute_won
+      - dispute_lost
+      - charge_off
+      - charge_off_recovery
+      - rewards_earned
+      - rewards_spent
+      - rewards_redeemed
+      - interest_accrued
+      - adjustment
+      - reallocation
+      - payment
+      - cancellation
+      - client_credit
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+          description: A human-readable description of the error family. Identical for every occurrence of a given `code`; carries no request-specific detail.
+          example: One or more parameters are invalid.
+        errors:
+          type: array
+          description: Zero or more specific errors within this family. Always present for validation errors, one entry per failing field.
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+    UserCreditTransaction:
+      type: object
+      required:
+      - id
+      - user_credit_balance_id
+      - type
+      - currency_code
+      - amount
+      - amount_breakdown
+      - effective_at
+      - metadata
+      - created_at
+      - updated_at
+      - core_transaction_id
+      - counterparty_core_transaction_id
+      properties:
+        id:
+          $ref: '#/components/schemas/UserCreditTransactionID'
+        user_credit_balance_id:
+          type: string
+          description: The ID of the User Credit Balance that this transaction belongs to.
+          example: user_credit_balance_xyz123
+          pattern: ^user_credit_balance_\w+$
+        type:
+          $ref: '#/components/schemas/CreditTransactionType'
+        core_transaction_id:
+          allOf:
+          - $ref: '#/components/schemas/CoreTransactionID'
+          description: The core transaction on the settlement (FBO) account side of this transaction's posting. Null until the transaction posts.
+        counterparty_core_transaction_id:
+          allOf:
+          - $ref: '#/components/schemas/CoreTransactionID'
+          description: The core transaction on the counterparty's operating account side of this transaction's posting. Present only when the counterparty account is a program DDA; null when the counterparty is a GL account, or until the transaction posts.
+        description:
+          type: string
+          maxLength: 120
+          description: A client-provided description of the transaction.
+          example: Monthly card fee
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        amount:
+          type: integer
+          format: int64
+          description: The transaction amount, represented in minor units. See `CreateUserCreditTransactionRequest.amount` for the per-`type` sign rules. On a transaction created by a reverse action, this is the negation of the original transaction's `amount`.
+          example: 1500
+        amount_in_usd:
+          type: integer
+          format: int64
+          description: The transaction amount converted to USD, represented in minor units. On a transaction created by a reverse action, this is the negation of the original transaction's `amount_in_usd`.
+          example: 1500
+        amount_breakdown:
+          $ref: '#/components/schemas/UserCreditTransactionAmountBreakdown'
+        effective_at:
+          type: string
+          format: date-time
+          description: An RFC 3339 timestamp representing when the transaction is effective.
+          example: '2026-09-30T00:00:00Z'
+        details:
+          $ref: '#/components/schemas/UserCreditTransactionDetails'
+        funding_id:
+          type: string
+          pattern: ^funding_\w+$
+          description: The ID of the associated Funding object. Present when `type` is `funding`.
+          example: funding_123
+        reversal_transaction_id:
+          type: string
+          pattern: ^user_credit_transaction_\w+$
+          description: The ID of the reversal User Credit Transaction created when this transaction was reversed. Present only once this transaction has been reversed.
+          example: user_credit_transaction_abc789
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        created_at:
+          type: string
+          format: date-time
+          description: An ISO-8601 timestamp at which the User Credit Transaction was created.
+          example: '2026-09-30T11:01:36Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: An ISO-8601 timestamp at which the User Credit Transaction was last updated.
+          example: '2026-09-30T11:05:00Z'
+    UserCreditTransactionRewardsDetails:
+      type: object
+      description: Rewards program details associated with the User Credit Transaction. Required when `type` is `rewards_redeemed`. Required when `type` is `rewards_earned` or `rewards_spent` and the top-level `amount` is `0`.
+      required:
+      - amount
+      - unit
+      properties:
+        amount:
+          type: integer
+          format: int64
+          description: The rewards amount. Non-negative when `type` is `rewards_earned`; non-positive when `type` is `rewards_spent` or `rewards_redeemed`.
+          example: 500
+        unit:
+          type: string
+          description: The unit that `amount` is denominated in.
+          example: points
+          enum:
+          - points
+          - USD
+    UserCreditTransactionDetails:
+      type: object
+      description: 'Additional details about the User Credit Transaction. Which properties are populated depends on the transaction `type`: `fee_type` is required when `type` is `fee`; `rewards` is required when `type` is `rewards_redeemed`, `rewards_earned`, or `rewards_spent`; `card_network` is present when `type` is `card_network`; `reversal` is present only on a transaction created by a reverse action.'
+      properties:
+        fee_type:
+          $ref: '#/components/schemas/CreditTransactionFeeType'
+        card_network:
+          $ref: '#/components/schemas/UserCreditTransactionCardNetworkDetails'
+        rewards:
+          $ref: '#/components/schemas/UserCreditTransactionRewardsDetails'
+        reversal:
+          $ref: '#/components/schemas/UserCreditTransactionReversalDetails'
+    UserCreditTransactionID:
+      type: string
+      description: The ID of the User Credit Transaction object.
+      example: user_credit_transaction_xyz123
+      pattern: ^user_credit_transaction_\w+$
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    UpdateUserCreditTransactionRequest:
+      type: object
+      additionalProperties: false
+      description: 'Request body for updating an existing User Credit Transaction. Only mutable fields are present
+
+        — amount-row fields (`amount`, `amount_breakdown`, `type`, `currency_code`, `effective_at`,
+
+        `funding_id`) and other immutable fields aren''t in this schema at all, so they''re rejected the
+
+        same way any unrecognized field is.'
+      properties:
+        description:
+          type: string
+          maxLength: 120
+          description: An optional, client-provided description of the transaction. Limited to 120 characters.
+          example: Monthly card fee
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        details:
+          type: object
+          additionalProperties: false
+          properties:
+            card_network:
+              type: object
+              additionalProperties: false
+              properties:
+                settlement_date:
+                  type: string
+                  format: date
+                  description: The date on which the transaction is expected to settle with the card network.
+                  example: '2026-09-30'
+    ErrorItem:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          description: A snake_case code naming the specific error or sub-category.
+          example: required
+        message:
+          type: string
+          description: A human-readable description of this specific error, with interpolated values where relevant.
+          example: account_number_id is required.
+        parameters:
+          type: array
+          description: The request fields this error implicates, in dot notation for nested fields. Present for validation errors.
+          items:
+            type: string
+          example:
+          - account_number_id
+    UserCreditTransactionCardNetworkMerchant:
+      type: object
+      description: Merchant details associated with a `card_network`-type User Credit Transaction.
+      properties:
+        name:
+          type: string
+          description: The name of the merchant. Required when `details.card_network.network_transfer_type` is `card`.
+          example: Acme Inc.
+        address_line_1:
+          type: string
+          description: The street address of the merchant. Optional; no format constraint.
+          example: 123 Main St
+        city:
+          type: string
+          description: The city of the merchant. Optional; no format constraint.
+          example: Kansas City
+        state:
+          type: string
+          description: The state of the merchant. Optional; no format constraint.
+          example: MO
+        country_code:
+          type: string
+          pattern: ^[A-Z]{2}$
+          description: The two-letter ISO 3166-1 country code of the merchant. Required when `details.card_network.network_transfer_type` is `card`.
+          example: US
+        zip_code:
+          type: string
+          description: The postal code of the merchant. Optional; no format constraint.
+          example: '64105'
+        mcc:
+          type: string
+          pattern: ^\d{4}$
+          description: The Merchant Category Code for the transaction. Required when `details.card_network.network_transfer_type` is `card`.
+          example: '5411'
+    CreditTransactionFeeType:
+      type: string
+      description: The category of fee represented by this transaction. Required when `type` is `fee`.
+      example: card
+      enum:
+      - periodic_maintenance
+      - card
+      - international_transaction
+      - borrower_origination
+      - other
+    CreateUserCreditTransactionRequest:
+      type: object
+      description: Request body for creating a new User Credit Transaction.
+      additionalProperties: false
+      required:
+      - type
+      - currency_code
+      - amount
+      - amount_breakdown
+      - effective_at
+      properties:
+        type:
+          $ref: '#/components/schemas/CreditTransactionType'
+        description:
+          type: string
+          maxLength: 120
+          description: An optional, client-provided description of the transaction. Limited to 120 characters.
+          example: Monthly card fee
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        amount:
+          type: integer
+          format: int64
+          description: "The transaction amount, represented in minor units. Sign rules and `amount_breakdown` treatment depend on `type`:\n  - Non-negative (`>= 0`), rule applies to `amount` and all of `amount_breakdown.principal`/`.interest`/`.fees`: `dispute_lost`\n  - Non-negative (`>= 0`), rule applies to `amount` and `amount_breakdown.interest` only; `amount_breakdown.principal` and `.fees` are forced to `0`: `funding`, `interest_accrued`\n  - Non-negative (`>= 0`); `amount_breakdown.principal` and `.interest` are forced to `0`: `fee`\n  - Strictly positive (`> 0`); `amount_breakdown.principal` and `.interest` are forced to `0`: `fee_accrued`\n  - Non-positive (`<= 0`), rule applies to `amount` and all of `amount_breakdown.principal`/`.interest`/`.fees`: `payment`, `dispute_provisional`, `charge_off`, `rewards_redeemed`, `cancellation`, `client_credit`, `dispute_won`, `charge_off_recovery`\n  - Exactly `0`, and all of `amount_breakdown.principal`/`.interest`/`.fees` forced to `0`: `rewards_earned`, `rewards_spent` (the signed rewards value instead lives in `details.rewards.amount`)\n  - Exactly `0` at the top level only; `amount_breakdown` components may be nonzero as long as they sum to `0`: `reallocation`\n  - Unconstrained: `card_network`, `adjustment`"
+          example: 1500
+        amount_breakdown:
+          $ref: '#/components/schemas/UserCreditTransactionAmountBreakdown'
+        effective_at:
+          type: string
+          format: date-time
+          description: An RFC 3339 timestamp representing when the transaction is effective. Must fall within the current or prior calendar quarter.
+          example: '2026-09-30T00:00:00Z'
+        details:
+          $ref: '#/components/schemas/UserCreditTransactionDetails'
+        funding_id:
+          type: string
+          pattern: ^funding_\w+$
+          description: The ID of the associated Funding object. Required when `type` is `funding`, and must be absent otherwise.
+          example: funding_123
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: A set of key-value pairs that can be used to store additional information related to this object.
+    UserCreditTransactionReversalDetails:
+      type: object
+      description: Present only on a User Credit Transaction created by a reverse action.
+      required:
+      - original_transaction_id
+      properties:
+        original_transaction_id:
+          $ref: '#/components/schemas/UserCreditTransactionID'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

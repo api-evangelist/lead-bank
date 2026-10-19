@@ -1,0 +1,12 @@
+{
+ "url": "https://docs.lead.bank/openapi.json",
+ "final": "https://docs.lead.bank/openapi.json",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 1332574,
+ "sha256": "2752b1dade42ad989cf6a530d297e13d39960c66f67f545c495b9285a374b6e0",
+ "fetched_at": "2026-10-19",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "re-archived: the provider's current document replaced a stale archive (roadmap#793); the old files are in openapi/_superseded/2026-10-19-stale"
+}

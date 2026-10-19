@@ -330,6 +330,107 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/lead-bank-oauth-api-openapi.yml
+- aid: lead-bank:lead-bank-application-api
+  name: Lead Bank Application API
+  description: The Application API from Lead Bank — 3 operation(s) for application.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Application
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-application-api-openapi.yml
+- aid: lead-bank:lead-bank-core-account-api
+  name: Lead Bank Core Account API
+  description: The Core Account API from Lead Bank — 2 operation(s) for core account.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Core Account
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-core-account-api-openapi.yml
+- aid: lead-bank:lead-bank-core-balance-api
+  name: Lead Bank Core Balance API
+  description: The Core Balance API from Lead Bank — 2 operation(s) for core balance.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Core Balance
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-core-balance-api-openapi.yml
+- aid: lead-bank:lead-bank-core-transaction-api
+  name: Lead Bank Core Transaction API
+  description: The Core Transaction API from Lead Bank — 2 operation(s) for core transaction.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Core Transaction
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-core-transaction-api-openapi.yml
+- aid: lead-bank:lead-bank-files-api
+  name: Lead Bank Files API
+  description: The Files API from Lead Bank — 2 operation(s) for files.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Files
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-files-api-openapi.yml
+- aid: lead-bank:lead-bank-receivable-api
+  name: Lead Bank Receivable API
+  description: The Receivable API from Lead Bank — 2 operation(s) for receivable.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Receivable
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-receivable-api-openapi.yml
+- aid: lead-bank:lead-bank-receivable-sale-api
+  name: Lead Bank Receivable Sale API
+  description: The Receivable Sale API from Lead Bank — 2 operation(s) for receivable sale.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - Receivable Sale
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-receivable-sale-api-openapi.yml
+- aid: lead-bank:lead-bank-user-account-api
+  name: Lead Bank User Account API
+  description: The User Account API from Lead Bank — 8 operation(s) for user account.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - User Account
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-user-account-api-openapi.yml
+- aid: lead-bank:lead-bank-user-credit-balance-api
+  name: Lead Bank User Credit Balance API
+  description: The User Credit Balance API from Lead Bank — 6 operation(s) for user credit balance.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - User Credit Balance
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-user-credit-balance-api-openapi.yml
+- aid: lead-bank:lead-bank-user-credit-transaction-api
+  name: Lead Bank User Credit Transaction API
+  description: >-
+    The User Credit Transaction API from Lead Bank — 3 operation(s) for user credit transaction.
+  humanURL: https://docs.lead.bank/api-integrations/overview
+  baseURL: gated-partner-access
+  tags:
+  - User Credit Transaction
+  properties:
+  - type: OpenAPI
+    url: openapi/lead-bank-user-credit-transaction-api-openapi.yml
 common:
   - type: Plans
     url: plans/lead-bank-plans-pricing.yml

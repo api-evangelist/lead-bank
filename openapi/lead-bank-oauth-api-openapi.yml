@@ -73,6 +73,8 @@ paths:
                   - application/read_write
                   - blockchain_payment/read
                   - blockchain_payment/read_write
+                  - card/read
+                  - card/read_write
       responses:
         '200':
           description: Successful token exchange
@@ -120,7 +122,55 @@ paths:
                     type: string
                     description: Why the parameter is invalid.
                     example: Invalid grant type.
+        '403':
+          description: Your program is not provisioned for one or more of the requested scopes. Scopes are provisioned by Lead; contact support@lead.bank to request access.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                status: '403'
+                code: insufficient_scope
+                title: Your program is not provisioned for one or more of the requested scopes.
+                detail: Scopes are provisioned by Lead. Check the documented scopes for this endpoint and contact support@lead.bank to request access.
+                invalid_parameters:
+                - parameter: scope
+                  reason: invalid_value
 components:
+  schemas:
+    InvalidParameterDetail:
+      type: object
+      properties:
+        parameter:
+          type: string
+          description: Which parameter is invalid.
+          example: transaction_type
+        reason:
+          type: string
+          description: Why the parameter is invalid.
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        title:
+          type: string
+          description: The error title.
+        detail:
+          type: string
+          description: A detailed error description.
+        status:
+          type: string
+          description: The HTTP status code.
+        invalid_parameters:
+          type: array
+          description: Invalid request parameters with reasons, if applicable.
+          items:
+            $ref: '#/components/schemas/InvalidParameterDetail'
+        instance:
+          type: string
+          description: The object causing this specific occurrence of the error, if applicable.
   securitySchemes:
     bearerAuth:
       type: http

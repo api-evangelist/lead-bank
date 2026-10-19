@@ -1,0 +1,537 @@
+openapi: 3.2.0
+info:
+  title: Lead Bank Receivable Sale API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: Receivable Sale
+paths:
+  /v2/receivable_sales:
+    get:
+      tags:
+      - Receivable Sale
+      operationId: list-all-receivable-sales-v2
+      summary: List all Receivable Sales
+      description: List the Receivable Sales for your program, most recently created first. More than one Receivable Sale can exist for the same `request_date`.
+      parameters:
+      - name: request_date
+        description: A set of filters on the list using the object's field `request_date`.
+        in: query
+        style: deepObject
+        explode: true
+        schema:
+          type: object
+          properties:
+            after:
+              type: string
+              format: date
+              description: Return only sales whose `request_date` is after this date.
+            on_or_after:
+              type: string
+              format: date
+              description: Return only sales whose `request_date` is the same as or after this date.
+            before:
+              type: string
+              format: date
+              description: Return only sales whose `request_date` is before this date.
+            on_or_before:
+              type: string
+              format: date
+              description: Return only sales whose `request_date` is the same as or before this date.
+      - name: status
+        in: query
+        description: Return only sales with this status.
+        schema:
+          $ref: '#/components/schemas/ReceivableSaleStatus'
+      - name: limit
+        in: query
+        description: Maximum number of objects to be returned.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+      - name: starting_after
+        in: query
+        description: A cursor for use in pagination. Pass the ID of the last Receivable Sale in the previous page to fetch the next page.
+        schema:
+          $ref: '#/components/schemas/ReceivableSaleID'
+      - name: ending_before
+        in: query
+        description: A cursor for use in pagination. Pass the ID of the first Receivable Sale in the current page to fetch the previous page.
+        schema:
+          $ref: '#/components/schemas/ReceivableSaleID'
+      responses:
+        '200':
+          description: A list of Receivable Sale objects.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - objects
+                - has_more
+                properties:
+                  objects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ReceivableSale'
+                  has_more:
+                    type: boolean
+                    description: Whether more objects are available beyond this page.
+              example:
+                objects:
+                - id: receivable_sale_3f9a1c7e5b2d4a6f8e0c1b3d5f7a9c2e
+                  status: settled
+                  request_date: '2026-06-03'
+                  currency_code: USD
+                  purchase_amount: 1250685
+                  purchase_amount_breakdown:
+                    principal: 1250000
+                    interest: 0
+                    fees: 685
+                  receivables_count: 42
+                  core_transaction_id: core_transaction_5BIJT5QH8Qm2n1x~0
+                  created_at: '2026-06-04T06:00:00Z'
+                  settled_at: '2026-06-04T14:30:00Z'
+                  updated_at: '2026-06-04T14:30:00Z'
+                - id: receivable_sale_6c1e3a5b7d9f0b2d4f6a8c0e2b4d6f8a
+                  status: failed
+                  request_date: '2026-06-02'
+                  currency_code: USD
+                  purchase_amount: 870000
+                  purchase_amount_breakdown:
+                    principal: 865000
+                    interest: 3200
+                    fees: 1800
+                  receivables_count: 27
+                  core_transaction_id: null
+                  failure:
+                    reason: non_sufficient_funds
+                    details: Your account has insufficient funds. Please add funds and notify Lead.
+                  created_at: '2026-06-03T06:00:00Z'
+                  settled_at: null
+                  updated_at: '2026-06-03T14:30:00Z'
+                has_more: false
+        '400':
+          description: The request URL could not be parsed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: 'Rejected before the request reached the Receivable Sale API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '422':
+          description: One or more query parameters are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: invalid_value
+                  message: status must be one of created, settled, failed.
+                  parameters:
+                  - status
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system did not respond in time. Retry with backoff.
+  /v2/receivable_sales/{receivable_sale_id}:
+    get:
+      tags:
+      - Receivable Sale
+      operationId: retrieve-a-receivable-sale-v2
+      summary: Retrieve a Receivable Sale
+      description: Retrieve a Receivable Sale by its ID, including its rollup totals. To list the Receivables in it, use `GET /v2/receivables?receivable_sale_id={receivable_sale_id}`.
+      parameters:
+      - name: receivable_sale_id
+        in: path
+        required: true
+        example: receivable_sale_3f9a1c7e5b2d4a6f8e0c1b3d5f7a9c2e
+        schema:
+          type: string
+          maxLength: 64
+        description: The ID of the Receivable Sale object to retrieve.
+      responses:
+        '200':
+          description: A Receivable Sale object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceivableSale'
+              example:
+                id: receivable_sale_8b2e4d6f0a1c3e5b7d9f1a3c5e7b9d0f
+                status: created
+                request_date: '2026-06-04'
+                currency_code: USD
+                purchase_amount: 980500
+                purchase_amount_breakdown:
+                  principal: 975000
+                  interest: 4000
+                  fees: 1500
+                receivables_count: 31
+                core_transaction_id: null
+                created_at: '2026-06-05T06:00:00Z'
+                settled_at: null
+                updated_at: '2026-06-05T06:00:00Z'
+        '400':
+          description: The request URL could not be parsed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: 'Rejected before the request reached the Receivable Sale API. `code` is one of:
+
+            `authentication_missing` (the request has no credentials),
+
+            `token_invalid` (the bearer token is expired, invalid, or does not grant the required scope),
+
+            `source_ip_not_permitted` (the request came from an IP address that is not on your program''s allowlist).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: authentication_missing
+                message: The request has no authentication credentials. Send your API token in the Authorization header.
+                errors:
+                - code: authentication_missing
+                  message: The Authorization header is missing. Send your API token as a bearer token.
+                  parameters:
+                  - Authorization
+        '404':
+          description: No Receivable Sale with this ID exists, or it is not visible to this program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '422':
+          description: The Receivable Sale ID in the path is not a well-formed Receivable Sale ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: malformed
+                  message: receivable_sale_id must match the format receivable_sale_*.
+                  parameters:
+                  - receivable_sale_id
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: An unexpected error occurred. Contact support with the Request-Id header value.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system did not respond in time. Retry with backoff.
+components:
+  schemas:
+    ReceivableSaleStatus:
+      type: string
+      description: 'The status of the receivable sale.
+
+
+        - `created`: the sale has been created and its member receivables and amounts are frozen.
+
+        - `settled`: the `purchase_amount` has been debited from your account. `core_transaction_id` and `settled_at` are set.
+
+        - `failed`: the sale could not be settled because your account has insufficient funds or is closed. `failure` describes why. Any other problem leaves the sale `created`.'
+      enum:
+      - created
+      - settled
+      - failed
+      example: settled
+    ReceivableSale:
+      type: object
+      description: A receivable sale is the aggregate of a program's eligible receivables for a single business day, which you purchase as a single unit.
+      required:
+      - id
+      - status
+      - request_date
+      - currency_code
+      - purchase_amount
+      - purchase_amount_breakdown
+      - receivables_count
+      - core_transaction_id
+      - created_at
+      - settled_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/ReceivableSaleID'
+        status:
+          $ref: '#/components/schemas/ReceivableSaleStatus'
+        request_date:
+          type: string
+          format: date
+          description: The business day being sold. This may be earlier than `created_at` when a sale is generated for a past business day.
+          example: '2026-06-03'
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        purchase_amount:
+          type: integer
+          description: The total amount you pay for the sale, in minor units, debited from your account as a single entry when the sale settles. Equal to the sum of the member receivables' amounts, frozen when the sale is created, and to the sum of the components in `purchase_amount_breakdown`.
+          example: 1250000
+        purchase_amount_breakdown:
+          $ref: '#/components/schemas/ReceivableSalePurchaseAmountBreakdown'
+        receivables_count:
+          type: integer
+          description: The number of receivables in the sale. List them with `GET /v2/receivables?receivable_sale_id={id}`.
+          minimum: 0
+          example: 42
+        core_transaction_id:
+          allOf:
+          - $ref: '#/components/schemas/CoreTransactionID'
+          description: The core transaction that debited `purchase_amount` from your account. Null until the sale is `settled`.
+        failure:
+          allOf:
+          - $ref: '#/components/schemas/ReceivableSaleFailure'
+          description: Why the sale failed. Present only when the sale is `failed`; omitted otherwise.
+        created_at:
+          type: string
+          format: date-time
+          description: The ISO-8601 timestamp at which the Receivable Sale object was created.
+          example: '2026-06-04T06:00:00Z'
+        settled_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The ISO-8601 timestamp at which the sale settled and `purchase_amount` was debited. Null until the sale is `settled`.
+          example: '2026-06-04T14:30:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: The ISO-8601 timestamp at which the Receivable Sale object was last updated.
+          example: '2026-06-04T14:30:00Z'
+    ErrorCode:
+      type: string
+      description: A snake_case code identifying the error family — the stable, machine-readable value partners branch on, together with the HTTP status.
+      example: parameters_invalid
+      enum:
+      - request_malformed
+      - content_too_large
+      - idempotency_key_missing
+      - authentication_missing
+      - token_invalid
+      - source_ip_not_allowed
+      - url_invalid
+      - object_not_found
+      - method_not_allowed
+      - idempotency_key_in_use
+      - idempotency_request_inconsistent
+      - rate_limit_exceeded
+      - internal_server_error
+      - service_unavailable
+      - endpoint_disabled
+      - gateway_timeout
+      - unclassified
+      - parameters_invalid
+      - related_object_invalid
+      - related_object_not_ready
+      - related_object_conflict
+      - limit_exceeded
+      - client_control_restricted
+      - lead_control_restricted
+      - object_state_conflict
+      - object_modified_concurrently
+      - operation_invalid
+    ReceivableSaleFailureReason:
+      type: string
+      description: 'Why the sale could not be settled.
+
+
+        - `non_sufficient_funds`: your account has insufficient funds for `purchase_amount`.
+
+        - `account_closed`: your account is closed.'
+      enum:
+      - non_sufficient_funds
+      - account_closed
+      example: non_sufficient_funds
+    ReceivableSalePurchaseAmountBreakdown:
+      type: object
+      description: 'The components that make up the sale''s `purchase_amount`, in minor units. The components always sum to `purchase_amount`.
+
+
+        This object is an open map: Lead may add new components (for example, a premium) in the future without a version change. Each component is a signed integer, so a component that reduces the amount due is negative. Sum every key present rather than only the ones listed here.'
+      required:
+      - principal
+      - interest
+      - fees
+      properties:
+        principal:
+          type: integer
+          description: The sum of the member receivables' outstanding principal, in minor units, frozen when the sale is created.
+          minimum: 0
+          example: 1250000
+        interest:
+          type: integer
+          description: The sum of the member receivables' outstanding borrower interest, in minor units, frozen when the sale is created.
+          minimum: 0
+          example: 0
+        fees:
+          type: integer
+          description: The sum of the member receivables' outstanding borrower fees, in minor units, frozen when the sale is created.
+          minimum: 0
+          example: 685
+      additionalProperties:
+        type: integer
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+          description: A human-readable description of the error family. Identical for every occurrence of a given `code`; carries no request-specific detail.
+          example: One or more parameters are invalid.
+        errors:
+          type: array
+          description: Zero or more specific errors within this family. Always present for validation errors, one entry per failing field.
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+    CurrencyCode:
+      description: A three-letter currency code as defined in ISO 4217.
+      type: string
+      example: USD
+      enum:
+      - USD
+    ErrorItem:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          description: A snake_case code naming the specific error or sub-category.
+          example: required
+        message:
+          type: string
+          description: A human-readable description of this specific error, with interpolated values where relevant.
+          example: account_number_id is required.
+        parameters:
+          type: array
+          description: The request fields this error implicates, in dot notation for nested fields. Present for validation errors.
+          items:
+            type: string
+          example:
+          - account_number_id
+    ReceivableSaleFailure:
+      type: object
+      description: Why a receivable sale failed to settle.
+      required:
+      - reason
+      - details
+      properties:
+        reason:
+          $ref: '#/components/schemas/ReceivableSaleFailureReason'
+        details:
+          type: string
+          description: A description of the failure and what to do next.
+          example: Your account has insufficient funds. Please add funds and notify Lead.
+    ReceivableSaleID:
+      type: string
+      description: Unique ID of the Receivable Sale object.
+      maxLength: 64
+      pattern: ^receivable_sale_\w+$
+      example: receivable_sale_3f9a1c7e5b2d4a6f8e0c1b3d5f7a9c2e
+    CoreTransactionID:
+      type: string
+      example: core_transaction_xyz123
+      pattern: ^core_transaction_.+~\d+$
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

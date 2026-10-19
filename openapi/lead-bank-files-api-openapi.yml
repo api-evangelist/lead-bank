@@ -1,0 +1,504 @@
+openapi: 3.2.0
+info:
+  title: Lead Bank Files API
+  description: Lead Bank's APIs
+  version: v1.0
+servers:
+- url: https://api.sandbox.lead.bank
+- url: https://api.lead.bank
+security:
+- bearerAuth: []
+tags:
+- name: Files
+paths:
+  /v2/files:
+    post:
+      tags:
+      - Files
+      operationId: create-a-file
+      summary: Create a file
+      description: Upload a File to Lead and get back a Lead-issued `id` you can reference immediately.
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency key
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+        example: 6f3a1c2e-9b47-4d81-a0c5-7e2f8b1d4a63
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - file
+              - type
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: 'The file bytes, as a standard multipart file part. The part''s
+
+                    own `filename` and `Content-Type` headers — which HTTP clients
+
+                    set automatically — are your declaration of the file''s name and
+
+                    format, and are returned as `file_name` and `content_type`.'
+                type:
+                  $ref: '#/components/schemas/FileType'
+                metadata:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: 'A set of key-value pairs that can be used to store additional
+
+                    information related to this object.'
+            encoding:
+              metadata:
+                contentType: application/json
+      responses:
+        '200':
+          description: File object created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+        '400':
+          description: 'The request could not be parsed: `idempotency_key_missing` when the
+
+            header is absent, or `request_malformed` when the body is not valid
+
+            `multipart/form-data`.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_missing
+                message: The Idempotency-Key header is required for this endpoint.
+        '403':
+          description: '`token_invalid`: the token is missing, expired, invalid, or does not
+
+            carry `file/read_write`.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, or invalid.
+        '409':
+          description: A request with this Idempotency-Key is still in flight.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: idempotency_key_in_use
+                message: A concurrent request using this Idempotency-Key is still in flight.
+        '413':
+          description: The file exceeds the 50 MB limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: content_too_large
+                message: The request is over a size limit for this endpoint. Make it smaller and resend it.
+                errors:
+                - code: body_too_large
+                  message: file is 52428801 bytes, which is over this endpoint's 50 MB limit.
+                  parameters:
+                  - file
+        '422':
+          description: 'The request parsed but did not validate: `parameters_invalid` for a
+
+            missing or unsupported part (`errors[].code` names the reason, such as
+
+            `required`, `not_in_allowed_set`, or `dependent_parameter_invalid` when
+
+            the bytes contradict the declared `Content-Type`), or
+
+            `idempotency_request_inconsistent` when this key was previously used
+
+            with a different request.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: required
+                  message: The file part is required and must include a filename and Content-Type.
+                  parameters:
+                  - file
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+  /v2/files/{id}:
+    get:
+      tags:
+      - Files
+      operationId: retrieve-a-file
+      summary: Retrieve a file
+      description: Retrieve a File's metadata by its ID. No bytes or download URL are returned.
+      parameters:
+      - name: id
+        in: path
+        description: The Lead-issued file id returned by `POST /v2/files`.
+        required: true
+        schema:
+          $ref: '#/components/schemas/FileID'
+        example: file_7RwQ2mK9pL4xT1vN8jS5
+      responses:
+        '200':
+          description: The file's metadata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+        '400':
+          description: The request could not be parsed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: request_malformed
+                message: The request is invalid and cannot be parsed by the server.
+                errors:
+                - code: url_malformed
+                  message: The request URL could not be parsed.
+        '403':
+          description: '`token_invalid`: the token is missing, expired, invalid, or carries
+
+            neither `file/read` nor `file/read_write`.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: token_invalid
+                message: The bearer token is missing, expired, or invalid.
+        '404':
+          description: No file with this `id` is visible to your program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: object_not_found
+                message: No object exists at the requested ID, or it is not visible to this caller.
+        '422':
+          description: 'The `id` did not validate: `parameters_invalid` when it does not match
+
+            the `file_*` format.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: parameters_invalid
+                message: One or more parameters are invalid.
+                errors:
+                - code: malformed
+                  message: The file ID format is invalid.
+                  parameters:
+                  - id
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: rate_limit_exceeded
+                message: You have exceeded the rate limit for this endpoint. Retry with backoff.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: internal_server_error
+                message: Something went wrong on our end. Contact Lead with the Request-Id if this persists.
+        '503':
+          description: The service or endpoint is temporarily unavailable. Retry after a delay.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: service_unavailable
+                message: The service is temporarily unavailable. Retry after the indicated delay.
+        '504':
+          description: An upstream system did not respond in time. Retry with backoff.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: gateway_timeout
+                message: An upstream system timed out. Retry with backoff.
+components:
+  schemas:
+    ErrorCode:
+      type: string
+      description: A snake_case code identifying the error family — the stable, machine-readable value partners branch on, together with the HTTP status.
+      example: parameters_invalid
+      enum:
+      - request_malformed
+      - content_too_large
+      - idempotency_key_missing
+      - authentication_missing
+      - token_invalid
+      - source_ip_not_allowed
+      - url_invalid
+      - object_not_found
+      - method_not_allowed
+      - idempotency_key_in_use
+      - idempotency_request_inconsistent
+      - rate_limit_exceeded
+      - internal_server_error
+      - service_unavailable
+      - endpoint_disabled
+      - gateway_timeout
+      - unclassified
+      - parameters_invalid
+      - related_object_invalid
+      - related_object_not_ready
+      - related_object_conflict
+      - limit_exceeded
+      - client_control_restricted
+      - lead_control_restricted
+      - object_state_conflict
+      - object_modified_concurrently
+      - operation_invalid
+    FileUploadedBy:
+      type: string
+      description: 'Who created the file. Set by Lead, not declarable on upload.
+
+        * `partner`: created by you through the files API.
+
+        * `lead`: reserved for files Lead itself creates.'
+      example: partner
+      enum:
+      - partner
+      - lead
+    File:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique ID of the file. Use this to link the file to Entity, Application and User Account objects.
+          example: file_7RwQ2mK9pL4xT1vN8jS5
+        uploaded_by:
+          $ref: '#/components/schemas/FileUploadedBy'
+        file_name:
+          type: string
+          description: 'The filename you declared, taken from the uploaded part''s `filename`
+
+            header.'
+          maxLength: 255
+          example: loan_agreement_acct_4471.pdf
+        type:
+          $ref: '#/components/schemas/FileType'
+        content_type:
+          type: string
+          description: 'MIME type of the file (e.g., application/pdf), taken from the
+
+            Content-Type header of the multipart file part.'
+          example: application/pdf
+        size_bytes:
+          type: integer
+          format: int64
+          description: Size of the file in bytes.
+          example: 184233
+        checksum:
+          type: string
+          description: 'A SHA-256 checksum digest of the file bytes, computed by Lead as the
+
+            file is received.'
+          example: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
+        created_at:
+          type: string
+          format: date-time
+          description: The ISO-8601 timestamp at which the file was created.
+          example: '2026-09-14T14:22:01Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: The ISO-8601 timestamp at which the file was last updated.
+          example: '2026-09-14T14:22:01Z'
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: 'A set of key-value pairs that can be used to store additional
+
+            information related to this object.'
+          example: {}
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+          description: A human-readable description of the error family. Identical for every occurrence of a given `code`; carries no request-specific detail.
+          example: One or more parameters are invalid.
+        errors:
+          type: array
+          description: Zero or more specific errors within this family. Always present for validation errors, one entry per failing field.
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+    FileID:
+      type: string
+      description: Lead-issued identifier of the file, from `POST /v2/files`.
+      example: file_7RwQ2mK9pL4xT1vN8jS5
+      pattern: ^file_\w+$
+    ErrorItem:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          description: A snake_case code naming the specific error or sub-category.
+          example: required
+        message:
+          type: string
+          description: A human-readable description of this specific error, with interpolated values where relevant.
+          example: account_number_id is required.
+        parameters:
+          type: array
+          description: The request fields this error implicates, in dot notation for nested fields. Present for validation errors.
+          items:
+            type: string
+          example:
+          - account_number_id
+    FileType:
+      type: string
+      description: 'The file''s type. Must be a valid enum.
+
+
+        The accepted values are grouped by the object the file can be linked to.
+
+
+        **Application and User Account**
+
+
+        `aan`, `ach_authorization`, `autopay_authorization`, `bo_certification`,
+
+        `cardholder_agreement`, `consent_to_link_account`, `consent_to_link_hsa`,
+
+        `consumer_credit_auth`, `credit_pull_consent`, `credit_score_notice`,
+
+        `decision_maker_document`, `deposit_agreement`, `eft_authorization`,
+
+        `esign_agreement`, `fcra_notice`, `lead_funds_transfer_agreement`,
+
+        `lead_privacy_policy`, `loan_agreement`, `loc_agreement`,
+
+        `missed_payments_policy`, `mla_notice`, `negative_option_consent`,
+
+        `notice_of_incompleteness`, `offer_summary`, `partner_privacy_policy`,
+
+        `patriot_act_notice`, `periodic_statement`, `personal_guarantee`,
+
+        `pre_approval_terms`, `prohibited_industry_certification`, `tcpa_consent`,
+
+        `terms_of_use`, `truth_in_lending_document`
+
+
+        **Entity — individual**
+
+
+        `adverse_media`, `bank_statement`, `drivers_license`,
+
+        `financial_statement`, `id_selfie`, `investigation_report`,
+
+        `matriculate_id`, `military_id`, `national_id`, `passport`,
+
+        `permanent_residency_id`, `proof_of_address`, `public_records`,
+
+        `state_or_provincial_id`, `utility_bills`
+
+
+        **Entity — business**
+
+
+        `adverse_media`, `bank_statement`, `certificate_of_good_standing`,
+
+        `financial_statement`, `formation_document`, `id_selfie`,
+
+        `investigation_report`, `partnership_agreement`,
+
+        `proof_of_address`, `proof_of_place_on_stock_exchange`, `public_records`,
+
+        `tax_certificate`, `tax_returns`, `utility_bills`
+
+
+        **Entity — sole prop**
+
+
+        `adverse_media`, `bank_statement`, `drivers_license`,
+
+        `financial_statement`, `id_selfie`, `investigation_report`,
+
+        `matriculate_id`, `military_id`, `name_certificate`, `national_id`,
+
+        `passport`, `permanent_residency_id`, `proof_of_address`,
+
+        `public_records`, `state_or_provincial_id`, `tax_certificate`,
+
+        `tax_returns`, `utility_bills`'
+      example: loan_agreement
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
